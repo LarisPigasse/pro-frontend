@@ -1,5 +1,5 @@
 // src/core/components/ui/button/Button.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const buttonData: ComponentData = {
   id: "button",

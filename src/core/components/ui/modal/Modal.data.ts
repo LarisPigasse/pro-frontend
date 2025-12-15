@@ -1,5 +1,5 @@
 // src/core/components/ui/modal/Modal.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const modalData: ComponentData = {
   id: "modal",
@@ -80,11 +80,11 @@ export const modalData: ComponentData = {
 >
   <div className="flex items-center justify-center p-8">
     <Spinner />
-    <ThemedText className="ml-4">Attendi il completamento...</ThemedText>
+    <span className="ml-4 text-text-primary">Attendi il completamento...</span>
   </div>
 </Modal>`,
     },
   ],
   notes:
-    "Il componente Modal è costruito sopra Radix UI Dialog per garantire massima accessibilità (gestione del focus, ARIA attributes, blocco dello scroll). La sua struttura interna è basata su ThemedSurface per una perfetta integrazione con il sistema di theming.",
+    "Il componente Modal è costruito sopra Radix UI Dialog per garantire massima accessibilità (gestione del focus, ARIA attributes, blocco dello scroll). La sua struttura interna è basata su Tailwind CSS per una perfetta integrazione con il sistema di theming.",
 };

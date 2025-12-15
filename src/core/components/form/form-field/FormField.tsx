@@ -59,7 +59,7 @@ export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
     const childrenWithProps = React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
         return React.cloneElement(child, {
-          id: child.props.id || id,
+          id: (child as React.ReactElement<any>).props.id || id,
           "aria-describedby": error ? `${id}-error` : helperText ? `${id}-helper` : undefined,
           "aria-invalid": hasError ? "true" : undefined,
         } as React.HTMLAttributes<HTMLElement>);
@@ -102,4 +102,4 @@ export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
 FormField.displayName = "FormField";
 
 export default FormField;
-export type { FormFieldSize, FormFieldSpacing };
+

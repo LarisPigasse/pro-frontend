@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { ThemedSurface } from "../../atomic";
+
 import { Spinner } from "../../feedback";
 
 interface CenteredPageProps {
@@ -87,9 +87,8 @@ export const CenteredPage: React.FC<CenteredPageProps> = ({
   const animationClasses = animate ? "animate-in fade-in-0 slide-in-from-bottom-4 duration-500" : "";
 
   return (
-    <ThemedSurface
-      variant={variant}
-      className={`min-h-screen flex items-center justify-center ${paddingClasses[padding]} ${className}`}
+    <div
+      className={`min-h-screen flex items-center justify-center ${paddingClasses[padding]} ${className} bg-bg-${variant}`}
     >
       <div
         className={`
@@ -99,7 +98,7 @@ export const CenteredPage: React.FC<CenteredPageProps> = ({
       >
         {isLoading ? (
           <div className="flex flex-col items-center justify-center space-y-4">
-            <Spinner size="lg" />
+            <Spinner size="md" />
             <div className="text-center">
               <p className="text-text-secondary text-sm">{loadingMessage}</p>
             </div>
@@ -108,7 +107,7 @@ export const CenteredPage: React.FC<CenteredPageProps> = ({
           children
         )}
       </div>
-    </ThemedSurface>
+    </div>
   );
 };
 

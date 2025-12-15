@@ -2,7 +2,7 @@
 import React from "react";
 import Card from "./Card";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 import { ArrowRight } from "lucide-react";
 
@@ -16,33 +16,33 @@ export const CardShowcase: React.FC = () => {
       {/* Varianti */}
       <TitledSurface title="Varianti Card" variant="primary" padding="lg">
         <div className="space-y-4">
-          <ThemedText variant="label" className="font-medium" block>
+          <p className="font-medium block text-text-secondary">
             Le 4 varianti principali definiscono l'aspetto di base del card.
-          </ThemedText>
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card variant="default" padding="md">
-              <ThemedText>Default</ThemedText>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <span className="text-text-primary">Default</span>
+              <p className="text-sm mt-1 text-text-secondary">
                 Bordo e ombra leggera
-              </ThemedText>
+              </p>
             </Card>
             <Card variant="elevated" padding="md">
-              <ThemedText>Elevated</ThemedText>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <span className="text-text-primary">Elevated</span>
+              <p className="text-sm mt-1 text-text-secondary">
                 Ombra più pronunciata
-              </ThemedText>
+              </p>
             </Card>
             <Card variant="outlined" padding="md">
-              <ThemedText>Outlined</ThemedText>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <span className="text-text-primary">Outlined</span>
+              <p className="text-sm mt-1 text-text-secondary">
                 Bordo marcato, no ombra
-              </ThemedText>
+              </p>
             </Card>
             <Card variant="flat" padding="md">
-              <ThemedText>Flat</ThemedText>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <span className="text-text-primary">Flat</span>
+              <p className="text-sm mt-1 text-text-secondary">
                 Superficie secondaria, senza bordi/ombra
-              </ThemedText>
+              </p>
             </Card>
           </div>
         </div>
@@ -51,21 +51,21 @@ export const CardShowcase: React.FC = () => {
       {/* Interattività */}
       <TitledSurface title="Interattività e Hover" variant="secondary" padding="lg">
         <div className="space-y-4">
-          <ThemedText variant="label" className="font-medium" block>
+          <p className="font-medium block text-text-secondary">
             I card possono essere resi interattivi con effetti hover e focus.
-          </ThemedText>
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card clickable padding="lg" onClick={handleCardClick}>
               <div className="flex justify-between items-center">
-                <ThemedText>Card Cliccabile</ThemedText>
+                <span className="text-text-primary">Card Cliccabile</span>
                 <ArrowRight className="w-5 h-5 text-text-secondary" />
               </div>
             </Card>
             <Card hover padding="lg">
-              <ThemedText>Card con Hover</ThemedText>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <span className="text-text-primary">Card con Hover</span>
+              <p className="text-sm mt-1 text-text-secondary">
                 Questo card ha solo l'effetto hover.
-              </ThemedText>
+              </p>
             </Card>
           </div>
         </div>
@@ -75,12 +75,12 @@ export const CardShowcase: React.FC = () => {
       <TitledSurface title="Esempio Realistico" variant="modal" padding="lg">
         <Card variant="elevated" padding="lg" clickable>
           <div className="space-y-4">
-            <ThemedText as="h3" variant="primary" className="font-bold text-lg">
+            <h3 className="font-bold text-lg text-text-primary">
               Piano Pro
-            </ThemedText>
-            <ThemedText variant="secondary">
+            </h3>
+            <p className="text-text-secondary">
               Accesso a tutte le funzionalità avanzate, supporto prioritario e reportistica dettagliata.
-            </ThemedText>
+            </p>
             <div className="flex justify-between items-baseline pt-2">
               <div>
                 <span className="text-3xl font-bold text-text-primary">29€</span>

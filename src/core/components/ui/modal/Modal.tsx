@@ -2,7 +2,7 @@
 import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils/";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
@@ -34,7 +34,7 @@ interface ModalProps {
 
 /**
  * Modal component con Radix UI integrato nel theme system EDG.
- * Usa ThemedSurface come base e CSS custom properties per consistency completa.
+ * Usa classi Tailwind e CSS custom properties per consistency completa.
  */
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -94,34 +94,32 @@ const Modal: React.FC<ModalProps> = ({
       <Dialog.Portal>
         <Dialog.Overlay className={overlayClasses} />
 
-        {/* Modal Content - USA THEMEDDSURFACE */}
+        {/* Modal Content - USA TAILWIND */}
         <Dialog.Content
           className={contentClasses}
           onEscapeKeyDown={preventClose ? (e) => e.preventDefault() : undefined}
           onPointerDownOutside={preventClose ? (e) => e.preventDefault() : undefined}
           asChild
         >
-          <ThemedSurface variant="modal" borderVariant="default" className="rounded-xl shadow-xl flex flex-col">
+          <div className="bg-bg-modal border border-border-default rounded-xl shadow-xl flex flex-col">
             {/* Header */}
             {(title || !hideCloseButton) && (
-              <ThemedSurface
-                variant="modal"
-                borderVariant="none"
-                className="flex items-center justify-between p-6 border-b border-border-default flex-shrink-0"
+              <div
+                className="bg-bg-modal flex items-center justify-between p-6 border-b border-border-default flex-shrink-0"
               >
                 <div className="flex-1 min-w-0">
                   {title && (
                     <Dialog.Title asChild>
-                      <ThemedText variant="primary" className="text-lg font-semibold" as="h2">
+                      <h2 className="text-text-primary text-lg font-semibold">
                         {title}
-                      </ThemedText>
+                      </h2>
                     </Dialog.Title>
                   )}
                   {description && (
                     <Dialog.Description asChild>
-                      <ThemedText variant="secondary" className="mt-1 text-sm">
+                      <p className="text-text-secondary mt-1 text-sm">
                         {description}
-                      </ThemedText>
+                      </p>
                     </Dialog.Description>
                   )}
                 </div>
@@ -138,21 +136,21 @@ const Modal: React.FC<ModalProps> = ({
                     </button>
                   </Dialog.Close>
                 )}
-              </ThemedSurface>
+              </div>
             )}
 
-            {/* Content - USA THEMEDDSURFACE */}
-            <ThemedSurface variant="modal" borderVariant="none" className="flex-1 overflow-y-auto">
+            {/* Content - USA TAILWIND */}
+            <div className="bg-bg-modal flex-1 overflow-y-auto">
               {children}
-            </ThemedSurface>
+            </div>
 
             {/* Footer */}
             {footer && (
-              <ThemedSurface variant="modal" borderVariant="none" className="border-t border-border-default p-6 flex-shrink-0">
+              <div className="bg-bg-modal border-t border-border-default p-6 flex-shrink-0">
                 {footer}
-              </ThemedSurface>
+              </div>
             )}
-          </ThemedSurface>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -160,4 +158,4 @@ const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
-export type { ModalSize };
+

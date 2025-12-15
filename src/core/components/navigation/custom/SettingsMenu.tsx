@@ -1,7 +1,7 @@
 // src/core/components/navigation/SettingsMenu.tsx
 import React, { useEffect } from "react";
 import { useUISettings } from "../../../../app/hooks";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { X } from "lucide-react";
 
 interface SettingsMenuProps {
@@ -66,11 +66,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
       <div className="fixed inset-0 z-50 pointer-events-none">
         <div className="flex justify-end pt-16 pr-4 sm:pr-6">
           {/* Modal Panel */}
-          <ThemedSurface
-            variant="primary"
-            borderVariant="default"
+          <div
             className={`
-              pointer-events-auto w-80 max-w-[90vw] shadow-2xl rounded-xl border
+              pointer-events-auto w-80 max-w-[90vw] shadow-2xl rounded-xl border border-border-default bg-bg-primary
               transform transition-all duration-300 ease-out
               ${settingsMenuOpen ? "translate-y-0 scale-100 opacity-100" : "-translate-y-4 scale-95 opacity-0"}
               ${className}
@@ -83,19 +81,17 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
             }}
           >
             {/* Header */}
-            <ThemedSurface
-              variant="secondary"
-              borderVariant="default"
+            <div
               className={`
-                flex items-center justify-between p-4 border-b rounded-t-xl
+                flex items-center justify-between p-4 border-b border-border-default rounded-t-xl bg-bg-secondary
                 transform transition-all duration-400 ease-out
                 ${settingsMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}
               `}
               style={{ transitionDelay: settingsMenuOpen ? "100ms" : "0ms" }}
             >
-              <ThemedText variant="primary" className="text-lg font-semibold">
+              <span className="text-lg font-semibold text-text-primary">
                 Impostazioni
-              </ThemedText>
+              </span>
               <button
                 onClick={closeSettingsMenu}
                 className="p-1.5 text-text-secondary hover:text-text-primary hover:bg-bg-hover rounded-lg transition-colors"
@@ -103,7 +99,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
               >
                 <X className="w-4 h-4" />
               </button>
-            </ThemedSurface>
+            </div>
 
             {/* Content */}
             <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
@@ -117,12 +113,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
                 {/* Dark Mode Toggle */}
                 <div className="flex items-center justify-between py-2">
                   <div className="flex-1">
-                    <ThemedText variant="primary" className="font-medium" block>
+                    <span className="text-text-primary font-medium block">
                       Dark Mode
-                    </ThemedText>
-                    <ThemedText variant="secondary" className="text-sm mt-0.5">
+                    </span>
+                    <span className="text-text-secondary text-sm mt-0.5 block">
                       Attiva/disattiva tema scuro
-                    </ThemedText>
+                    </span>
                   </div>
                   <div className="flex-shrink-0 ml-4">
                     <ToggleSwitch checked={darkMode} onChange={toggleDarkMode} id="darkMode" />
@@ -135,12 +131,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
                 {/* Sidebar Toggle */}
                 <div className="flex items-center justify-between py-2">
                   <div className="flex-1">
-                    <ThemedText variant="primary" className="font-medium" block>
+                    <span className="text-text-primary font-medium block">
                       Sidebar
-                    </ThemedText>
-                    <ThemedText variant="secondary" className="text-sm mt-0.5">
+                    </span>
+                    <span className="text-text-secondary text-sm mt-0.5 block">
                       Mostra/nascondi barra laterale
-                    </ThemedText>
+                    </span>
                   </div>
                   <div className="flex-shrink-0 ml-4">
                     <ToggleSwitch checked={sidebarVisible} onChange={toggleSidebar} id="sidebar" />
@@ -153,12 +149,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
                 {/* Footer Toggle */}
                 <div className="flex items-center justify-between py-2">
                   <div className="flex-1">
-                    <ThemedText variant="primary" className="font-medium" block>
+                    <span className="text-text-primary font-medium block">
                       Footer
-                    </ThemedText>
-                    <ThemedText variant="secondary" className="text-sm mt-0.5">
+                    </span>
+                    <span className="text-text-secondary text-sm mt-0.5 block">
                       Mostra/nascondi footer
-                    </ThemedText>
+                    </span>
                   </div>
                   <div className="flex-shrink-0 ml-4">
                     <ToggleSwitch checked={footerVisible} onChange={toggleFooter} id="footer" />
@@ -176,11 +172,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className = "" }) => {
               `}
               style={{ transitionDelay: settingsMenuOpen ? "300ms" : "0ms" }}
             >
-              <ThemedText variant="secondary" className="text-xs text-center">
+              <span className="text-xs text-center text-text-secondary block">
                 Le impostazioni vengono salvate automaticamente
-              </ThemedText>
+              </span>
             </div>
-          </ThemedSurface>
+          </div>
         </div>
       </div>
     </>

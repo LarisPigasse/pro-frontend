@@ -2,7 +2,7 @@
 import React from "react";
 import Tooltip from "./Tooltip";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 import { Settings, HelpCircle, Archive } from "lucide-react";
 
@@ -10,10 +10,10 @@ export const TooltipShowcase: React.FC = () => {
   return (
     <div className="space-y-8">
       <TitledSurface title="Posizionamento del Tooltip" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           Usa la prop `side` per definire la posizione preferita del tooltip. Radix UI gestirà automaticamente le collisioni con
           i bordi dello schermo.
-        </ThemedText>
+        </p>
         <div className="flex flex-wrap items-center justify-center gap-4 p-8">
           <Tooltip content="Appare in alto (default)">
             <Button>Top</Button>

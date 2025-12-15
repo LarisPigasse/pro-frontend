@@ -1,6 +1,6 @@
 // src/core/components/layout/HeaderGroup.tsx
 import React from "react";
-import { ThemedText } from "../../atomic";
+
 
 interface HeaderGroupProps {
   title: string;
@@ -46,14 +46,14 @@ const HeaderGroup: React.FC<HeaderGroupProps> = ({
 
   return (
     <div className={`${spacingClasses[spacing]} ${alignClasses[align]} ${className}`}>
-      <ThemedText variant="primary" className={titleSizeClasses[titleSize]} block>
+      <span className={`text-text-primary block ${titleSizeClasses[titleSize]}`}>
         {title}
-      </ThemedText>
+      </span>
 
       {subtitle && (
-        <ThemedText variant="secondary" className="text-sm" block>
+        <span className="text-text-secondary text-sm block">
           {subtitle}
-        </ThemedText>
+        </span>
       )}
     </div>
   );

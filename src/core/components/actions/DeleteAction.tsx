@@ -2,7 +2,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "../ui";
-import type { ButtonSize } from "../ui/Button";
+import type { ButtonSize } from "../ui/button/Button";
 
 interface DeleteActionProps<T> {
   item: T;

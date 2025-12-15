@@ -1,8 +1,9 @@
 // src/core/components/actions/ActionMenu.tsx
 import React from "react";
+
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
-import { cn } from "../../utils/";
+import { cn } from "../../utils";
 
 // Definizione del tipo per una singola azione
 export interface Action {
@@ -143,4 +144,4 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 };
 
 export default ActionMenu;
-export type { Action };
+

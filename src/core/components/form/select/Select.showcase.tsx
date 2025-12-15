@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Select from "./Select";
 import type { SelectOption } from "./Select";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 
 const countryOptions: SelectOption[] = [
@@ -50,9 +50,9 @@ export const SelectShowcase: React.FC = () => {
 
       <TitledSurface title="Validazione e Errori" variant="secondary" padding="lg">
         <div className="max-w-sm space-y-4">
-          <ThemedText variant="secondary" className="mb-2">
+          <p className="text-text-secondary mb-2">
             Un esempio interattivo per mostrare come il select gestisce gli errori di validazione.
-          </ThemedText>
+          </p>
           <Select
             label="Categoria Prodotto"
             options={[

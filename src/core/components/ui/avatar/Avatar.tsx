@@ -175,11 +175,11 @@ export const Avatar: React.FC<AvatarProps> = ({
   const displayInitials = initials?.slice(0, 2).toUpperCase();
 
   // Click handler
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = () => {
     if (clickable && onClick) {
       onClick();
     }
-    props.onClick?.(e);
+
   };
 
   // Auto-enable clickable if onClick is provided
@@ -194,12 +194,10 @@ export const Avatar: React.FC<AvatarProps> = ({
         // Background for initials/fallback
         (shouldShowInitials || shouldShowFallback) && variantClass,
         // Clickable styles
-        isClickable && [
-          "cursor-pointer transition-all duration-200",
-          "hover:scale-105 hover:shadow-md",
-          "focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2",
-          "active:scale-95",
-        ],
+        isClickable && "cursor-pointer transition-all duration-200",
+        isClickable && "hover:scale-105 hover:shadow-md",
+        isClickable && "focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2",
+        isClickable && "active:scale-95",
         // Border
         bordered && "ring-2 ring-white dark:ring-gray-800 shadow-md",
         // Disabled state
@@ -287,4 +285,4 @@ export const Avatar: React.FC<AvatarProps> = ({
 export default Avatar;
 
 // Export dei tipi per uso esterno
-export type { AvatarSize, AvatarShape, AvatarVariant, AvatarStatus, AvatarStatusPosition };
+

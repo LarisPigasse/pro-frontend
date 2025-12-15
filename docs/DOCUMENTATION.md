@@ -26,7 +26,7 @@ edg-frontend-template/
 │   ├── eslint.config.js                            # 🟢 Configurazione di esLint per il controllo del codice
 │   ├── tsconfig.app.json                           # 🟢 Configurazione TypeScript specifica per la compilazione
 │   ├── tsconfig.json                               # 🟢 Configurazione TypeScript principale per tutto il progetto
-│   ├── tsconfig.node.json                          # 🟢 Configurazione TypeScript per l'esecuzione in ambiente node                           
+│   ├── tsconfig.node.json                          # 🟢 Configurazione TypeScript per l'esecuzione in ambiente                           
 │   └── vite.config.ts                              # 🟢 Configurazione Vite
 ├── node_modules  
 | 

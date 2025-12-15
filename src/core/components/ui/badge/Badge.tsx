@@ -110,5 +110,5 @@ const Badge: React.FC<BadgeProps> = ({ children, text, variant, size = "xs", sta
 };
 
 // Export con types per uso esterno
-export type { BadgeVariant, BadgeSize };
+
 export default Badge;

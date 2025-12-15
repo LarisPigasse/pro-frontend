@@ -2,7 +2,7 @@
 import React from "react";
 import { Edit } from "lucide-react";
 import { Button } from "../ui";
-import type { ButtonSize } from "../ui/Button";
+import type { ButtonSize } from "../ui/button/Button";
 
 interface EditActionProps<T> {
   item: T;

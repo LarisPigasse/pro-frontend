@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import RadioGroup from "./RadioGroup";
 import type { RadioOption } from "./RadioGroup";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 const planOptions: RadioOption[] = [
   { value: "free", label: "Piano Free", description: "Funzionalità di base, ideale per iniziare." },
@@ -26,15 +26,15 @@ export const RadioGroupShowcase: React.FC = () => {
       <TitledSurface title="Orientamento e Descrizioni" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="text-text-secondary mb-4 font-semibold block">
               Vertical (Default)
-            </ThemedText>
+            </span>
             <RadioGroup label="Scegli il tuo piano" options={planOptions} value={plan} onValueChange={setPlan} />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="text-text-secondary mb-4 font-semibold block">
               Horizontal
-            </ThemedText>
+            </span>
             <RadioGroup
               label="Metodo di Pagamento"
               orientation="horizontal"
@@ -49,9 +49,9 @@ export const RadioGroupShowcase: React.FC = () => {
       <TitledSurface title="Stati e Dimensioni" variant="secondary" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="text-text-secondary mb-4 font-semibold block">
               Stato di Errore
-            </ThemedText>
+            </span>
             <RadioGroup
               label="Conferma la tua scelta"
               options={[
@@ -63,9 +63,9 @@ export const RadioGroupShowcase: React.FC = () => {
             />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="text-text-secondary mb-4 font-semibold block">
               Stato Disabilitato
-            </ThemedText>
+            </span>
             <RadioGroup
               label="Opzioni non disponibili"
               options={[
@@ -77,9 +77,9 @@ export const RadioGroupShowcase: React.FC = () => {
             />
           </div>
           <div className="md:col-span-2">
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="text-text-secondary mb-4 font-semibold block">
               Dimensioni Diverse
-            </ThemedText>
+            </span>
             <div className="space-y-6">
               <RadioGroup
                 label="Dimensione Small"

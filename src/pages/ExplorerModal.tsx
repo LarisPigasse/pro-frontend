@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { X, Copy, Check, ExternalLink, Info, Palette } from "lucide-react";
 import { Badge, Button } from "../core/components/ui";
-import { ThemedSurface, ThemedText } from "../core/components/atomic";
+
 import { TitledSurface } from "../core/components/layout";
-import type { ComponentData } from "../data/components.data";
+import type { ComponentData } from '../core/types';
 import { cn } from "../core/utils";
 
 interface RestructuredComponent {
@@ -116,16 +116,16 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
     <div className="space-y-6">
       {/* Overview */}
       <div>
-        <ThemedText variant="secondary" className="leading-relaxed mb-4">
+        <span className="text-text-secondary leading-relaxed mb-4 block">
           {componentData.description}
-        </ThemedText>
+        </span>
 
         {/* Import */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <ThemedText variant="label" className="text-sm font-medium">
+            <span className="text-text-secondary text-sm font-medium">
               Import
-            </ThemedText>
+            </span>
             <button
               onClick={() => copyToClipboard(componentData.importPath, "import")}
               className="p-1 rounded hover:bg-bg-hover transition-colors"
@@ -176,9 +176,9 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
                     )}
                   </td>
                   <td className="py-3">
-                    <ThemedText variant="secondary" className="text-sm">
+                    <span className="text-text-secondary text-sm">
                       {prop.description}
-                    </ThemedText>
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -194,12 +194,12 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
             <div key={index} className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <ThemedText variant="primary" className="font-semibold">
+                  <span className="text-text-primary font-semibold block">
                     {example.title}
-                  </ThemedText>
-                  <ThemedText variant="secondary" className="text-sm mt-1">
+                  </span>
+                  <span className="text-text-secondary text-sm mt-1 block">
                     {example.description}
-                  </ThemedText>
+                  </span>
                 </div>
                 <button
                   onClick={() => copyToClipboard(example.code, `example-${index}`)}
@@ -231,9 +231,9 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
                 <ExternalLink className="w-3 h-3 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
-            <ThemedText variant="secondary" className="leading-relaxed">
+            <span className="text-text-secondary leading-relaxed">
               {componentData.notes}
-            </ThemedText>
+            </span>
           </div>
         </TitledSurface>
       )}
@@ -247,12 +247,12 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
         <div className="flex items-center gap-3">
           <Palette className="w-5 h-5 text-violet-600" />
           <div>
-            <ThemedText variant="primary" className="font-medium">
+            <span className="text-text-primary font-medium block">
               Showcase Interattivo
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm">
+            </span>
+            <span className="text-text-secondary text-sm block">
               Esempi live del componente {componentData.title} - Prova le interazioni!
-            </ThemedText>
+            </span>
           </div>
         </div>
       </div>
@@ -271,7 +271,7 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
 
       {/* Modal Container */}
       <div className="relative w-full max-w-6xl max-h-[95vh] mx-4 flex flex-col">
-        <ThemedSurface variant="modal" borderVariant="default" className="rounded-xl shadow-xl overflow-hidden flex flex-col">
+        <div className="rounded-xl shadow-xl overflow-hidden flex flex-col bg-bg-modal border border-border-default">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border-default">
             <div className="flex items-center space-x-4">
@@ -287,18 +287,18 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
                   <Badge variant="default" size="xs">
                     {componentData.category}
                   </Badge>
-                  <ThemedText variant="primary" className="text-sm">
+                  <span className="text-text-primary text-sm">
                     {componentData.id}
-                  </ThemedText>
+                  </span>
                   <Badge variant="info" size="xs">
                     Co-located
                   </Badge>
-                  <ThemedText variant="secondary" className="text-sm">
+                  <span className="text-text-secondary text-sm">
                     | {componentData.origin}
-                  </ThemedText>
-                  <ThemedText variant="secondary" className="text-sm">
+                  </span>
+                  <span className="text-text-secondary text-sm">
                     | {componentData.dependence}
-                  </ThemedText>
+                  </span>
                 </div>
               </div>
             </div>
@@ -340,9 +340,9 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
           <div className="border-t border-border-default p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <ThemedText variant="secondary" className="text-sm">
+                <span className="text-text-secondary text-sm">
                   Component ID: <code className="font-mono">{componentData.id}</code>
-                </ThemedText>
+                </span>
                 <Badge variant="success" size="xs">
                   ✓ Ristrutturato
                 </Badge>
@@ -352,7 +352,7 @@ const ExplorerModal: React.FC<ExplorerModalProps> = ({ isOpen, component, onClos
               </Button>
             </div>
           </div>
-        </ThemedSurface>
+        </div>
       </div>
     </div>
   );

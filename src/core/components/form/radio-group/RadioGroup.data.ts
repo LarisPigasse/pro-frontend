@@ -1,5 +1,5 @@
 // src/core/components/ui/radio-group/RadioGroup.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const radioGroupData: ComponentData = {
   id: "radioGroup",

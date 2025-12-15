@@ -1,6 +1,6 @@
 // src/core/components/ui/Card.tsx
 import React from "react";
-import { ThemedSurface } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type CardVariant = "default" | "elevated" | "outlined" | "flat";
@@ -59,23 +59,23 @@ export const Card: React.FC<CardProps> = ({
   // Configurazione varianti
   const variantConfig = {
     default: {
-      surface: "primary" as const,
-      border: "default" as const,
+      bg: "bg-bg-primary",
+      border: "border border-border-default",
       shadow: "shadow-themed-sm",
     },
     elevated: {
-      surface: "primary" as const,
-      border: "thin" as const,
+      bg: "bg-bg-primary",
+      border: "border border-border-thin",
       shadow: "shadow-themed-md",
     },
     outlined: {
-      surface: "primary" as const,
-      border: "strong" as const,
+      bg: "bg-bg-primary",
+      border: "border border-border-strong",
       shadow: "shadow-none",
     },
     flat: {
-      surface: "secondary" as const,
-      border: "none" as const,
+      bg: "bg-bg-secondary",
+      border: "",
       shadow: "shadow-none",
     },
   };
@@ -91,13 +91,21 @@ export const Card: React.FC<CardProps> = ({
   const config = variantConfig[variant];
 
   // Classi base
-  const baseClasses = cn("rounded-lg transition-all duration-200 ease-in-out", config.shadow, paddingClasses[padding]);
+  const baseClasses = cn(
+    "rounded-lg transition-all duration-200 ease-in-out",
+    config.bg,
+    config.border,
+    config.shadow,
+    paddingClasses[padding]
+  );
 
   // Classi hover
   const hoverClasses = enableHover
     ? cn(
         "hover:shadow-themed-lg",
-        variant === "outlined" ? "hover:border-violet-400 hover:shadow-themed-sm" : "hover:border-violet-300",
+        variant === "outlined"
+          ? "hover:border-violet-400 hover:shadow-themed-sm"
+          : "hover:border-violet-300",
         variant === "flat" ? "hover:shadow-themed-sm" : ""
       )
     : "";
@@ -108,14 +116,21 @@ export const Card: React.FC<CardProps> = ({
         "cursor-pointer",
         // Focus styles - border highlight instead of ring
         "focus:outline-none focus:border-violet-500",
-        variant === "flat" ? "focus:shadow-themed-sm" : "focus:shadow-themed-lg",
+        variant === "flat"
+          ? "focus:shadow-themed-sm"
+          : "focus:shadow-themed-lg",
         // Active state
         "active:scale-[0.98] active:shadow-themed-sm"
       )
     : "";
 
   // Classi finali
-  const finalClasses = cn(baseClasses, hoverClasses, clickableClasses, className);
+  const finalClasses = cn(
+    baseClasses,
+    hoverClasses,
+    clickableClasses,
+    className
+  );
 
   // Props finali
   const finalProps = {
@@ -134,10 +149,10 @@ export const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <ThemedSurface variant={config.surface} borderVariant={config.border} className={finalClasses} {...finalProps}>
+    <div className={finalClasses} {...finalProps}>
       {children}
-    </ThemedSurface>
+    </div>
   );
 };
-export type { CardVariant, CardPadding };
+
 export default Card;

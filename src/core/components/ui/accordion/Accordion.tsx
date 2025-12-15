@@ -2,7 +2,7 @@
 import React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type AccordionType = "single" | "multiple";
@@ -16,13 +16,15 @@ export interface AccordionItem {
   disabled?: boolean;
 }
 
-interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Modalità accordion - single (un item) o multiple (più items) */
   type?: AccordionType;
   /** Items dell'accordion */
   items: AccordionItem[];
   /** Valore/i di default aperti */
   defaultValue?: string | string[];
+  /** Valore/i controllati */
+  value?: string | string[];
   /** Se type="single", permette di chiudere tutti gli item */
   collapsible?: boolean;
   /** Variante visiva */
@@ -60,7 +62,7 @@ interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
  *   ]}
  * />
  */
-export const Accordion: React.FC<AccordionProps> = ({
+export const Accordion = ({
   type = "single",
   items,
   defaultValue,
@@ -70,7 +72,7 @@ export const Accordion: React.FC<AccordionProps> = ({
   onValueChange,
   className = "",
   ...props
-}) => {
+}: AccordionProps) => {
   // Configurazione dimensioni
   const sizeConfig = {
     sm: {
@@ -121,18 +123,21 @@ export const Accordion: React.FC<AccordionProps> = ({
       ? {
           type: "single" as const,
           defaultValue: defaultValue as string,
-          onValueChange: onValueChange as (value: string) => void,
+          value: props.value as string,
+          onValueChange: onValueChange as any,
           collapsible,
         }
       : {
           type: "multiple" as const,
           defaultValue: defaultValue as string[],
-          onValueChange: onValueChange as (value: string[]) => void,
-        };
+          value: props.value as string[],
+          onValueChange: onValueChange as any,
+        } as any;
 
   return (
-    <ThemedSurface variant="primary" borderVariant="none" className={cn("w-full", className)} {...props}>
-      <AccordionPrimitive.Root className={cn("w-full", variantStyles.container)} {...rootProps}>
+    <div className={cn("w-full bg-bg-primary", className)} {...props}>
+      {/* @ts-ignore */}
+      <AccordionPrimitive.Root className={cn("w-full", variantStyles.container)} {...(rootProps as any)}>
         {items.map((item) => (
           <AccordionPrimitive.Item
             key={item.value}
@@ -152,9 +157,9 @@ export const Accordion: React.FC<AccordionProps> = ({
                   variantStyles.trigger
                 )}
               >
-                <ThemedText variant="primary" className="font-medium">
+                <span className="text-text-primary font-medium">
                   {item.title}
-                </ThemedText>
+                </span>
 
                 <ChevronDown
                   className={cn(
@@ -176,19 +181,19 @@ export const Accordion: React.FC<AccordionProps> = ({
               )}
             >
               <div className={cn(config.content)}>
-                <ThemedText variant="secondary" className="leading-relaxed">
+                <p className="text-text-secondary leading-relaxed">
                   {item.content}
-                </ThemedText>
+                </p>
               </div>
             </AccordionPrimitive.Content>
           </AccordionPrimitive.Item>
         ))}
       </AccordionPrimitive.Root>
-    </ThemedSurface>
+    </div>
   );
 };
 
 export default Accordion;
 
 // Export dei tipi per uso esterno
-export type { AccordionType, AccordionVariant, AccordionSize };
+

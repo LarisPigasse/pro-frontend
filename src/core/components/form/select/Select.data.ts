@@ -1,5 +1,5 @@
 // src/core/components/ui/select/Select.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const selectData: ComponentData = {
   id: "select",

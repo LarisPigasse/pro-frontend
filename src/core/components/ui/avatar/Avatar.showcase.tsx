@@ -2,22 +2,12 @@
 import React, { useState } from "react";
 import Avatar from "./Avatar";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Badge } from "../";
-import { User, Settings, Shield, Star, Camera, Edit3, Users, Crown, Heart, Zap, Coffee, Gamepad2, Music } from "lucide-react";
+import { User, Settings, Shield, Star, Camera, Edit3, Crown, Heart, Zap, Coffee, Gamepad2, Music } from "lucide-react";
 
 /**
  * AvatarShowcase - Showcase completo per il Avatar component.
- *
- * Dimostra tutte le features dell'Avatar:
- * - Tutte le dimensioni (xs, sm, md, lg, xl)
- * - Tutte le forme (circle, square, rounded)
- * - Tutte le varianti colore (primary, secondary, success, warning, danger, info)
- * - Status indicators con tutte le posizioni
- * - Avatar interattivi e cliccabili
- * - Fallback intelligenti (immagine → iniziali → icona)
- * - Avatar groups e overlapping
- * - Use cases reali (user lists, teams, profiles)
  */
 export const AvatarShowcase: React.FC = () => {
   // State per dimostrazioni interattive
@@ -27,18 +17,18 @@ export const AvatarShowcase: React.FC = () => {
 
   // Mock users per esempi realistici
   const mockUsers = [
-    { id: "1", name: "Alice Johnson", initials: "AJ", status: "online", role: "Designer", avatar: null },
+    { id: "1", name: "Alice Johnson", initials: "AJ", status: "online", role: "Designer", avatar: undefined },
     { id: "2", name: "Bob Smith", initials: "BS", status: "busy", role: "Developer", avatar: "/avatar2.jpg" },
-    { id: "3", name: "Carol Davis", initials: "CD", status: "away", role: "Manager", avatar: null },
+    { id: "3", name: "Carol Davis", initials: "CD", status: "away", role: "Manager", avatar: undefined },
     { id: "4", name: "David Wilson", initials: "DW", status: "offline", role: "Tester", avatar: "/avatar4.jpg" },
-    { id: "5", name: "Eva Martinez", initials: "EM", status: "online", role: "Designer", avatar: null },
+    { id: "5", name: "Eva Martinez", initials: "EM", status: "online", role: "Designer", avatar: undefined },
   ];
 
   const teamMembers = [
     { id: "t1", name: "Marco Rossi", initials: "MR", avatar: "/team1.jpg" },
-    { id: "t2", name: "Laura Bianchi", initials: "LB", avatar: null },
+    { id: "t2", name: "Laura Bianchi", initials: "LB", avatar: undefined },
     { id: "t3", name: "Giuseppe Verdi", initials: "GV", avatar: "/team3.jpg" },
-    { id: "t4", name: "Anna Neri", initials: "AN", avatar: null },
+    { id: "t4", name: "Anna Neri", initials: "AN", avatar: undefined },
     { id: "t5", name: "Francesco Blu", initials: "FB", avatar: "/team5.jpg" },
   ];
 
@@ -82,47 +72,47 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Dimensioni Avatar" variant="primary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Tutte le Dimensioni Disponibili
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               <div className="text-center">
                 <Avatar initials="XS" size="xs" variant="primary" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   XS (24px)
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="SM" size="sm" variant="secondary" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   SM (32px)
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="MD" size="md" variant="success" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   MD (40px)
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="LG" size="lg" variant="warning" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   LG (48px)
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="XL" size="xl" variant="danger" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   XL (64px)
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Con Status Indicators
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               <Avatar initials="ON" size="lg" variant="success" status="online" />
               <Avatar initials="BU" size="lg" variant="danger" status="busy" />
@@ -137,35 +127,35 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Forme Avatar" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Forme Disponibili
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               <div className="text-center">
                 <Avatar initials="CI" shape="circle" variant="primary" size="lg" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Circle
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="SQ" shape="square" variant="secondary" size="lg" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Square
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="RO" shape="rounded" variant="info" size="lg" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Rounded
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Con Bordi e Status
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               <Avatar
                 initials="B1"
@@ -203,53 +193,53 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Varianti Colore" variant="modal" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Varianti Semantiche
-            </ThemedText>
+            </span>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
               <div className="text-center">
                 <Avatar initials="PR" variant="primary" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Primary
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="SC" variant="secondary" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Secondary
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="SU" variant="success" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Success
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="WA" variant="warning" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Warning
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="DA" variant="danger" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Danger
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="IN" variant="info" size="md" />
-                <ThemedText variant="secondary" className="text-xs mt-2" block>
+                <span className="text-text-secondary text-xs mt-2 block">
                   Info
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Con Fallback Personalizzati
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-4">
               <Avatar
                 fallback={<Settings className="w-5 h-5" />}
@@ -271,41 +261,41 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Status Indicators" variant="info" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Posizioni Status
-            </ThemedText>
+            </span>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <Avatar initials="TR" variant="primary" size="lg" status="online" statusPosition="top-right" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Top Right
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="BR" variant="secondary" size="lg" status="busy" statusPosition="bottom-right" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Bottom Right
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="TL" variant="success" size="lg" status="away" statusPosition="top-left" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Top Left
-                </ThemedText>
+                </span>
               </div>
               <div className="text-center">
                 <Avatar initials="BL" variant="warning" size="lg" status="offline" statusPosition="bottom-left" />
-                <ThemedText variant="secondary" className="text-sm mt-2" block>
+                <span className="text-text-secondary text-sm mt-2 block">
                   Bottom Left
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Status Semantici
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               <div className="text-center">
                 <Avatar initials="ON" variant="success" size="lg" status="online" />
@@ -340,9 +330,9 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Avatar Interattivi" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar Cliccabili
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-4 mb-4">
               <Avatar
                 initials="CL"
@@ -374,21 +364,21 @@ export const AvatarShowcase: React.FC = () => {
 
             {/* Interactive Feedback */}
             <div className="p-4 bg-bg-info rounded-lg">
-              <ThemedText variant="primary" className="font-medium mb-1" block>
+              <span className="text-text-primary font-medium mb-1 block">
                 Interazioni: {clickCount} click totali
-              </ThemedText>
+              </span>
               {selectedUser && (
-                <ThemedText variant="secondary" className="text-sm">
+                <span className="text-text-secondary text-sm">
                   Ultimo click: {selectedUser}
-                </ThemedText>
+                </span>
               )}
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar con Azioni Preferiti
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-4">
               {["F1", "F2", "F3", "F4"].map((id, index) => (
                 <div key={id} className="relative">
@@ -408,9 +398,6 @@ export const AvatarShowcase: React.FC = () => {
                 </div>
               ))}
             </div>
-            <ThemedText variant="secondary" className="text-sm mt-2">
-              Click per aggiungere/rimuovere dai preferiti
-            </ThemedText>
           </div>
         </div>
       </TitledSurface>
@@ -419,9 +406,9 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Avatar Groups" variant="modal" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Team Avatar Sovrapposti
-            </ThemedText>
+            </span>
             <div className="flex -space-x-2 mb-3">
               {teamMembers.slice(0, 4).map((member, index) => (
                 <Avatar
@@ -446,15 +433,15 @@ export const AvatarShowcase: React.FC = () => {
                 className="z-10"
               />
             </div>
-            <ThemedText variant="secondary" className="text-sm">
+            <span className="text-text-secondary text-sm">
               Team di 12 persone - Click su +8 per vedere tutti
-            </ThemedText>
+            </span>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar Group con Varianti
-            </ThemedText>
+            </span>
             <div className="flex -space-x-3">
               <Avatar initials="AD" variant="primary" size="lg" bordered className="z-40" />
               <Avatar initials="DV" variant="success" size="lg" bordered className="z-30" />
@@ -464,9 +451,9 @@ export const AvatarShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar Stack Verticale
-            </ThemedText>
+            </span>
             <div className="flex flex-col -space-y-2 w-fit">
               <Avatar initials="V1" variant="primary" size="sm" bordered />
               <Avatar initials="V2" variant="secondary" size="sm" bordered />
@@ -477,15 +464,10 @@ export const AvatarShowcase: React.FC = () => {
         </div>
       </TitledSurface>
 
-      {/* User List Example */}
-      <TitledSurface title="Lista Utenti Realistica" variant="info" padding="lg">
+      {/* User List */}
+      <TitledSurface title="Lista Utenti" variant="secondary" padding="lg">
         <div className="space-y-4">
-          <ThemedText variant="label" className="font-medium mb-3" block>
-            Team Members Dashboard
-          </ThemedText>
-
-          <div className="space-y-3">
-            {mockUsers.map((user) => (
+          {mockUsers.map((user) => (
               <div
                 key={user.id}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-bg-hover transition-colors cursor-pointer"
@@ -502,16 +484,16 @@ export const AvatarShowcase: React.FC = () => {
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <ThemedText variant="primary" className="font-medium">
+                    <span className="text-text-primary font-medium">
                       {user.name}
-                    </ThemedText>
+                    </span>
                     <Badge variant={getStatusVariant(user.status) as any} size="xs">
                       {user.status}
                     </Badge>
                   </div>
-                  <ThemedText variant="secondary" className="text-sm">
+                  <span className="text-text-secondary text-sm">
                     {user.role}
-                  </ThemedText>
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {favoriteAvatars.has(user.id) && <Heart className="w-4 h-4 text-red-500 fill-current" />}
@@ -522,69 +504,68 @@ export const AvatarShowcase: React.FC = () => {
           </div>
 
           <div className="mt-4 p-4 bg-bg-secondary rounded-lg">
-            <ThemedText variant="primary" className="font-medium mb-2" block>
+            <span className="text-text-primary font-medium mb-2 block">
               Stats Dashboard
-            </ThemedText>
+            </span>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <ThemedText variant="primary" className="text-2xl font-bold" block>
+                <span className="text-2xl font-bold text-text-primary block">
                   {mockUsers.filter((u) => u.status === "online").length}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm">
                   Online
-                </ThemedText>
+                </span>
               </div>
               <div>
-                <ThemedText variant="primary" className="text-2xl font-bold" block>
+                <span className="text-2xl font-bold text-text-primary block">
                   {mockUsers.filter((u) => u.status === "busy").length}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm">
                   Busy
-                </ThemedText>
+                </span>
               </div>
               <div>
-                <ThemedText variant="primary" className="text-2xl font-bold" block>
+                <span className="text-2xl font-bold text-text-primary block">
                   {mockUsers.filter((u) => u.status === "away").length}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm">
                   Away
-                </ThemedText>
+                </span>
               </div>
               <div>
-                <ThemedText variant="primary" className="text-2xl font-bold" block>
+                <span className="text-2xl font-bold text-text-primary block">
                   {mockUsers.filter((u) => u.status === "offline").length}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm">
                   Offline
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
-        </div>
       </TitledSurface>
 
       {/* Advanced Use Cases */}
       <TitledSurface title="Casi d'Uso Avanzati" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar con Loading State
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-4">
               <Avatar src="/very-slow-loading-image.jpg" alt="Loading Avatar" initials="LD" size="lg" variant="primary" />
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-full" />
-                <ThemedText variant="secondary" className="text-sm">
+                <span className="text-text-secondary text-sm">
                   Loading simulation
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar Tematici
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-4">
               <Avatar fallback={<Coffee className="w-5 h-5" />} variant="warning" size="md" title="Coffee Break" clickable />
               <Avatar fallback={<Gamepad2 className="w-5 h-5" />} variant="info" size="md" title="Gaming Mode" clickable />
@@ -594,15 +575,15 @@ export const AvatarShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar Responsive (Mobile vs Desktop)
-            </ThemedText>
+            </span>
             <div className="space-y-4">
               {/* Mobile Layout */}
               <div className="block md:hidden">
-                <ThemedText variant="secondary" className="text-sm mb-2" block>
+                <span className="text-text-secondary text-sm mb-2 block">
                   Layout Mobile (dimensioni più piccole)
-                </ThemedText>
+                </span>
                 <div className="flex items-center gap-2">
                   <Avatar initials="MB" size="sm" variant="primary" status="online" />
                   <Avatar initials="MB" size="sm" variant="secondary" status="busy" />
@@ -612,9 +593,9 @@ export const AvatarShowcase: React.FC = () => {
 
               {/* Desktop Layout */}
               <div className="hidden md:block">
-                <ThemedText variant="secondary" className="text-sm mb-2" block>
+                <span className="text-text-secondary text-sm mb-2 block">
                   Layout Desktop (dimensioni più grandi)
-                </ThemedText>
+                </span>
                 <div className="flex items-center gap-4">
                   <Avatar initials="DT" size="lg" variant="primary" status="online" bordered />
                   <Avatar initials="DT" size="lg" variant="secondary" status="busy" bordered />
@@ -625,9 +606,9 @@ export const AvatarShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Avatar con Accessibility Features
-            </ThemedText>
+            </span>
             <div className="space-y-3">
               <div className="flex items-center gap-4">
                 <Avatar
@@ -639,9 +620,9 @@ export const AvatarShowcase: React.FC = () => {
                   aria-label="Avatar accessibile con supporto screen reader"
                   title="Premi Invio o Spazio per interagire"
                 />
-                <ThemedText variant="secondary" className="text-sm">
+                <span className="text-text-secondary text-sm">
                   Avatar con ARIA labels e keyboard navigation
-                </ThemedText>
+                </span>
               </div>
 
               <div className="flex items-center gap-4">
@@ -653,9 +634,9 @@ export const AvatarShowcase: React.FC = () => {
                   aria-label="Utente ad alto contrasto online"
                   className="ring-2 ring-black dark:ring-white"
                 />
-                <ThemedText variant="secondary" className="text-sm">
+                <span className="text-text-secondary text-sm">
                   Avatar ad alto contrasto per accessibility
-                </ThemedText>
+                </span>
               </div>
             </div>
           </div>
@@ -666,43 +647,43 @@ export const AvatarShowcase: React.FC = () => {
       <TitledSurface title="Statistiche Showcase" variant="primary" padding="lg">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
-            <ThemedText variant="primary" className="text-3xl font-bold" block>
+            <span className="text-text-primary text-3xl font-bold block">
               5
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm">
+            </span>
+            <span className="text-text-secondary text-sm">
               Dimensioni
-            </ThemedText>
+            </span>
           </div>
           <div>
-            <ThemedText variant="primary" className="text-3xl font-bold" block>
+            <span className="text-text-primary text-3xl font-bold block">
               3
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm">
+            </span>
+            <span className="text-text-secondary text-sm">
               Forme
-            </ThemedText>
+            </span>
           </div>
           <div>
-            <ThemedText variant="primary" className="text-3xl font-bold" block>
+            <span className="text-text-primary text-3xl font-bold block">
               6
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm">
+            </span>
+            <span className="text-text-secondary text-sm">
               Varianti
-            </ThemedText>
+            </span>
           </div>
           <div>
-            <ThemedText variant="primary" className="text-3xl font-bold" block>
+            <span className="text-text-primary text-3xl font-bold block">
               4
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm">
+            </span>
+            <span className="text-text-secondary text-sm">
               Status
-            </ThemedText>
+            </span>
           </div>
         </div>
 
         <div className="mt-6 p-4 bg-bg-info rounded-lg">
-          <ThemedText variant="primary" className="font-medium mb-2" block>
+          <span className="font-medium mb-2 text-text-primary block">
             💡 Avatar Component Features
-          </ThemedText>
+          </span>
           <ul className="text-sm text-text-secondary space-y-1">
             <li>• Fallback intelligente: Immagine → Iniziali → Icona</li>
             <li>• Status indicators con 4 posizioni configurabili</li>

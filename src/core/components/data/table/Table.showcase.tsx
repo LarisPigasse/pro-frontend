@@ -1,11 +1,11 @@
 // src/core/components/ui/table/Table.showcase.tsx
-import React, { useState } from "react";
+import React from "react";
 import Table from "./Table";
-import type { TableColumn, TableRowActions } from "./Table";
+import type { TableColumn } from "./Table";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Badge } from "../../ui";
-import { Users, FileText, Eye, Edit, Copy, Download } from "lucide-react";
+import { Users, FileText, Eye, Copy, Download } from "lucide-react";
 
 interface User {
   id: number;
@@ -28,12 +28,7 @@ const mockProjects = [
   { id: "PRJ-003", name: "Mobile App", type: "React Native", priority: "low", status: "nuovo" },
 ];
 
-const sampleUsers: User[] = [
-  { id: 1, name: "Laris Pigasse", email: "laris.pigasse@example.com", role: "Admin", status: "Active" },
-  { id: 2, name: "Jane Smith", email: "jane.smith@example.com", role: "Member", status: "Active" },
-  { id: 3, name: "John Doe", email: "john.doe@example.com", role: "Member", status: "Pending" },
-  { id: 4, name: "Peter Jones", email: "peter.jones@example.com", role: "Guest", status: "Banned" },
-];
+
 
 export const TableShowcase: React.FC = () => {
   const handleEmailClick = (user: (typeof mockUsers)[0]) => {
@@ -63,8 +58,6 @@ export const TableShowcase: React.FC = () => {
   const handleDeleteProject = (project: (typeof mockProjects)[0]) => {
     alert(`Elimina progetto: ${project.name}`);
   };
-
-  const [users, setUsers] = useState(sampleUsers);
 
   const columns: TableColumn<User>[] = [
     {
@@ -107,9 +100,9 @@ export const TableShowcase: React.FC = () => {
               accessor: (user) => (
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-text-secondary" />
-                  <ThemedText variant="primary" className="font-medium">
+                  <span className="font-medium text-text-primary">
                     {user.name}
-                  </ThemedText>
+                  </span>
                 </div>
               ),
             },
@@ -175,12 +168,12 @@ export const TableShowcase: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <FileText className="w-4 h-4 text-text-secondary" />
                   <div>
-                    <ThemedText variant="primary" className="font-medium">
+                    <span className="font-medium text-text-primary">
                       {project.name}
-                    </ThemedText>
-                    <ThemedText variant="secondary" className="text-xs">
+                    </span>
+                    <span className="text-xs text-text-secondary">
                       {project.id}
-                    </ThemedText>
+                    </span>
                   </div>
                 </div>
               ),
@@ -236,9 +229,9 @@ export const TableShowcase: React.FC = () => {
               accessor: (user) => (
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-text-secondary" />
-                  <ThemedText variant="primary" className="font-medium">
+                  <span className="font-medium text-text-primary">
                     {user.name}
-                  </ThemedText>
+                  </span>
                 </div>
               ),
             },
@@ -296,15 +289,15 @@ export const TableShowcase: React.FC = () => {
       <TitledSurface title="Stati della Tabella" variant="secondary" padding="lg">
         <div className="space-y-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="mb-4 font-semibold block text-text-secondary">
               Stato Vuoto
-            </ThemedText>
+            </span>
             <Table<User> data={[]} columns={columns} keyExtractor={(u) => u.id} emptyMessage="Nessun elemento trovato." />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-4" block>
+            <span className="mb-4 font-semibold block text-text-secondary">
               Stato di Caricamento
-            </ThemedText>
+            </span>
             <Table<User> data={[]} columns={columns} keyExtractor={(u) => u.id} isLoading />
           </div>
         </div>

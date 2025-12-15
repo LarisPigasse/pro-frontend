@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import TimePicker from "./TimePicker";
 import type { TimeValue } from "./TimePicker";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 export const TimePickerShowcase: React.FC = () => {
   const [time24, setTime24] = useState<TimeValue | undefined>({ hours: 14, minutes: 30 });
@@ -15,15 +15,15 @@ export const TimePickerShowcase: React.FC = () => {
       <TitledSurface title="Formati e Interazione" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+            <span className="text-text-secondary mb-2 font-semibold block">
               Formato 24h (step 15min)
-            </ThemedText>
+            </span>
             <TimePicker label="Orario di Fine" value={time24} onChange={setTime24} format="24h" step={15} />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+            <span className="text-text-secondary mb-2 font-semibold block">
               Formato 12h (step 30min)
-            </ThemedText>
+            </span>
             <TimePicker label="Orario Pausa" value={time12} onChange={setTime12} format="12h" step={30} />
           </div>
         </div>
@@ -32,9 +32,9 @@ export const TimePickerShowcase: React.FC = () => {
       <TitledSurface title="Validazione e Stati" variant="secondary" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+            <span className="text-text-secondary mb-2 font-semibold block">
               Orari Lavorativi
-            </ThemedText>
+            </span>
             <TimePicker
               label="Orario Riunione"
               value={meetingTime}
@@ -45,9 +45,9 @@ export const TimePickerShowcase: React.FC = () => {
             />
           </div>
           <div className="space-y-8">
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+            <span className="text-text-secondary mb-2 font-semibold block">
               Stati Speciali
-            </ThemedText>
+            </span>
             <TimePicker label="Campo con Errore" error="L'orario non è disponibile." required />
             <TimePicker label="Campo Disabilitato" value={{ hours: 10, minutes: 0 }} disabled />
           </div>

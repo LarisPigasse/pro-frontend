@@ -1,5 +1,5 @@
 // src/core/components/ui/info-card/InfoCard.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const infoCardData: ComponentData = {
   id: "infoCard",

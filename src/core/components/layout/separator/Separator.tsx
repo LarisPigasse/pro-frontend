@@ -57,4 +57,4 @@ export const Separator: React.FC<SeparatorProps> = ({
 };
 
 export default Separator;
-export type { SeparatorOrientation, SeparatorVariant };
+

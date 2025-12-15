@@ -1,7 +1,7 @@
 // src/core/components/ui/ConfirmModal.tsx
 import React from "react";
 import { AlertTriangle, Info, CheckCircle, XCircle } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { Button } from "..";
 import { Modal } from "..";
 import { cn } from "../../../utils";
@@ -113,37 +113,35 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm" footer={footer} preventClose={isLoading}>
       {/* Content con ThemedSurface */}
-      <ThemedSurface variant="modal" borderVariant="none" className="p-6">
+      <div className="bg-bg-modal p-6">
         {/* Icon + Message */}
         <div className="flex items-start space-x-4">
           {/* Icon Container - USA CSS CUSTOM PROPERTIES */}
-          <ThemedSurface
-            variant="modal"
-            borderVariant="none"
+          <div
             className={cn("flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center", config.iconBg)}
           >
             <IconComponent className={cn("w-6 h-6", config.iconColor)} />
-          </ThemedSurface>
+          </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             {/* Message */}
-            <ThemedText variant="primary" className="leading-relaxed">
+            <p className="text-text-primary leading-relaxed">
               {message}
-            </ThemedText>
+            </p>
 
             {/* Details */}
             {details && (
-              <ThemedText variant="secondary" className="mt-3 text-sm leading-relaxed">
+              <p className="text-text-secondary mt-3 text-sm leading-relaxed">
                 {details}
-              </ThemedText>
+              </p>
             )}
           </div>
         </div>
-      </ThemedSurface>
+      </div>
     </Modal>
   );
 };
 
 export default ConfirmModal;
-export type { ConfirmVariant };
+

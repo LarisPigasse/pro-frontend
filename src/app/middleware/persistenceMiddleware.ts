@@ -1,7 +1,7 @@
 // src/app/middleware/persistenceMiddleware.ts
 import type { Middleware } from "redux";
-import type { Action } from "@reduxjs/toolkit";
-import type { RootState, AppDispatch } from "../store";
+
+// import type { RootState, AppDispatch } from "../store"; // Circular dependency removal
 
 // Chiavi per localStorage
 const STORAGE_KEYS = {
@@ -20,7 +20,7 @@ interface PersistedUISettings {
 // Utility per il localStorage
 export const storageUtils = {
   // Salva le impostazioni UI nel localStorage
-  saveUISettings: (uiState: RootState["ui"]) => {
+  saveUISettings: (uiState: any) => {
     try {
       const settingsToSave: PersistedUISettings = {
         darkMode: uiState.darkMode,
@@ -69,16 +69,19 @@ export const storageUtils = {
 // Tipizzazione corretta per il middleware Redux
 export const persistenceMiddleware: Middleware<
   Record<string, never>, // Extra dispatch signature
-  RootState, // State type
-  AppDispatch // Dispatch type
-> = (store) => (next) => (action: Action) => {
+  any, // State type (was RootState) - using any to avoid circular dependency
+  any // Dispatch type (was AppDispatch)
+> = (store) => (next) => (action: any) => {
   // Esegui l'action
   const result = next(action);
 
   // Se l'action riguarda l'UI, salva lo stato
   if (action.type?.startsWith("ui/")) {
     const state = store.getState();
-    storageUtils.saveUISettings(state.ui);
+    // Verify state.ui exists before saving
+    if (state && state.ui) {
+      storageUtils.saveUISettings(state.ui);
+    }
   }
 
   return result;

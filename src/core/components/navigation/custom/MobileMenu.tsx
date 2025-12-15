@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUISettings } from "../../../../app/hooks";
 import { useIsMobile } from "../../../hooks";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { Logo } from "../../info";
 import { X } from "lucide-react";
 import { NAVIGATION_ITEMS } from "../../../../config";
@@ -79,25 +79,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
       <div className="fixed inset-0 z-50 pointer-events-none">
         <div className="flex justify-start h-full">
           {/* Panel */}
-          <ThemedSurface
-            variant="primary"
-            borderVariant="default"
+          <div
             className={`
-              pointer-events-auto w-80 max-w-[85vw] h-full shadow-2xl 
+              pointer-events-auto w-80 max-w-[85vw] h-full shadow-2xl bg-bg-primary
               transform transition-all duration-300 ease-out
               ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
-              border-r
+              border-r border-border-default
               ${className}
             `}
           >
             {/* Header */}
-            <ThemedSurface
-              variant="secondary"
-              borderVariant="default"
-              className="flex items-center justify-between p-4 border-b"
+            <div
+              className="flex items-center justify-between p-4 border-b border-border-default bg-bg-secondary"
             >
               {/* Logo */}
-              <Logo variant="full" />
+              <Logo />
 
               {/* Close Button */}
               <button
@@ -107,7 +103,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
               >
                 <X className="w-5 h-5" />
               </button>
-            </ThemedSurface>
+            </div>
 
             {/* Navigation Items */}
             <div className="flex-1 overflow-y-auto py-4">
@@ -132,13 +128,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
                     >
                       <Icon className="w-5 h-5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <ThemedText variant={isActive ? "primary" : "secondary"} className="font-medium">
+                        <span className={`font-medium block ${isActive ? "text-text-primary" : "text-text-secondary"}`}>
                           {item.label}
-                        </ThemedText>
+                        </span>
                         {item.description && (
-                          <ThemedText variant="secondary" className="text-xs mt-0.5">
+                          <span className="text-text-secondary text-xs mt-0.5 block">
                             {item.description}
-                          </ThemedText>
+                          </span>
                         )}
                       </div>
                     </button>
@@ -148,12 +144,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
             </div>
 
             {/* Footer */}
-            <ThemedSurface variant="secondary" borderVariant="default" className="p-4 border-t">
-              <ThemedText variant="secondary" className="text-xs text-center">
+            <div className="p-4 border-t border-border-default bg-bg-secondary">
+              <span className="text-xs text-center text-text-secondary block">
                 EDG Frontend Template
-              </ThemedText>
-            </ThemedSurface>
-          </ThemedSurface>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </>

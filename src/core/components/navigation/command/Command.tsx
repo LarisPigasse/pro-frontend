@@ -1,10 +1,9 @@
 // src/core/components/ui/command/Command.tsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Search } from "lucide-react";
 import { cn } from "../../../utils";
-import { Input } from "../input/Input";
-import { ThemedSurface } from "../../atomic";
+
 
 export interface CommandItem {
   id: string;
@@ -78,7 +77,7 @@ export const Command: React.FC<CommandProps> = ({
           className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
           onKeyDown={handleKeyDown}
         >
-          <ThemedSurface variant="modal" className="rounded-lg border border-border-default shadow-lg">
+          <div className="bg-bg-modal rounded-lg border border-border-default shadow-lg">
             <div className="flex items-center border-b border-border-default px-4">
               <Search className="h-5 w-5 text-text-secondary" />
               <input
@@ -110,7 +109,7 @@ export const Command: React.FC<CommandProps> = ({
                 <p className="p-4 text-center text-sm text-text-secondary">Nessun risultato.</p>
               )}
             </div>
-          </ThemedSurface>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Button from "./Button";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import {
   Plus,
   Download,
@@ -13,7 +13,6 @@ import {
   Edit3,
   Eye,
   Heart,
-  Star,
   Share,
   Settings,
   User,
@@ -82,9 +81,9 @@ export const ButtonShowcase: React.FC = () => {
       <TitledSurface title="Button Variants" variant="primary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Varianti Principali
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="primary">Primary</Button>
               <Button variant="secondary">Secondary</Button>
@@ -95,9 +94,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Varianti Semantiche
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="success" leftIcon={<Check className="w-4 h-4" />}>
                 Success
@@ -120,9 +119,9 @@ export const ButtonShowcase: React.FC = () => {
       <TitledSurface title="Button Sizes" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Tutte le Dimensioni
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap items-center gap-3">
               <Button size="xs" variant="outline">
                 Extra Small
@@ -140,9 +139,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Full Width Buttons
-            </ThemedText>
+            </span>
             <div className="space-y-2">
               <Button variant="primary" fullWidth>
                 Full Width Primary
@@ -159,9 +158,9 @@ export const ButtonShowcase: React.FC = () => {
       <TitledSurface title="Button con Icone" variant="modal" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Icone Leading (Sinistra)
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
                 Nuovo
@@ -179,9 +178,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Icone Trailing (Destra)
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="primary" rightIcon={<ArrowRight className="w-4 h-4" />}>
                 Continua
@@ -204,9 +203,9 @@ export const ButtonShowcase: React.FC = () => {
       <TitledSurface title="Stati Loading" variant="info" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Loading con Testo Personalizzato
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button
                 variant="primary"
@@ -236,9 +235,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Loading Senza Testo Personalizzato
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button
                 variant="outline"
@@ -265,9 +264,9 @@ export const ButtonShowcase: React.FC = () => {
         <div className="space-y-6">
           {/* Like Button */}
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Like Button Interattivo
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-3">
               <Button
                 variant={isLiked ? "primary" : "outline"}
@@ -284,9 +283,9 @@ export const ButtonShowcase: React.FC = () => {
 
           {/* Form Submission */}
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Form Submission
-            </ThemedText>
+            </span>
             <form className="space-y-4 max-w-md">
               <input
                 type="email"
@@ -319,9 +318,9 @@ export const ButtonShowcase: React.FC = () => {
         <div className="space-y-6">
           {/* Toolbar */}
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Text Editor Toolbar
-            </ThemedText>
+            </span>
             <div className="flex">
               <Button variant="ghost" size="sm" leftIcon={<Bold className="w-4 h-4" />} className="rounded-r-none border-r-0" />
               <Button variant="ghost" size="sm" leftIcon={<Italic className="w-4 h-4" />} className="rounded-none border-r-0" />
@@ -331,9 +330,9 @@ export const ButtonShowcase: React.FC = () => {
 
           {/* Alignment */}
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Alignment Controls
-            </ThemedText>
+            </span>
             <div className="flex gap-1">
               <Button variant="outline" size="sm" leftIcon={<AlignLeft className="w-4 h-4" />} />
               <Button variant="outline" size="sm" leftIcon={<AlignCenter className="w-4 h-4" />} />
@@ -343,9 +342,9 @@ export const ButtonShowcase: React.FC = () => {
 
           {/* Action Groups */}
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Action Groups
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <div className="flex gap-2">
                 <Button variant="primary" size="sm">
@@ -373,9 +372,9 @@ export const ButtonShowcase: React.FC = () => {
       <TitledSurface title="Stati Speciali" variant="info" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Stati Disabled
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="primary" disabled>
                 Primary Disabled
@@ -393,9 +392,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Icon Only Buttons
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button
                 variant="outline"
@@ -411,9 +410,9 @@ export const ButtonShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Security Buttons
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Button variant="success" leftIcon={<Unlock className="w-4 h-4" />}>
                 Sblocca Account

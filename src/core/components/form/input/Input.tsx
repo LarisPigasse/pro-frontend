@@ -61,8 +61,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const labelClasses = cn(
       "absolute left-0 pointer-events-none select-none transition-all duration-200 ease-out text-text-label",
       isFloating
-        ? ["top-1 text-sm font-medium", isFocused && !hasError && "text-text-primary", hasError && "text-text-error"]
-        : ["top-1/2 -translate-y-1/2 text-base text-text-placeholder"],
+        ? cn("top-1 text-sm font-medium", isFocused && !hasError && "text-text-primary", hasError && "text-text-error")
+        : "top-1/2 -translate-y-1/2 text-base text-text-placeholder",
       disabled && "text-text-disabled"
     );
     const underlineClasses = cn(

@@ -1,8 +1,9 @@
 // src/core/components/actions/CreateAction.tsx
-import React, { ReactNode } from "react";
+import React from "react";
+import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
-import { Button } from "../ui";
-import type { ButtonVariant, ButtonSize } from "../ui/Button";
+import Button from "../ui/button/Button";
+import type { ButtonVariant, ButtonSize } from "../ui/button/Button";
 
 interface CreateActionProps {
   onClick: () => void;

@@ -2,7 +2,7 @@
 import React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { ChevronDown, ExternalLink } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { Badge } from "../../ui";
 import { cn } from "../../../utils";
 
@@ -155,9 +155,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <ThemedText variant="primary" className="font-medium truncate">
+            <span className="text-text-primary font-medium truncate">
               {link.title}
-            </ThemedText>
+            </span>
 
             {/* Badge */}
             {link.badge && (
@@ -172,9 +172,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
 
           {/* Description */}
           {link.description && (
-            <ThemedText variant="secondary" className="text-xs mt-0.5 truncate">
+            <span className="text-text-secondary text-xs mt-0.5 truncate block">
               {link.description}
-            </ThemedText>
+            </span>
           )}
         </div>
       </a>
@@ -199,7 +199,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
           widthConfig[width]
         )}
       >
-        <ThemedSurface variant="primary" borderVariant="default" className={cn("border rounded-lg shadow-lg", config.content)}>
+        <div className={cn("bg-bg-primary border border-border-default rounded-lg shadow-lg", config.content)}>
           {layout === "list" && (
             <div className="space-y-1">
               {isContentGrouped
@@ -207,9 +207,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                     <div key={groupIndex} className={groupIndex > 0 ? "pt-3 mt-3 border-t border-border-default" : ""}>
                       {group.title && (
                         <div className="mb-2">
-                          <ThemedText variant="label" className="text-xs font-semibold uppercase tracking-wider">
+                          <span className="text-text-secondary text-xs font-semibold uppercase tracking-wider block">
                             {group.title}
-                          </ThemedText>
+                          </span>
                         </div>
                       )}
                       <div className="space-y-1">{(group.links || []).map((link) => renderLink(link, true))}</div>
@@ -222,7 +222,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
           {layout === "grid" && (
             <div className="grid grid-cols-2 gap-2">
               {isContentGrouped
-                ? (content as NavigationGroup[]).flatMap((group) => group.links || [])
+                ? (content as NavigationGroup[])
+                    .flatMap((group) => group.links || [])
+                    .map((link) => renderLink(link))
                 : (content as NavigationLink[]).map((link) => renderLink(link))}
             </div>
           )}
@@ -233,9 +235,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 (content as NavigationGroup[]).map((group, groupIndex) => (
                   <div key={groupIndex} className="space-y-3">
                     {group.title && (
-                      <ThemedText variant="label" className="font-semibold text-sm">
+                      <span className="text-text-secondary font-semibold text-sm block">
                         {group.title}
-                      </ThemedText>
+                      </span>
                     )}
                     <div className="space-y-2">{group.links?.map((link) => renderLink(link)) || []}</div>
                   </div>
@@ -247,7 +249,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
               )}
             </div>
           )}
-        </ThemedSurface>
+        </div>
       </NavigationMenuPrimitive.Content>
     );
   };
@@ -256,12 +258,11 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
     <NavigationMenuPrimitive.Root
       className={cn("relative z-10", className)}
       orientation={orientation}
-      disabled={disabled}
       {...props}
     >
       <NavigationMenuPrimitive.List className={cn("flex gap-1", orientation === "vertical" && "flex-col")}>
         {items.map((item, index) => (
-          <NavigationMenuPrimitive.Item key={index} disabled={item.disabled}>
+          <NavigationMenuPrimitive.Item key={index}>
             <NavigationMenuPrimitive.Trigger
               className={cn(
                 "flex items-center gap-2 rounded-md transition-all duration-200",
@@ -278,9 +279,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
               {item.triggerIcon && <span className={cn("flex-shrink-0", config.icon)}>{item.triggerIcon}</span>}
 
               {/* Trigger Text */}
-              <ThemedText variant="primary" className="font-medium">
+              <span className="text-text-primary font-medium">
                 {item.trigger}
-              </ThemedText>
+              </span>
 
               {/* Chevron */}
               <ChevronDown
@@ -326,5 +327,5 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
   );
 };
 
-export type { NavigationLink, NavigationGroup, NavigationMenuItem };
+
 export default NavigationMenu;

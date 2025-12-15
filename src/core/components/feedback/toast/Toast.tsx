@@ -2,7 +2,7 @@
 import React from "react";
 import * as RadixToast from "@radix-ui/react-toast";
 import { X, Info, AlertTriangle } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 import { cn } from "../../../utils";
 import type { ToastItem, ToastPosition } from "./Toast.context";
@@ -56,10 +56,8 @@ const ToastComponent: React.FC<RadixToast.ToastProps & ToastItem> = ({
         "data-[state=open]:slide-in-from-bottom-full data-[state=open]:sm:slide-in-from-right-full"
       )}
     >
-      <ThemedSurface
-        variant="modal"
-        borderVariant="default"
-        className="w-full max-w-sm rounded-lg shadow-lg p-4 flex items-start gap-4"
+      <div
+        className="bg-bg-modal border border-border-default w-full max-w-sm rounded-lg shadow-lg p-4 flex items-start gap-4"
       >
         <div className="flex-shrink-0 mt-1">
           <Icon className={cn("h-5 w-5", severity === "danger" ? "text-text-error" : "text-text-secondary")} />
@@ -68,16 +66,16 @@ const ToastComponent: React.FC<RadixToast.ToastProps & ToastItem> = ({
         <div className="flex-1">
           {title && (
             <RadixToast.Title asChild>
-              <ThemedText as="h3" weight="semibold" className={titleColor}>
+              <h3 className={cn(titleColor, "font-semibold")}>
                 {title}
-              </ThemedText>
+              </h3>
             </RadixToast.Title>
           )}
           {description && (
             <RadixToast.Description asChild>
-              <ThemedText variant="secondary" className="text-sm mt-1">
+              <p className="text-text-secondary text-sm mt-1">
                 {description}
-              </ThemedText>
+              </p>
             </RadixToast.Description>
           )}
           {action && (
@@ -94,7 +92,7 @@ const ToastComponent: React.FC<RadixToast.ToastProps & ToastItem> = ({
             <X className="h-4 w-4 text-text-secondary" />
           </button>
         </RadixToast.Close>
-      </ThemedSurface>
+      </div>
     </RadixToast.Root>
   );
 };

@@ -1,3 +1,5 @@
+import type { ComponentData } from "../../../types";
+
 export const accordionData: ComponentData = {
   id: "accordion",
   title: "Accordion",

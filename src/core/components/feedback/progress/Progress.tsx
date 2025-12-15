@@ -1,7 +1,7 @@
 // src/core/components/ui/Progress.tsx
 import React from "react";
 import * as ProgressPrimitive from "@radix-ui/react-progress";
-import { ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type ProgressVariant = "default" | "success" | "warning" | "danger" | "info";
@@ -107,13 +107,13 @@ export const Progress: React.FC<ProgressProps> = ({
       {/* Label */}
       {showLabel && (
         <div className="flex justify-between items-center mb-2">
-          <ThemedText variant="primary" className={cn("font-medium", config.text)}>
+          <span className={cn("text-text-primary font-medium", config.text)}>
             {displayLabel}
-          </ThemedText>
+          </span>
           {!label && (
-            <ThemedText variant="secondary" className={cn(config.text)}>
+            <span className={cn("text-text-secondary", config.text)}>
               {indeterminate ? "..." : `${Math.round(percentage)}%`}
-            </ThemedText>
+            </span>
           )}
         </div>
       )}
@@ -154,4 +154,4 @@ export const Progress: React.FC<ProgressProps> = ({
 };
 
 export default Progress;
-export type { ProgressVariant, ProgressSize };
+

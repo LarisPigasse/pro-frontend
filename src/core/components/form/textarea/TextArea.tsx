@@ -99,8 +99,9 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       "absolute left-0 pointer-events-none select-none",
       "transition-all duration-200 ease-out",
       isFloating
-        ? ["top-1 text-sm font-medium", isFocused && !hasError ? "text-text-primary" : "text-text-label"]
-        : ["top-1/2 -translate-y-1/2 text-base", "text-text-placeholder"],
+        ? "top-1 text-sm font-medium"
+        : "top-1/2 -translate-y-1/2 text-base text-text-placeholder",
+      isFloating && (isFocused && !hasError ? "text-text-primary" : "text-text-label"),
       hasError && "text-text-error",
       disabled && "text-text-disabled"
     );

@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import TableLink from "./TableLink";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Badge } from "../../ui";
-import { Download, Edit, Trash2, FileText, ExternalLink } from "lucide-react";
+import { FileText, ExternalLink } from "lucide-react";
 
 export const TableLinkShowcase: React.FC = () => {
-  const handleClick = (action: string) => {
+  const handleRowClick = (action: string) => {
     alert(`Azione eseguita: ${action}`);
+    setSelectedRow(action);
   };
 
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
@@ -18,6 +19,15 @@ export const TableLinkShowcase: React.FC = () => {
     { id: "PRJ-002", name: "API Gateway", type: "Node.js", priority: "medium", status: "in_elaborazione" },
     { id: "PRJ-003", name: "Mobile App", type: "React Native", priority: "low", status: "nuovo" },
   ];
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case "completato": return "success";
+      case "in_elaborazione": return "warning";
+      case "nuovo": return "info";
+      default: return "default";
+    }
+  };
 
   return (
     <TitledSurface title="TableLink - Righe Cliccabili" padding="md">
@@ -37,16 +47,16 @@ export const TableLinkShowcase: React.FC = () => {
                 <FileText className="w-5 h-5 text-text-secondary" />
                 <div>
                   <div className="flex items-center space-x-2">
-                    <ThemedText variant="primary" className="font-medium">
+                    <span className="font-medium text-text-primary">
                       {project.name}
-                    </ThemedText>
-                    <ThemedText variant="secondary" className="text-sm">
+                    </span>
+                    <span className="text-sm text-text-secondary">
                       ({project.id})
-                    </ThemedText>
+                    </span>
                   </div>
-                  <ThemedText variant="secondary" className="text-sm">
+                  <span className="text-sm text-text-secondary">
                     {project.type}
-                  </ThemedText>
+                  </span>
                 </div>
               </div>
 
@@ -57,11 +67,10 @@ export const TableLinkShowcase: React.FC = () => {
                 >
                   {project.priority}
                 </Badge>
-                <Badge status={project.status}>{project.status}</Badge>
+                <Badge variant={getStatusVariant(project.status) as any}>{project.status}</Badge>
                 <TableLink
                   variant="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  onClick={() => {
                     alert(`Navigating to ${project.name}`);
                   }}
                 >
@@ -75,9 +84,9 @@ export const TableLinkShowcase: React.FC = () => {
 
       {selectedRow && (
         <div className="mt-4 p-3 bg-bg-info border border-border-default rounded-lg">
-          <ThemedText variant="info" className="text-sm">
+          <span className="text-sm text-text-primary">
             Progetto selezionato: <strong>{mockProjects.find((p) => p.id === selectedRow)?.name}</strong>
-          </ThemedText>
+          </span>
         </div>
       )}
     </TitledSurface>

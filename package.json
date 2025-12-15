@@ -1,11 +1,11 @@
 {
-  "name": "edg-frontend-template",
+  "name": "edg-operatori-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --config ./config/vite.config.ts",
-    "build": "tsc -b && vite build --config ./config/vite.config.ts",
+    "build": "tsc -b ./config/tsconfig.json && vite build --config ./config/vite.config.ts",
     "lint": "eslint --config ./config/eslint.config.js .",
     "preview": "vite preview --config ./config/vite.config.ts"
   },
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/node": "^24.9.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/react-router-dom": "^5.3.3",

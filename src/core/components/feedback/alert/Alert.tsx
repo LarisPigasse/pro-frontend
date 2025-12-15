@@ -1,7 +1,7 @@
 // src/core/components/ui/Alert.tsx
 import React from "react";
 import { AlertTriangle, Info, CheckCircle, XCircle, X } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type AlertVariant = "info" | "success" | "warning" | "danger";
@@ -93,10 +93,8 @@ export const Alert: React.FC<AlertProps> = ({
   };
 
   return (
-    <ThemedSurface
-      variant={config.surface}
-      borderVariant="thin"
-      className={cn("rounded-lg p-4", backgroundClasses[variant], className)}
+    <div
+      className={cn("rounded-lg p-4 border border-border-thin", backgroundClasses[variant], className)}
       role="alert"
       aria-live="polite"
       {...props}
@@ -108,7 +106,7 @@ export const Alert: React.FC<AlertProps> = ({
             {React.isValidElement(IconComponent) ? (
               IconComponent
             ) : (
-              <IconComponent className={cn("w-5 h-5", config.iconColor)} />
+              React.createElement(IconComponent as React.ElementType, { className: cn("w-5 h-5", config.iconColor) })
             )}
           </div>
         )}
@@ -116,14 +114,14 @@ export const Alert: React.FC<AlertProps> = ({
         {/* Content */}
         <div className="flex-1 min-w-0">
           {title && (
-            <ThemedText variant="primary" className={cn("font-semibold mb-1", config.textColor)} as="h4">
+            <h4 className={cn("font-semibold mb-1", config.textColor)}>
               {title}
-            </ThemedText>
+            </h4>
           )}
 
-          <ThemedText variant="primary" className={cn("text-sm leading-relaxed", config.textColor)}>
+          <p className={cn("text-sm leading-relaxed", config.textColor)}>
             {children}
-          </ThemedText>
+          </p>
         </div>
 
         {/* Close Button */}
@@ -141,7 +139,7 @@ export const Alert: React.FC<AlertProps> = ({
           </button>
         )}
       </div>
-    </ThemedSurface>
+    </div>
   );
 };
 

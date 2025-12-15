@@ -2,13 +2,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type DatePickerFormat = "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
 export type DatePickerSize = "sm" | "md" | "lg";
 
-interface DatePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
+interface DatePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "size"> {
   /** Etichetta del campo (floating label) */
   label: string;
   /** Valore della data selezionata */
@@ -223,7 +223,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     const month = viewDate.getMonth();
 
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
 
     // Start from Monday
@@ -281,11 +280,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         <Popover.Trigger asChild>
           <div className={cn("relative cursor-text", fullWidth ? "w-full" : "w-auto", disabled && "cursor-not-allowed")}>
             {/* Input Container */}
-            <ThemedSurface
-              variant="primary"
-              borderVariant="none"
+            <div
               className={cn(
-                "relative transition-all duration-200",
+                "relative transition-all duration-200 bg-bg-primary",
                 config.container,
                 fullWidth ? "w-full" : "min-w-[200px]",
                 disabled && "opacity-60"
@@ -333,16 +330,14 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
               {/* Underline */}
               <div className={cn("absolute bottom-0 left-0 h-0.5 w-full transition-all duration-200", getUnderlineClass())} />
-            </ThemedSurface>
+            </div>
           </div>
         </Popover.Trigger>
 
         <Popover.Portal>
           <Popover.Content className="z-50" sideOffset={4} align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
-            <ThemedSurface
-              variant="primary"
-              borderVariant="default"
-              className={cn("p-4 rounded-lg border shadow-lg min-w-[280px]", config.calendar)}
+            <div
+              className={cn("p-4 rounded-lg border border-border-default shadow-lg min-w-[280px] bg-bg-primary", config.calendar)}
             >
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-4">
@@ -365,9 +360,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   </button>
                 </div>
 
-                <ThemedText variant="primary" className="font-semibold text-center flex-1">
+                <div className="font-semibold text-center flex-1 text-text-primary">
                   {monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}
-                </ThemedText>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <button
@@ -393,9 +388,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               <div className="grid grid-cols-7 gap-1 mb-2">
                 {dayNames.map((day) => (
                   <div key={day} className="h-8 flex items-center justify-center">
-                    <ThemedText variant="secondary" className="text-xs font-medium">
+                    <span className="text-xs font-medium text-text-secondary">
                       {day}
-                    </ThemedText>
+                    </span>
                   </div>
                 ))}
               </div>
@@ -453,7 +448,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   Oggi
                 </button>
               </div>
-            </ThemedSurface>
+            </div>
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
@@ -461,17 +456,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       {/* Helper Text / Error */}
       {(error || helperText) && (
         <div className="mt-1 px-1">
-          <ThemedText
-            variant={error ? "primary" : "secondary"}
-            className={cn("text-xs", error && "text-red-500 dark:text-red-400")}
+          <p
+            className={cn("text-xs", error ? "text-text-primary" : "text-text-secondary", error && "text-red-500 dark:text-red-400")}
           >
             {error || helperText}
-          </ThemedText>
+          </p>
         </div>
       )}
     </div>
   );
 };
 
-export type { DatePickerFormat, DatePickerSize };
+
 export default DatePicker;

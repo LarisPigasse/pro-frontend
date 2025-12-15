@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { ThemedText } from '../atomic';
+
 import { Badge } from '../ui';
 
 interface VersionInfoProps {
@@ -87,9 +87,9 @@ export const VersionInfo: React.FC<VersionInfoProps> = ({
   if (variant === 'compact') {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <ThemedText variant="secondary" className="text-xs">
+        <span className="text-text-secondary text-xs">
           v{appVersion}
-        </ThemedText>
+        </span>
         {showEnvironment && (
           <Badge 
             variant={getEnvironmentVariant(environment)} 
@@ -106,20 +106,20 @@ export const VersionInfo: React.FC<VersionInfoProps> = ({
     <div className={`space-y-2 ${className}`}>
       {/* Version */}
       <div className="flex items-center gap-2">
-        <ThemedText variant="label" className="text-sm font-medium">
+        <span className="text-text-secondary text-sm font-medium">
           Versione:
-        </ThemedText>
-        <ThemedText variant="primary" className="text-sm font-mono">
+        </span>
+        <span className="text-text-primary text-sm font-mono">
           {appVersion}
-        </ThemedText>
+        </span>
       </div>
 
       {/* Environment */}
       {showEnvironment && (
         <div className="flex items-center gap-2">
-          <ThemedText variant="label" className="text-sm font-medium">
+          <span className="text-text-secondary text-sm font-medium">
             Ambiente:
-          </ThemedText>
+          </span>
           <Badge variant={getEnvironmentVariant(environment)} size="sm">
             {environment}
           </Badge>
@@ -129,12 +129,12 @@ export const VersionInfo: React.FC<VersionInfoProps> = ({
       {/* Build Time */}
       {showBuildTime && (
         <div className="flex items-center gap-2">
-          <ThemedText variant="label" className="text-sm font-medium">
+          <span className="text-text-secondary text-sm font-medium">
             Build:
-          </ThemedText>
-          <ThemedText variant="secondary" className="text-xs font-mono">
+          </span>
+          <span className="text-text-secondary text-xs font-mono">
             {formatBuildTime(buildTime)}
-          </ThemedText>
+          </span>
         </div>
       )}
     </div>

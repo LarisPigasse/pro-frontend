@@ -2,15 +2,15 @@
 import React from "react";
 import Skeleton from "./Skeleton";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 export const SkeletonShowcase: React.FC = () => {
   return (
     <div className="space-y-8">
       <TitledSurface title="Forme di Base" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           La forma e la dimensione dello Skeleton sono definite tramite `className`.
-        </ThemedText>
+        </p>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Skeleton className="h-12 w-12 rounded-full" />
@@ -25,9 +25,9 @@ export const SkeletonShowcase: React.FC = () => {
       </TitledSurface>
 
       <TitledSurface title="Esempio: Scheletro di una Card" variant="secondary" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           Combinando diversi Skeleton si può creare un'anteprima di caricamento per componenti complessi.
-        </ThemedText>
+        </p>
         <div className="max-w-sm rounded-xl border border-border-default p-4 bg-white">
           <Skeleton className="h-32 w-full rounded-lg mb-4" />
           <div className="space-y-3">

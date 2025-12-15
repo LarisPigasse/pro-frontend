@@ -1,5 +1,5 @@
 // src/core/components/ui/confirm-modal/ConfirmModal.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const confirmModalData: ComponentData = {
   id: "confirmModal",

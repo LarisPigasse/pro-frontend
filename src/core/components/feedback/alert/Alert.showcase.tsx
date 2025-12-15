@@ -2,27 +2,16 @@
 import React, { useState } from "react";
 import Alert from "./Alert";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import {
   Shield,
   Zap,
-  Download,
-  Lock,
-  Wifi,
-  WifiOff,
-  Database,
   Server,
   Cloud,
-  Mail,
   CreditCard,
   UserCheck,
-  FileCheck,
-  AlertCircle,
   BellRing,
   Sparkles,
-  TrendingUp,
-  Package,
-  Cpu,
   HardDrive,
 } from "lucide-react";
 
@@ -47,10 +36,17 @@ export const AlertShowcase: React.FC = () => {
   const [showDanger, setShowDanger] = useState(true);
 
   // State per alert stack
-  const [notifications, setNotifications] = useState([
-    { id: 1, variant: "info" as const, title: "Aggiornamento Sistema", message: "È disponibile la versione 2.1.0" },
-    { id: 2, variant: "success" as const, message: "Backup completato con successo" },
-    { id: 3, variant: "warning" as const, message: "Spazio su disco in esaurimento (85% utilizzato)" },
+  interface Notification {
+    id: number;
+    variant: "info" | "success" | "warning" | "danger";
+    title?: string;
+    message: string;
+  }
+
+  const [notifications, setNotifications] = useState<Notification[]>([
+    { id: 1, variant: "info", title: "Aggiornamento Sistema", message: "È disponibile la versione 2.1.0" },
+    { id: 2, variant: "success", message: "Backup completato con successo" },
+    { id: 3, variant: "warning", message: "Spazio su disco in esaurimento (85% utilizzato)" },
   ]);
 
   // State per form validation
@@ -108,9 +104,9 @@ export const AlertShowcase: React.FC = () => {
       <TitledSurface title="Varianti Alert" variant="primary" padding="lg">
         <div className="space-y-4">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="font-medium mb-3 block text-text-secondary">
               Varianti Semantiche Base
-            </ThemedText>
+            </span>
             <div className="space-y-3">
               <Alert variant="info">Informazione: Questa è un'informazione neutra per l'utente.</Alert>
               <Alert variant="success">Successo: L'operazione è stata completata correttamente.</Alert>

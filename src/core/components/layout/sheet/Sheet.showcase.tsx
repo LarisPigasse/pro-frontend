@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Sheet, type SheetSide } from "./Sheet";
 import { TitledSurface } from "..";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 import { Input, Label } from "../../form";
 
@@ -13,11 +13,11 @@ export const SheetShowcase: React.FC = () => {
     <div className="space-y-4">
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <Label htmlFor="name">Nome</Label>
-        <Input id="name" defaultValue="Laris Pigasse" />
+        <Input id="name" label="Nome" defaultValue="Laris Pigasse" />
       </div>
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <Label htmlFor="username">Username</Label>
-        <Input id="username" defaultValue="@larispigasse" />
+        <Input id="username" label="Username" defaultValue="@larispigasse" />
       </div>
     </div>
   );
@@ -27,9 +27,9 @@ export const SheetShowcase: React.FC = () => {
   return (
     <>
       <TitledSurface title="Apri Sheet" padding="lg">
-        <ThemedText variant="secondary" className="mb-4">
+        <p className="text-text-secondary mb-4">
           Clicca un pulsante per aprire un pannello `Sheet` dal lato corrispondente.
-        </ThemedText>
+        </p>
         <div className="flex flex-wrap gap-4">
           <Button variant="outline" onClick={() => setOpenSide("top")}>
             Top

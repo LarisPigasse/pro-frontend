@@ -2,7 +2,7 @@
 import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { cn } from "../../../utils";
 
 export type SheetSide = "top" | "bottom" | "left" | "right";
@@ -47,22 +47,22 @@ export const Sheet: React.FC<SheetProps> = ({
             className
           )}
         >
-          <ThemedSurface variant="modal" className="h-full flex flex-col">
+          <div className="bg-bg-modal h-full flex flex-col">
             {/* Header */}
             {(title || description) && (
               <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 border-b border-border-default">
                 {title && (
                   <Dialog.Title asChild>
-                    <ThemedText as="h2" weight="semibold">
+                    <h2 className="text-text-primary font-semibold">
                       {title}
-                    </ThemedText>
+                    </h2>
                   </Dialog.Title>
                 )}
                 {description && (
                   <Dialog.Description asChild>
-                    <ThemedText variant="secondary" className="text-sm">
+                    <p className="text-text-secondary text-sm">
                       {description}
-                    </ThemedText>
+                    </p>
                   </Dialog.Description>
                 )}
               </div>
@@ -82,7 +82,7 @@ export const Sheet: React.FC<SheetProps> = ({
               <X className="h-4 w-4 text-text-secondary" />
               <span className="sr-only">Close</span>
             </Dialog.Close>
-          </ThemedSurface>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

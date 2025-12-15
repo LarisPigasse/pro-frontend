@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { WifiOff, RefreshCw, AlertCircle, CheckCircle } from "lucide-react";
-import { ThemedText, ThemedSurface } from "../atomic";
+
 import { Button } from "../ui";
 import apiService, { isApiError } from "../../services/apiService";
 
@@ -192,29 +192,29 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
     return (
       <div className={`flex items-center gap-2 ${className}`} title={config.description}>
         <StatusIcon className={`w-4 h-4 ${config.color} ${status === "checking" ? "animate-spin" : ""}`} />
-        <ThemedText variant="secondary" className="text-sm">
+        <span className="text-text-secondary text-sm">
           {config.label}
-        </ThemedText>
+        </span>
       </div>
     );
   }
 
   return (
-    <ThemedSurface variant="primary" borderVariant="default" className={`p-4 rounded-lg ${config.bgColor} ${className}`}>
+    <div className={`p-4 rounded-lg border border-border-default bg-bg-primary ${config.bgColor} ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <StatusIcon className={`w-5 h-5 ${config.color} flex-shrink-0 ${status === "checking" ? "animate-spin" : ""}`} />
           <div>
-            <ThemedText variant="primary" className="font-medium">
+            <span className="text-text-primary font-medium block">
               {config.label}
-            </ThemedText>
-            <ThemedText variant="secondary" className="text-sm mt-1">
+            </span>
+            <span className="text-text-secondary text-sm mt-1 block">
               {errorMessage || config.description}
-            </ThemedText>
+            </span>
             {lastCheck && (
-              <ThemedText variant="placeholder" className="text-xs mt-1">
+              <span className="text-text-secondary text-xs mt-1 block">
                 Ultimo controllo: {formatLastCheck(lastCheck)}
-              </ThemedText>
+              </span>
             )}
           </div>
         </div>
@@ -225,7 +225,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
           </Button>
         )}
       </div>
-    </ThemedSurface>
+    </div>
   );
 };
 

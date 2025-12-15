@@ -3,7 +3,7 @@ import React from "react";
 import Tabs from "./Tabs";
 import type { TabItem } from "./Tabs";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Palette, SquarePen, Settings, Bell } from "lucide-react";
 import { Button } from "../../ui";
 import { Input, Switch } from "../../form";
@@ -20,10 +20,10 @@ const showcaseItems: TabItem[] = [
     ),
     content: (
       <div className="p-4 space-y-4 max-w-md">
-        <ThemedText as="h3" className="font-semibold">
+        <h3 className="font-semibold text-text-primary">
           Impostazioni Tema
-        </ThemedText>
-        <ThemedText variant="secondary">Personalizza l'aspetto dell'applicazione.</ThemedText>
+        </h3>
+        <p className="text-text-secondary">Personalizza l'aspetto dell'applicazione.</p>
         <Switch label="Modalità Scura" description="Attiva il tema scuro per l'interfaccia." />
       </div>
     ),
@@ -77,25 +77,25 @@ export const TabsShowcase: React.FC = () => {
     <div className="space-y-8">
       {/* ✨ Esempio principale che imita lo stile di Showcase.tsx */}
       <TitledSurface title="Esempio Principale (Stile 'Underline')" padding="lg">
-        <ThemedText variant="secondary" className="mb-4">
+        <p className="mb-4 text-text-secondary">
           Questa variante utilizza una linea inferiore per indicare la scheda attiva, ideale per header e navigazioni
           principali.
-        </ThemedText>
+        </p>
         <Tabs items={showcaseItems} defaultTab="profile" variant="underline" size="md" />
       </TitledSurface>
 
       <TitledSurface title="Altre Varianti Visive" variant="secondary" padding="lg">
         <div className="space-y-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-3" block>
+            <span className="mb-3 font-semibold block text-text-secondary">
               Variante 'Pills'
-            </ThemedText>
+            </span>
             <Tabs items={showcaseItems} defaultTab="profile" variant="pills" size="sm" />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-3" block>
+            <span className="mb-3 font-semibold block text-text-secondary">
               Variante 'Default'
-            </ThemedText>
+            </span>
             <Tabs items={showcaseItems} defaultTab="profile" variant="default" size="md" />
           </div>
         </div>

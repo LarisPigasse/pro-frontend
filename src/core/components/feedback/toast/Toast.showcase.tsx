@@ -2,12 +2,14 @@
 import React from "react";
 import { useToast } from "./useToast.hook"; // o dal barrel file
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 
 export const ToastShowcase: React.FC = () => {
   // ✨ CORREZIONE: Rimosse le parentesi graffe {} dalla destrutturazione
   const toast = useToast();
+
+  if (!toast) return null;
 
   const showDefaultToast = () => {
     toast({
@@ -33,6 +35,7 @@ export const ToastShowcase: React.FC = () => {
           toast({
             title: "Annullato",
             description: "L'eliminazione è stata annullata.",
+            severity: "default",
           }),
       },
     });
@@ -41,10 +44,10 @@ export const ToastShowcase: React.FC = () => {
   return (
     <div className="space-y-8">
       <TitledSurface title="Genera Notifiche Toast" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           Clicca i pulsanti per visualizzare i diversi tipi di notifiche. I toast appariranno in base alla posizione definita
           nel `Toaster`.
-        </ThemedText>
+        </p>
         <div className="flex flex-wrap gap-4">
           <Button onClick={showDefaultToast}>Mostra Toast Standard</Button>
           <Button variant="danger" onClick={showDangerToast}>

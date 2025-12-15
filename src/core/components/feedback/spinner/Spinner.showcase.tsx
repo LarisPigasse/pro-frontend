@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 
 export const SpinnerShowcase: React.FC = () => {
@@ -20,29 +20,29 @@ export const SpinnerShowcase: React.FC = () => {
       <div className="space-y-6">
         {/* Spinner Dimensioni */}
         <div>
-          <ThemedText variant="label" className="text-sm font-medium mb-3 block">
+          <span className="text-sm font-medium mb-3 block text-text-secondary">
             Dimensioni, spinner in pulsanti e inline
-          </ThemedText>
+          </span>
           <div className="flex items-center gap-6">
             <div className="text-center">
               <Spinner size="xs" />
-              <ThemedText variant="secondary" className="text-xs mt-2 block">
+              <span className="text-xs mt-2 block text-text-secondary">
                 XS (16px)
-              </ThemedText>
+              </span>
             </div>
 
             <div className="text-center">
               <Spinner size="sm" />
-              <ThemedText variant="secondary" className="text-xs mt-2 block">
+              <span className="text-xs mt-2 block text-text-secondary">
                 SM (20px)
-              </ThemedText>
+              </span>
             </div>
 
             <div className="text-center">
               <Spinner size="md" />
-              <ThemedText variant="secondary" className="text-xs mt-2 block">
+              <span className="text-xs mt-2 block text-text-secondary">
                 MD (24px)
-              </ThemedText>
+              </span>
             </div>
             <div className="flex items-center gap-4 flex-wrap">
               <Button variant="info" disabled leftIcon={<Spinner size="sm" />}>
@@ -58,29 +58,29 @@ export const SpinnerShowcase: React.FC = () => {
 
         {/* Spinner con Background */}
         <div>
-          <ThemedText variant="label" className="text-sm font-medium mb-3 block">
+          <span className="text-sm font-medium mb-3 block text-text-secondary">
             Spinner su Sfondi Diversi
-          </ThemedText>
+          </span>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-bg-primary border border-border-default rounded-lg p-6 text-center">
               <Spinner size="md" />
-              <ThemedText variant="secondary" className="mt-2 text-xs ms-3">
+              <span className="mt-2 text-xs ms-3 text-text-secondary">
                 Sfondo Primary
-              </ThemedText>
+              </span>
             </div>
 
             <div className="bg-bg-secondary border border-border-default rounded-lg p-6 text-center">
               <Spinner size="md" />
-              <ThemedText variant="secondary" className="mt-2 text-xs ms-3">
+              <span className="mt-2 text-xs ms-3 text-text-secondary">
                 Sfondo Secondary
-              </ThemedText>
+              </span>
             </div>
 
             <div className="bg-bg-contrast rounded-lg p-6 text-center">
               <Spinner size="md" />
-              <ThemedText variant="contrast" className="mt-2 text-xs ms-3">
+              <span className="mt-2 text-xs ms-3 text-text-contrast">
                 Sfondo Contrast
-              </ThemedText>
+              </span>
             </div>
           </div>
         </div>

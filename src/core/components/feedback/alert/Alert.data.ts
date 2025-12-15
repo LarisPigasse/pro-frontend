@@ -1,5 +1,5 @@
 // src/core/components/ui/alert/Alert.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const alertData: ComponentData = {
   id: "alert",

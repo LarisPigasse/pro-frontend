@@ -1,7 +1,7 @@
 // src/core/components/navigation/UserMenu.tsx
 import React, { useEffect } from "react";
 import { useUISettings } from "../../../../app/hooks";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { UserAvatar } from "../../info";
 import { X, User, Settings, LogOut, Mail, Shield } from "lucide-react";
 
@@ -70,11 +70,9 @@ const UserMenu: React.FC<UserMenuProps> = ({
 
       {/* Dropdown Menu */}
       <div className="fixed top-14 right-4 z-50">
-        <ThemedSurface
-          variant="primary"
-          borderVariant="default"
+        <div
           className={`
-            w-72 shadow-xl rounded-lg border transform transition-all duration-300 ease-out
+            w-72 shadow-xl rounded-lg border border-border-default bg-bg-primary transform transition-all duration-300 ease-out
             ${userMenuOpen ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 -translate-y-2"}
             ${className}
           `}
@@ -84,17 +82,17 @@ const UserMenu: React.FC<UserMenuProps> = ({
             <div className="flex items-center space-x-3">
               <UserAvatar initials={userInitials} size="lg" variant="primary" />
               <div className="flex-1 min-w-0">
-                <ThemedText variant="primary" className="font-semibold truncate">
+                <span className="text-text-primary font-semibold truncate block">
                   {userName}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm truncate flex items-center">
+                </span>
+                <span className="text-text-secondary text-sm truncate flex items-center">
                   <Mail className="w-3 h-3 mr-1" />
                   {userEmail}
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-xs flex items-center mt-1">
+                </span>
+                <span className="text-text-secondary text-xs flex items-center mt-1">
                   <Shield className="w-3 h-3 mr-1" />
                   {userRole}
-                </ThemedText>
+                </span>
               </div>
               <button
                 onClick={closeUserMenu}
@@ -119,12 +117,12 @@ const UserMenu: React.FC<UserMenuProps> = ({
             >
               <User className="w-4 h-4 text-text-secondary" />
               <div>
-                <ThemedText variant="primary" className="font-medium" block>
+                <span className="text-text-primary font-medium block">
                   Il mio profilo
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm block">
                   Gestisci il tuo account
-                </ThemedText>
+                </span>
               </div>
             </button>
 
@@ -139,12 +137,12 @@ const UserMenu: React.FC<UserMenuProps> = ({
             >
               <Settings className="w-4 h-4 text-text-secondary" />
               <div>
-                <ThemedText variant="primary" className="font-medium" block>
+                <span className="text-text-primary font-medium block">
                   Preferenze
-                </ThemedText>
-                <ThemedText variant="secondary" className="text-sm">
+                </span>
+                <span className="text-text-secondary text-sm block">
                   Personalizza l'esperienza
-                </ThemedText>
+                </span>
               </div>
             </button>
 
@@ -158,14 +156,14 @@ const UserMenu: React.FC<UserMenuProps> = ({
             >
               <LogOut className="w-4 h-4" />
               <div>
-                <ThemedText className="font-medium text-red-600 dark:text-red-400" block>
+                <span className="font-medium text-red-600 dark:text-red-400 block">
                   Logout
-                </ThemedText>
-                <ThemedText className="text-sm text-red-500 dark:text-red-500">Esci dall'applicazione</ThemedText>
+                </span>
+                <span className="text-sm text-red-500 dark:text-red-500 block">Esci dall'applicazione</span>
               </div>
             </button>
           </div>
-        </ThemedSurface>
+        </div>
       </div>
     </>
   );

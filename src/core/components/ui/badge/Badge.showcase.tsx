@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Badge from "./Badge";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import {
   CheckCircle,
   AlertTriangle,
@@ -16,13 +16,10 @@ import {
   User,
   Clock,
   Calendar,
-  Package,
   ShoppingCart,
   Download,
-  Upload,
   Wifi,
   WifiOff,
-  Battery,
   BatteryLow,
   Circle,
 } from "lucide-react";
@@ -76,9 +73,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Varianti Badge" variant="primary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Varianti Semantiche
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="default">Default</Badge>
               <Badge variant="success">Success</Badge>
@@ -89,9 +86,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Con Testo Descrittivo
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="success">Operazione Completata</Badge>
               <Badge variant="warning">Richiede Attenzione</Badge>
@@ -107,9 +104,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Dimensioni Badge" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Confronto Dimensioni
-            </ThemedText>
+            </span>
             <div className="flex items-center flex-wrap gap-3">
               <Badge size="xs" variant="info">Extra Small (xs)</Badge>
               <Badge size="sm" variant="info">Small (sm)</Badge>
@@ -118,9 +115,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Dimensioni con Numeri
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-3">
               <Badge size="xs" variant="danger">99+</Badge>
               <Badge size="sm" variant="warning">42</Badge>
@@ -134,9 +131,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Auto-mapping Intelligente" variant="modal" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Status Automatici - Il badge si colora in base al contenuto
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge status="attivo">Attivo</Badge>
               <Badge status="inattivo">Inattivo</Badge>
@@ -154,9 +151,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Override con Variant Esplicita
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge status="attivo" variant="danger">Attivo (ma forzato danger)</Badge>
               <Badge variant="success">Success (senza status)</Badge>
@@ -170,9 +167,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Badge con Icone" variant="info" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Icone Leading
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="success" size="sm">
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -194,9 +191,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Badge Premium/Special
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="warning" size="sm">
                 <Star className="w-3 h-3 mr-1" />
@@ -214,9 +211,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Status con Icone
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="success" size="sm">
                 <Circle className="w-2 h-2 mr-1 fill-current" />
@@ -239,9 +236,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Badge Numerici e Notifiche" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Notification Badges
-            </ThemedText>
+            </span>
             <div className="flex items-center gap-6">
               {/* Email */}
               <div className="relative">
@@ -314,9 +311,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Statistiche e Contatori
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-3">
               <Badge variant="default" size="sm">Totale: 1,234</Badge>
               <Badge variant="success" size="sm">Completati: 892</Badge>
@@ -331,9 +328,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Badge in Tabelle e Liste" variant="modal" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Lista Utenti
-            </ThemedText>
+            </span>
             <div className="space-y-2">
               {users.map((user) => (
                 <div 
@@ -428,9 +425,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Sistema Tags (Esempio Concettuale)" variant="secondary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Tags Selezionabili - Click per simulare rimozione
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <button
@@ -467,9 +464,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Filtri Attivi
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="info" size="sm">
                 Categoria: Development
@@ -492,9 +489,9 @@ export const BadgeShowcase: React.FC = () => {
       <TitledSurface title="Use Cases Speciali" variant="primary" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Version e Release
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="success" size="sm">v2.0.0</Badge>
               <Badge variant="info" size="sm">Beta</Badge>
@@ -505,9 +502,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Connettività e Sistema
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="success" size="sm">
                 <Wifi className="w-3 h-3 mr-1" />
@@ -529,9 +526,9 @@ export const BadgeShowcase: React.FC = () => {
           </div>
 
           <div>
-            <ThemedText variant="label" className="font-medium mb-3" block>
+            <span className="text-text-secondary font-medium mb-3 block">
               Date e Tempi
-            </ThemedText>
+            </span>
             <div className="flex flex-wrap gap-2">
               <Badge variant="danger" size="sm">
                 <Clock className="w-3 h-3 mr-1" />

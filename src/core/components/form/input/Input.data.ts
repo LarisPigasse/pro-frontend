@@ -1,5 +1,5 @@
 // src/core/components/ui/input/Input.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const inputData: ComponentData = {
   id: "input",

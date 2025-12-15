@@ -1,5 +1,6 @@
 // src/core/components/ui/table-link/TableLink.tsx
-import React, { ReactNode, forwardRef } from "react";
+import React, { forwardRef } from "react";
+import type { ReactNode } from "react";
 import { cn } from "../../../utils/";
 
 // ✨ Aggiunte nuove varianti per coerenza
@@ -57,4 +58,4 @@ const TableLink = forwardRef<HTMLButtonElement, TableLinkProps>(
 
 TableLink.displayName = "TableLink";
 export default TableLink;
-export type { TableLinkVariant };
+

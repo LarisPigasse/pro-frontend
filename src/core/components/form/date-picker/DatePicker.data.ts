@@ -1,5 +1,5 @@
 // src/core/components/ui/date-picker/DatePicker.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const datePickerData: ComponentData = {
   id: "datePicker",

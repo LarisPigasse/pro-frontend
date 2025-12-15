@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemedSurface } from "../../atomic";
+
 import { Header, Footer, Sidebar } from "..";
 import { SettingsMenu } from "../../navigation";
 import { UserMenu } from "../../navigation";
@@ -21,22 +21,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   // Layout Mobile - semplice, nessuna sidebar
   if (isMobile) {
     return (
-      <ThemedSurface variant="base" className="min-h-screen">
+      <div className="bg-bg-base min-h-screen">
         <Header showLogo={shouldShowLogo} showNavigation={shouldShowNavigation} />
-        <ThemedSurface variant="base" as="main" className="min-h-screen">
+        <main className="bg-bg-base min-h-screen">
           <div className="w-full px-4 sm:px-6 py-8">{children}</div>
-        </ThemedSurface>
+        </main>
         {footerVisible && <Footer showVersionInfo={true} />}
         {/* ✨ MENU COMPONENTS - Renderizzati sempre */}
         <SettingsMenu />
         {/* <UserMenu /> */} {/* Uncomment quando UserMenu sarà pronto */}
-      </ThemedSurface>
+      </div>
     );
   }
 
   // Layout Desktop - GRID con Header e Sidebar Sticky
   return (
-    <ThemedSurface variant="base" className="min-h-screen">
+    <div className="bg-bg-base min-h-screen">
       <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
         {/* Header Sticky - sempre in cima */}
         <header className="sticky top-0 z-40 col-span-full">
@@ -60,9 +60,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           )}
 
           {/* Main Content - solo questo scrolla */}
-          <ThemedSurface variant="base" as="main" className="flex-1 min-w-0 overflow-y-auto flex flex-col">
+          <main className="bg-bg-base flex-1 min-w-0 overflow-y-auto flex flex-col">
             <div className="w-full px-4 sm:px-6 py-8 flex-1">{children}</div>
-          </ThemedSurface>
+          </main>
         </div>
 
         {/* Footer - sempre in fondo */}
@@ -75,7 +75,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* MENU COMPONENTS - Renderizzati sempre alla fine */}
       <SettingsMenu />
       <UserMenu />
-    </ThemedSurface>
+    </div>
   );
 };
 

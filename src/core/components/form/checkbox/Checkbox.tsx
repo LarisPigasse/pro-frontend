@@ -50,11 +50,9 @@ export const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimiti
       "border-border-strong bg-bg-primary hover:border-border-strong",
       "data-[state=checked]:bg-text-link data-[state=checked]:border-text-link",
       "data-[state=indeterminate]:bg-text-link data-[state=indeterminate]:border-text-link",
-      hasError && [
-        "border-text-error",
-        "data-[state=checked]:bg-text-error data-[state=checked]:border-text-error",
-        "data-[state=indeterminate]:bg-text-error data-[state=indeterminate]:border-text-error",
-      ],
+      hasError && "border-text-error",
+      hasError && "data-[state=checked]:bg-text-error data-[state=checked]:border-text-error",
+      hasError && "data-[state=indeterminate]:bg-text-error data-[state=indeterminate]:border-text-error",
       disabled && "opacity-50 cursor-not-allowed hover:border-border-default",
       className
     );
@@ -111,5 +109,5 @@ export const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimiti
 );
 
 Checkbox.displayName = "Checkbox";
-export type { CheckboxSize };
+
 export default Checkbox;

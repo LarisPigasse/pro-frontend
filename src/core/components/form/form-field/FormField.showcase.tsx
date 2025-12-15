@@ -4,7 +4,7 @@ import FormField from "./FormField";
 import { TitledSurface } from "../../layout";
 import { Input, Checkbox, RadioGroup } from "../";
 import { Button } from "../../ui";
-import { ThemedText } from "../../atomic";
+
 
 export const FormFieldShowcase: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -28,17 +28,17 @@ export const FormFieldShowcase: React.FC = () => {
       {/* Caso 1: hideLabel */}
       <TitledSurface title="Caso d'uso: con Label Interna (hideLabel)" padding="lg">
         <div className="space-y-4 mb-8">
-          <ThemedText variant="secondary">
+          <p className="text-text-secondary">
             Quando il componente figlio (come `Input` o `Select`) ha già una sua etichetta interna (es. floating label), usiamo
             `hideLabel` su `FormField`. Il wrapper si occupa così solo del layout, del testo di aiuto e dei messaggi di errore.
-          </ThemedText>
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Esempio Interattivo (con errore)
-            </ThemedText>
+            </h3>
             <FormField hideLabel error={emailError}>
               <Input
                 id="showcase-email"
@@ -57,9 +57,9 @@ export const FormFieldShowcase: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Esempio con Helper Text
-            </ThemedText>
+            </h3>
             <FormField hideLabel helperText="La password deve contenere almeno 8 caratteri.">
               <Input id="showcase-password" type="password" label="Password" required />
             </FormField>
@@ -70,17 +70,17 @@ export const FormFieldShowcase: React.FC = () => {
       {/* Caso 2: Label Esterna */}
       <TitledSurface title="Caso d'uso: con Label Esterna" variant="secondary" padding="lg">
         <div className="space-y-4 mb-8">
-          <ThemedText variant="secondary">
+          <p className="text-text-secondary">
             Quando il componente figlio è un gruppo (come `RadioGroup` o un set di `Checkbox`), `FormField` fornisce l'etichetta
             principale, la descrizione e la gestione degli errori per l'intero gruppo.
-          </ThemedText>
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Esempio con RadioGroup
-            </ThemedText>
+            </h3>
             <FormField
               label="Piano di Abbonamento"
               description="Scegli il piano più adatto a te."
@@ -98,12 +98,17 @@ export const FormFieldShowcase: React.FC = () => {
             </FormField>
           </div>
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Esempio con Checkbox
-            </ThemedText>
+            </h3>
             <FormField label="Consensi" helperText="Puoi modificare le preferenze in seguito.">
               <div className="space-y-3 pt-2">
-                <Checkbox id="promo-cb" label="Ricevi offerte promozionali" checked={promo} onCheckedChange={setPromo} />
+                <Checkbox
+                  id="promo-cb"
+                  label="Ricevi offerte promozionali"
+                  checked={promo}
+                  onCheckedChange={(checked) => setPromo(checked === true)}
+                />
                 <Checkbox id="terms-cb" label="Accetto i termini e condizioni" required />
               </div>
             </FormField>
@@ -115,9 +120,9 @@ export const FormFieldShowcase: React.FC = () => {
       <TitledSurface title="Personalizzazione Spacing e Dimensioni" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Effetto dello `spacing`
-            </ThemedText>
+            </h3>
             <FormField label="Spacing 'tight'" spacing="tight" helperText="Testo di aiuto">
               <Input label="Campo" />
             </FormField>
@@ -129,9 +134,9 @@ export const FormFieldShowcase: React.FC = () => {
             </FormField>
           </div>
           <div className="space-y-6">
-            <ThemedText as="h3" variant="label" weight="semibold">
+            <h3 className="text-text-secondary font-semibold">
               Effetto della `size`
-            </ThemedText>
+            </h3>
             <FormField label="Size 'sm'" size="sm" helperText="Testo di aiuto piccolo">
               <Checkbox label="Opzione piccola" size="sm" />
             </FormField>

@@ -14,7 +14,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, ArrowRight } from 'lucide-react';
-import { ThemedText, ThemedSurface } from '../atomic';
+
 import { Badge } from '../ui';
 import { iconMap } from '../../utils';
 
@@ -44,7 +44,7 @@ interface QuickLinkProps {
    */
   badge?: {
     text: string;
-    variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+    variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
   };
   
   /**
@@ -134,12 +134,11 @@ export const QuickLink: React.FC<QuickLinkProps> = ({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <ThemedText 
-            variant="primary" 
-            className={`font-medium ${config.titleSize} truncate`}
+          <span 
+            className={`text-text-primary font-medium ${config.titleSize} truncate`}
           >
             {title}
-          </ThemedText>
+          </span>
           
           {badge && (
             <Badge 
@@ -152,12 +151,11 @@ export const QuickLink: React.FC<QuickLinkProps> = ({
         </div>
         
         {description && (
-          <ThemedText 
-            variant="secondary" 
-            className={`${config.descriptionSize} line-clamp-2`}
+          <span 
+            className={`text-text-secondary ${config.descriptionSize} line-clamp-2`}
           >
             {description}
-          </ThemedText>
+          </span>
         )}
       </div>
       
@@ -196,33 +194,27 @@ export const QuickLink: React.FC<QuickLinkProps> = ({
   // Render internal link
   if (!isExternal) {
     return (
-      <ThemedSurface 
-        variant={variant === 'card' ? 'primary' : 'base'}
-        borderVariant={variant === 'card' ? 'default' : 'none'}
-        as={Link}
+      <Link
         to={href}
-        className={`${baseClasses} ${variantClasses[variant]} no-underline`}
+        className={`${baseClasses} ${variantClasses[variant]} no-underline ${variant === 'card' ? 'bg-bg-primary border border-border-default' : 'bg-bg-base'}`}
         onClick={handleClick}
       >
         {renderContent()}
-      </ThemedSurface>
+      </Link>
     );
   }
   
   // Render external link
   return (
-    <ThemedSurface 
-      variant={variant === 'card' ? 'primary' : 'base'}
-      borderVariant={variant === 'card' ? 'default' : 'none'}
-      as="a"
+    <a
       href={href}
       target={shouldOpenInNewTab ? '_blank' : undefined}
       rel={shouldOpenInNewTab ? 'noopener noreferrer' : undefined}
-      className={`${baseClasses} ${variantClasses[variant]} no-underline`}
+      className={`${baseClasses} ${variantClasses[variant]} no-underline ${variant === 'card' ? 'bg-bg-primary border border-border-default' : 'bg-bg-base'}`}
       onClick={handleClick}
     >
       {renderContent()}
-    </ThemedSurface>
+    </a>
   );
 };
 

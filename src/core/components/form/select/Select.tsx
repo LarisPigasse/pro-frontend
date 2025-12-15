@@ -1,5 +1,5 @@
 // src/core/components/ui/select/Select.tsx
-import React, { useState, useId } from "react";
+import React, { useState } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "../../../utils";
@@ -17,9 +17,10 @@ interface SelectProps extends Omit<SelectPrimitive.SelectProps, "size"> {
   error?: string;
   helperText?: string;
   fullWidth?: boolean;
+  className?: string;
 }
 
-export const Select = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Root>, SelectProps>(
+export const Select = React.forwardRef<any, SelectProps>(
   (
     {
       label,
@@ -40,7 +41,6 @@ export const Select = React.forwardRef<React.ElementRef<typeof SelectPrimitive.R
   ) => {
     const [isFocused, setIsFocused] = useState(false);
     const [open, setOpen] = useState(false);
-    const id = useId();
     const hasValue = !!(value || defaultValue);
     const isFloating = open || hasValue || !!placeholder;
     const hasError = !!error; // ✨ Logica Semplificata
@@ -132,4 +132,4 @@ export const Select = React.forwardRef<React.ElementRef<typeof SelectPrimitive.R
 Select.displayName = "Select";
 
 export default Select;
-export type { SelectOption };
+

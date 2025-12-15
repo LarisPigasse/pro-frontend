@@ -74,4 +74,4 @@ export const Label: React.FC<LabelProps> = ({
 };
 
 export default Label;
-export type { LabelVariant, LabelSize, LabelWeight };
+

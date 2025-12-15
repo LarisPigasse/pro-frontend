@@ -2,7 +2,7 @@
 import React from "react";
 import { NavigationMenu, type NavigationMenuItem } from "./NavigationMenu";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Code, Book, LifeBuoy, Rocket, Users, Building, ShoppingCart, BarChart } from "lucide-react";
 
 const sampleMenuItems: NavigationMenuItem[] = [
@@ -75,15 +75,15 @@ export const NavigationMenuShowcase: React.FC = () => {
       <TitledSurface title="Stili dei Trigger e Dimensioni" padding="lg">
         <div className="space-y-6">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-3" block>
+            <span className="mb-3 font-semibold block text-text-secondary">
               Trigger 'ghost' (size 'sm')
-            </ThemedText>
+            </span>
             <NavigationMenu items={sampleMenuItems} triggerVariant="ghost" size="sm" />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-3" block>
+            <span className="mb-3 font-semibold block text-text-secondary">
               Trigger 'minimal' (size 'lg')
-            </ThemedText>
+            </span>
             <NavigationMenu items={sampleMenuItems} triggerVariant="minimal" size="lg" />
           </div>
         </div>

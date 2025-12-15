@@ -4,7 +4,7 @@ import Modal from "./Modal";
 import type { ModalSize } from "./Modal";
 import { TitledSurface } from "../../layout";
 import { Button } from "../";
-import { ThemedText } from "../../atomic";
+
 import { Input } from "../../form";
 import { Spinner } from "../../feedback";
 
@@ -52,7 +52,7 @@ export const ModalShowcase: React.FC = () => {
     <div className="space-y-8">
       <TitledSurface title="Apri Modal" padding="lg">
         <div className="space-y-4">
-          <ThemedText variant="secondary">Clicca sui pulsanti per aprire il modal con diverse configurazioni.</ThemedText>
+          <p className="text-text-secondary">Clicca sui pulsanti per aprire il modal con diverse configurazioni.</p>
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => openModal("sm")}>Small</Button>
             <Button onClick={() => openModal("md")}>Medium (Default)</Button>
@@ -81,7 +81,7 @@ export const ModalShowcase: React.FC = () => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-48 gap-4">
               <Spinner />
-              <ThemedText variant="secondary">Salvataggio in corso, attendere...</ThemedText>
+              <p className="text-text-secondary">Salvataggio in corso, attendere...</p>
             </div>
           ) : (
             <>

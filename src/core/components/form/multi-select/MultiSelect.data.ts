@@ -1,5 +1,5 @@
 // src/core/components/ui/multi-select/MultiSelect.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const multiSelectData: ComponentData = {
   id: "multiSelect",

@@ -73,4 +73,4 @@ export const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitive.R
 
 Switch.displayName = "Switch";
 export default Switch;
-export type { SwitchSize };
+

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Input from "./Input";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 
 export const InputShowcase: React.FC = () => {
@@ -21,9 +21,9 @@ export const InputShowcase: React.FC = () => {
   return (
     <div className="space-y-8">
       <TitledSurface title="Stati e Interazione" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           La floating label e l'underline cambiano aspetto in base allo stato dell'input.
-        </ThemedText>
+        </p>
         <div className="grid md:grid-cols-2 gap-8">
           <Input label="Campo vuoto" />
           <Input label="Campo con valore" defaultValue="Testo inserito" />
@@ -32,9 +32,9 @@ export const InputShowcase: React.FC = () => {
         </div>
       </TitledSurface>
       <TitledSurface title="Validazione e Errori" variant="secondary" padding="lg">
-        <ThemedText variant="secondary" className="mb-6">
+        <p className="mb-6 text-text-secondary">
           Un esempio interattivo per mostrare come l'input gestisce gli errori di validazione.
-        </ThemedText>
+        </p>
         <div className="max-w-sm space-y-4">
           <Input label="Il tuo Nome" value={name} onChange={(e) => setName(e.target.value)} error={nameError} required />
           <Button onClick={handleValidate}>Valida Nome</Button>

@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Switch from "./Switch";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
 
 export const SwitchShowcase: React.FC = () => {
   const [notifications, setNotifications] = useState(true);

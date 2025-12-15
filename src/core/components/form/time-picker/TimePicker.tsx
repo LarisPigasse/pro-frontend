@@ -1,8 +1,8 @@
 // src/core/components/ui/TimePicker.tsx
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { Clock, ChevronUp, ChevronDown } from "lucide-react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+import { Clock } from "lucide-react";
+
 import { cn } from "../../../utils";
 
 export interface TimeValue {
@@ -10,7 +10,7 @@ export interface TimeValue {
   minutes: number;
 }
 
-interface TimePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
+interface TimePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "size"> {
   /** Etichetta del campo (floating label) */
   label: string;
   /** Valore dell'orario selezionato */
@@ -105,16 +105,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
   const config = sizeConfig[size];
 
-  // Generate time options based on step
-  const timeOptions = useMemo(() => {
-    const options = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += step) {
-        options.push({ hours: h, minutes: m });
-      }
-    }
-    return options;
-  }, [step]);
+
 
   // Generate hour options (12h or 24h)
   const hourOptions = useMemo(() => {
@@ -282,11 +273,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         <Popover.Trigger asChild>
           <div className={cn("relative cursor-text", fullWidth ? "w-full" : "w-auto", disabled && "cursor-not-allowed")}>
             {/* Input Container */}
-            <ThemedSurface
-              variant="primary"
-              borderVariant="none"
+            <div
               className={cn(
-                "relative transition-all duration-200",
+                "relative transition-all duration-200 bg-bg-primary",
                 config.container,
                 fullWidth ? "w-full" : "min-w-[150px]",
                 disabled && "opacity-60"
@@ -334,17 +323,15 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
               {/* Underline */}
               <div className={cn("absolute bottom-0 left-0 h-0.5 w-full transition-all duration-200", getUnderlineClass())} />
-            </ThemedSurface>
+            </div>
           </div>
         </Popover.Trigger>
 
         <Popover.Portal>
           <Popover.Content className="z-50" sideOffset={4} align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
-            <ThemedSurface
-              variant="primary"
-              borderVariant="default"
+            <div
               className={cn(
-                "p-4 rounded-lg border shadow-lg",
+                "p-4 rounded-lg border border-border-default shadow-lg bg-bg-primary",
                 config.dropdown,
                 format === "12h" ? "min-w-[240px]" : "min-w-[200px]"
               )}
@@ -352,9 +339,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               <div className="flex gap-2">
                 {/* Hours Column */}
                 <div className="flex-1">
-                  <ThemedText variant="secondary" className="text-xs font-medium mb-2 text-center" block>
+                  <span className="text-text-secondary text-xs font-medium mb-2 text-center block">
                     Ore
-                  </ThemedText>
+                  </span>
                   <div className="max-h-32 overflow-y-auto border border-border-default rounded">
                     {hourOptions.map((hour) => (
                       <button
@@ -377,9 +364,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
                 {/* Minutes Column */}
                 <div className="flex-1">
-                  <ThemedText variant="secondary" className="text-xs font-medium mb-2 text-center" block>
+                  <span className="text-text-secondary text-xs font-medium mb-2 text-center block">
                     Minuti
-                  </ThemedText>
+                  </span>
                   <div className="max-h-32 overflow-y-auto border border-border-default rounded">
                     {minuteOptions.map((minute) => (
                       <button
@@ -403,9 +390,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
                 {/* AM/PM Column (only for 12h format) */}
                 {format === "12h" && (
                   <div className="flex-1">
-                    <ThemedText variant="secondary" className="text-xs font-medium mb-2 text-center" block>
+                    <span className="text-text-secondary text-xs font-medium mb-2 text-center block">
                       AM/PM
-                    </ThemedText>
+                    </span>
                     <div className="space-y-1">
                       {["AM", "PM"].map((period) => (
                         <button
@@ -451,7 +438,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
                   Adesso
                 </button>
               </div>
-            </ThemedSurface>
+            </div>
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
@@ -459,12 +446,11 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       {/* Helper Text / Error */}
       {(error || helperText) && (
         <div className="mt-1 px-1">
-          <ThemedText
-            variant={error ? "primary" : "secondary"}
-            className={cn("text-xs", error && "text-red-500 dark:text-red-400")}
+          <p
+            className={cn("text-xs", error ? "text-text-primary" : "text-text-secondary", error && "text-red-500 dark:text-red-400")}
           >
             {error || helperText}
-          </ThemedText>
+          </p>
         </div>
       )}
     </div>
@@ -472,7 +458,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 };
 
 export default TimePicker;
-export type { TimeValue };
+
 export type TimePickerFormat = "12h" | "24h";
 export type TimePickerStep = 5 | 10 | 15 | 30;
 export type TimePickerSize = "sm" | "md" | "lg";

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Command, type CommandItem } from "./Command";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 import { Button } from "../../ui";
 import { Home, Settings, LogOut, UserPlus } from "lucide-react";
 
@@ -39,10 +39,10 @@ export const CommandShowcase: React.FC = () => {
   return (
     <>
       <TitledSurface title="Command Palette Interattiva" padding="lg">
-        <ThemedText variant="secondary" className="mb-4">
+        <p className="text-text-secondary mb-4">
           Clicca il pulsante qui sotto o premi `Cmd + K` (su Mac) o `Ctrl + K` (su Windows/Linux) per aprire la palette dei
           comandi.
-        </ThemedText>
+        </p>
         <Button onClick={() => setIsOpen(true)}>Apri Command Palette</Button>
       </TitledSurface>
 

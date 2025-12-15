@@ -1,5 +1,6 @@
 // src/core/components/ui/Table.tsx
-import React, { ReactNode } from "react";
+import React from "react";
+import type { ReactNode } from "react";
 import { cn } from "../../../utils/";
 import { ActionMenu, EditAction, DeleteAction } from "../../actions";
 import type { Action } from "../../actions";
@@ -340,11 +341,12 @@ function Table<T>({
             <tr
               key={keyExtractor(item)}
               onClick={() => handleRowClick(item)}
-              className={cn("transition-colors duration-200", {
-                "hover:bg-bg-hover": hoverable,
-                "bg-bg-secondary/30": striped && rowIndex % 2 === 1,
-                "cursor-pointer": onRowClick,
-              })}
+              className={cn(
+                "transition-colors duration-200",
+                hoverable && "hover:bg-bg-hover",
+                striped && rowIndex % 2 === 1 && "bg-bg-secondary/30",
+                onRowClick && "cursor-pointer"
+              )}
             >
               {preparedColumns.map((column, colIndex) => {
                 // Handle actions column
@@ -390,7 +392,7 @@ function Table<T>({
                       column.className
                     )}
                   >
-                    {cellContent}
+                    {cellContent as ReactNode}
                   </td>
                 );
               })}
@@ -403,4 +405,4 @@ function Table<T>({
 }
 
 export default Table;
-export type { TableColumn, TableSize, TableRowActions };
+

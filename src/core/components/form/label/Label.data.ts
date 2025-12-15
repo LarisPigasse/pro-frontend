@@ -1,5 +1,5 @@
 // src/core/components/ui/label/Label.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const labelData: ComponentData = {
   id: "label",

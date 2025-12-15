@@ -5,7 +5,7 @@ import { ChevronDown, X } from "lucide-react";
 import { cn } from "../../../utils";
 import { Checkbox } from "../checkbox/Checkbox";
 import { Badge } from "../../ui";
-import { ThemedText } from "../../atomic";
+
 
 export interface MultiSelectOption {
   value: string;
@@ -91,9 +91,9 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                     );
                   })
                 : isFloating && (
-                    <ThemedText variant="placeholder" className="ml-1">
+                    <span className="text-text-placeholder ml-1">
                       {placeholder}
-                    </ThemedText>
+                    </span>
                   )}
             </div>
 
@@ -144,4 +144,4 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 };
 
 export default MultiSelect;
-export type { MultiSelectOption };
+

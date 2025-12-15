@@ -110,4 +110,4 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, description, category, onCli
 };
 
 export default InfoCard;
-export type { ComponentCategory };
+

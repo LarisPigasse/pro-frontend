@@ -1,5 +1,5 @@
 // src/core/components/ui/card/Card.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const cardData: ComponentData = {
   id: "card",
@@ -74,26 +74,26 @@ export const cardData: ComponentData = {
       description: "Esempi di card cliccabili e con effetti hover. L'interattività aggiunge stili per focus, hover e active.",
       code: `<div className="grid md:grid-cols-2 gap-4">
   <Card clickable padding="lg">
-    <ThemedText>Card Cliccabile</ThemedText>
+    <span className="text-text-primary">Card Cliccabile</span>
   </Card>
   <Card hover padding="lg">
-    <ThemedText>Card con Hover</ThemedText>
+    <span className="text-text-primary">Card con Hover</span>
   </Card>
 </div>`,
     },
     {
       title: "Card Composto",
       description: "Un esempio realistico di un card che contiene altri componenti tematici come titoli, testi e pulsanti.",
-      code: `import { ThemedText, Button } from "../.."; // Assicurati di importare i componenti necessari
+      code: `import { Button } from "../.."; // Assicurati di importare i componenti necessari
 
 <Card variant="elevated" padding="lg">
   <div className="space-y-4">
-    <ThemedText as="h3" variant="primary" className="font-bold text-lg">
+    <h3 className="font-bold text-lg text-text-primary">
       Titolo della Card
-    </ThemedText>
-    <ThemedText variant="secondary">
+    </h3>
+    <p className="text-text-secondary">
       Questa è una descrizione del contenuto della card. Può contenere informazioni utili e contestuali.
-    </ThemedText>
+    </p>
     <div className="flex justify-end pt-2">
       <Button variant="primary" size="sm">Azione</Button>
     </div>

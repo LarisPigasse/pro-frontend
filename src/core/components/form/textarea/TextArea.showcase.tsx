@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import TextArea from "./TextArea";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 export const TextAreaShowcase: React.FC = () => {
   const [comment, setComment] = useState("");
@@ -12,15 +12,15 @@ export const TextAreaShowcase: React.FC = () => {
       <TitledSurface title="Funzionalità Principali" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+              <span className="text-text-secondary mb-2 font-semibold block">
               Auto-Resize (Default)
-            </ThemedText>
+            </span>
             <TextArea label="Descrizione Evento" helperText="Il campo si espanderà mentre scrivi." />
           </div>
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+              <span className="text-text-secondary mb-2 font-semibold block">
               Contatore Caratteri
-            </ThemedText>
+            </span>
             <TextArea
               label="Il tuo feedback"
               showCharCount
@@ -36,9 +36,9 @@ export const TextAreaShowcase: React.FC = () => {
       <TitledSurface title="Configurazioni e Stati" variant="secondary" padding="lg">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <ThemedText variant="label" weight="semibold" className="mb-2" block>
+              <span className="text-text-secondary mb-2 font-semibold block">
               Senza Auto-Resize
-            </ThemedText>
+            </span>
             <TextArea
               label="Note fisse"
               autoResize={false}
@@ -48,15 +48,15 @@ export const TextAreaShowcase: React.FC = () => {
           </div>
           <div className="space-y-8">
             <div>
-              <ThemedText variant="label" weight="semibold" className="mb-2" block>
+                <span className="text-text-secondary mb-2 font-semibold block">
                 Stato di Errore
-              </ThemedText>
+              </span>
               <TextArea label="Motivazione" error="Questo campo è obbligatorio." required />
             </div>
             <div>
-              <ThemedText variant="label" weight="semibold" className="mb-2" block>
+                <span className="text-text-secondary mb-2 font-semibold block">
                 Stato Disabilitato
-              </ThemedText>
+              </span>
               <TextArea label="Commento non modificabile" disabled defaultValue="Questo testo è bloccato." />
             </div>
           </div>

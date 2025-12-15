@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import MultiSelect from "./MultiSelect";
 import type { MultiSelectOption } from "./MultiSelect";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 const techOptions: MultiSelectOption[] = [
   { value: "react", label: "React" },
@@ -43,9 +43,9 @@ export const MultiSelectShowcase: React.FC = () => {
       </TitledSurface>
 
       <TitledSurface title="Stato Attuale" variant="secondary" padding="lg">
-        <ThemedText variant="label" weight="semibold">
+        <span className="text-text-secondary font-semibold">
           Valori selezionati:
-        </ThemedText>
+        </span>
         <pre className="mt-2 text-sm bg-bg-primary p-2 rounded">{JSON.stringify(selectedTechs, null, 2)}</pre>
       </TitledSurface>
     </div>

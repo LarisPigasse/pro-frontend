@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 import { iconMap } from "../../../utils";
 import { useUISettings } from "../../../../app/hooks";
 import { NAVIGATION_ITEMS } from "../../../../config";
@@ -39,12 +39,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   };
 
   return (
-    <ThemedSurface
-      variant="secondary"
-      borderVariant="none"
-      as="aside"
+    <aside
       className={`
-        h-full flex flex-col transition-all duration-300 ease-in-out border-r border-border-default
+        bg-bg-secondary h-full flex flex-col transition-all duration-300 ease-in-out border-r border-border-default
         ${sidebarExpanded ? "w-64" : "w-12"}
         ${className}
       `}
@@ -61,9 +58,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
               >
                 {getMenuIcon(item.icon)}
                 {sidebarExpanded && (
-                  <ThemedText variant="inherit" as="span" className="ml-3 transition-opacity duration-300">
+                  <span className="text-text-primary ml-3 transition-opacity duration-300">
                     {item.label}
-                  </ThemedText>
+                  </span>
                 )}
               </Link>
             </li>
@@ -83,16 +80,16 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
           {sidebarExpanded ? (
             <>
               <ChevronLeft className="w-5 h-5 flex-shrink-0" />
-              <ThemedText variant="inherit" as="span" className="ml-3">
+              <span className="text-text-primary ml-3">
                 Comprimi
-              </ThemedText>
+              </span>
             </>
           ) : (
             <ChevronRight className="w-5 h-5 flex-shrink-0" />
           )}
         </button>
       </div>
-    </ThemedSurface>
+    </aside>
   );
 };
 

@@ -2,11 +2,21 @@
 import React, { useState } from "react";
 import Checkbox from "./Checkbox";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 export const CheckboxShowcase: React.FC = () => {
-  const [agree, setAgree] = useState(false);
-  const [newsletter, setNewsletter] = useState(true);
+  const [agree, setAgree] = useState<boolean>(false);
+  const [newsletter, setNewsletter] = useState<boolean>(true);
+
+  const handleAgreeChange = (state: boolean | "indeterminate") => {
+    if (state === "indeterminate") return;
+    setAgree(state);
+  };
+
+  const handleNewsletterChange = (state: boolean | "indeterminate") => {
+    if (state === "indeterminate") return;
+    setNewsletter(state);
+  };
 
   return (
     <div className="space-y-8">
@@ -17,9 +27,14 @@ export const CheckboxShowcase: React.FC = () => {
             label="Accetto i termini di servizio"
             description="Questa è una descrizione opzionale."
             checked={agree}
-            onCheckedChange={setAgree}
+            onCheckedChange={handleAgreeChange}
           />
-          <Checkbox id="interactive-2" label="Iscrivimi alla newsletter" checked={newsletter} onCheckedChange={setNewsletter} />
+          <Checkbox 
+            id="interactive-2" 
+            label="Iscrivimi alla newsletter" 
+            checked={newsletter} 
+            onCheckedChange={handleNewsletterChange} 
+          />
         </div>
       </TitledSurface>
 
@@ -33,7 +48,7 @@ export const CheckboxShowcase: React.FC = () => {
 
       <TitledSurface title="Dimensioni" padding="lg">
         <div className="space-y-4">
-          <ThemedText variant="secondary">Il componente supporta più dimensioni.</ThemedText>
+          <p className="text-text-secondary">Il componente supporta più dimensioni.</p>
           <Checkbox id="size-sm-showcase" label="Dimensione Small" size="sm" />
           <Checkbox id="size-md-showcase" label="Dimensione Medium (default)" size="md" />
           <Checkbox id="size-lg-showcase" label="Dimensione Large" size="lg" />

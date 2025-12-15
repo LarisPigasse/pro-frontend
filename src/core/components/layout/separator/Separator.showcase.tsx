@@ -2,8 +2,7 @@
 import React from "react";
 import Separator from "./Separator";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
-import { Button } from "../../ui";
+
 
 export const SeparatorShowcase: React.FC = () => {
   return (
@@ -11,9 +10,9 @@ export const SeparatorShowcase: React.FC = () => {
       <div className="space-y-8">
         {/* Separator Base */}
         <div>
-          <ThemedText variant="label" className="text-sm font-medium mb-4 block">
+          <span className="text-text-secondary text-sm font-medium mb-4 block">
             Separator Orizzontali, con testo decorativo
-          </ThemedText>
+          </span>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="p-4 border border-border-default rounded-lg">
               <p className="text-sm text-text-secondary">Contenuto sezione 1</p>
@@ -50,9 +49,9 @@ export const SeparatorShowcase: React.FC = () => {
 
         {/* Separator Verticali */}
         <div>
-          <ThemedText variant="label" className="text-sm font-medium mb-4 block">
+          <span className="text-text-secondary text-sm font-medium mb-4 block">
             Separator Verticali
-          </ThemedText>
+          </span>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="p-4 border border-border-default rounded-lg">
               <div className="flex items-center space-x-4">

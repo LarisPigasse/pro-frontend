@@ -1,6 +1,6 @@
 // src/core/components/layout/TitledSurface.tsx
 import React from "react";
-import { ThemedSurface, ThemedText } from "../../atomic";
+
 
 interface TitledSurfaceProps {
   title: string;
@@ -35,21 +35,29 @@ const TitledSurface: React.FC<TitledSurfaceProps> = ({
     lg: "p-8",
   };
 
+  // Border mapping
+  const borderClasses = {
+    none: "border-0",
+    thin: "border",
+    default: "border",
+    strong: "border-2",
+  };
+
   return (
     <div className={`relative mt-3 ${className}`}>
       {/* Titolo posizionato sul bordo */}
       <div className="absolute -top-3 left-4 z-10">
-        <ThemedSurface variant={variant} className="px-2">
-          <ThemedText variant="primary" className={titleSizeClasses[titleSize]}>
+        <div className={`px-2 bg-bg-${variant}`}>
+          <span className={`text-text-primary ${titleSizeClasses[titleSize]}`}>
             {title}
-          </ThemedText>
-        </ThemedSurface>
+          </span>
+        </div>
       </div>
 
       {/* Contenuto principale */}
-      <ThemedSurface variant={variant} borderVariant={borderVariant} className={`rounded-lg border ${paddingClasses[padding]}`}>
+      <div className={`rounded-lg ${borderClasses[borderVariant]} border-border-default bg-bg-${variant} ${paddingClasses[padding]}`}>
         {children}
-      </ThemedSurface>
+      </div>
     </div>
   );
 };

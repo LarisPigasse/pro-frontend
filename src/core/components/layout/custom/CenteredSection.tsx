@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { ThemedSurface } from "../../atomic";
+
 import { iconMap } from "../../../utils";
 
 interface CenteredSectionProps {
@@ -137,14 +137,14 @@ export const CenteredSection: React.FC<CenteredSectionProps> = ({
   const IconComponent = icon ? iconMap[icon] : null;
 
   return (
-    <ThemedSurface
-      variant={variant}
-      borderVariant={borderVariant}
+    <div
       className={`
         ${heightClass} 
         flex ${alignClasses[align]} justify-center 
         ${paddingClasses[padding]}
         ${rounded ? "rounded-lg" : ""}
+        bg-bg-${variant}
+        ${borderVariant !== "none" ? "border border-border-default" : ""}
         ${className}
       `}
     >
@@ -159,7 +159,7 @@ export const CenteredSection: React.FC<CenteredSectionProps> = ({
         {/* Content */}
         {children}
       </div>
-    </ThemedSurface>
+    </div>
   );
 };
 

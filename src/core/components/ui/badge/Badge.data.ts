@@ -1,5 +1,5 @@
 // src/core/components/ui/badge/Badge.data.ts
-import type { ComponentData } from "../../../types/ComponentData";
+import type { ComponentData } from "../../../types";
 
 export const badgeData: ComponentData = {
   id: "badge",

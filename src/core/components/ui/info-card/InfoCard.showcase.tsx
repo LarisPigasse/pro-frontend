@@ -3,7 +3,7 @@ import React from "react";
 import InfoCard from "./InfoCard";
 import type { ComponentCategory } from "./InfoCard";
 import { TitledSurface } from "../../layout";
-import { ThemedText } from "../../atomic";
+
 
 export const InfoCardShowcase: React.FC = () => {
   const categories: ComponentCategory[] = ["ui", "form", "navigation", "feedback", "data", "layout"];
@@ -16,10 +16,12 @@ export const InfoCardShowcase: React.FC = () => {
     <div className="space-y-8">
       <TitledSurface title="Varianti per Categoria" padding="lg">
         <div className="mb-4">
-          <ThemedText variant="secondary">
+        <div className="mb-4">
+          <p className="text-text-secondary">
             La caratteristica principale della InfoCard è la sua capacità di cambiare colore in base alla categoria del
             componente che rappresenta.
-          </ThemedText>
+          </p>
+        </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.map((cat) => (
