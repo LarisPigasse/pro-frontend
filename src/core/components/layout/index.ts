@@ -1,11 +1,11 @@
 // Layout custom components
 export { default as Header } from './custom/Header';
 export { default as Footer } from './custom/Footer';
-export { default as Sidebar } from './custom/Sidebar';
 export { default as HeaderGroup } from './custom/HeaderGroup';
 export { default as TitledSurface } from './custom/TitledSurface';
 export { default as CenteredPage } from './custom/CenteredPage';
 export { default as CenteredSection } from './custom/CenteredSection';
+export { default as MainLayout } from './custom/MainLayout';
 
 // Card
 export { default as Card } from './card/Card';

@@ -7,57 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Advanced UI Components Suite**
-  - `DatePicker` component with calendar integration and date validation
-  - `TimePicker` component with hours/minutes selection and 12/24h formats
-  - `Avatar` component with image fallback, initials, and status indicators
-  - `NavigationMenu` component with nested dropdown navigation and responsive design
-  - `Accordion` component with single/multiple modes and Radix UI integration
-  - `Progress` component with 5 semantic variants and indeterminate mode
-  - `Tabs` component with 3 visual variants (default, pills, underline)
-  - `Toast` component with complete notification system and queue management
-
-- **Date/Time System Infrastructure**
-  - Advanced date picker with calendar popup and input validation
-  - Time picker with 12/24 hour format support and step controls
-  - Complete date/time handling with proper accessibility
-  - Keyboard navigation and screen reader support
-
-- **Enhanced Navigation Components**
-  - Multi-level navigation menu with Radix UI integration
-  - Responsive behavior with mobile-first design
-  - Keyboard navigation and focus management
-  - Icon integration with consistent styling
-
-- **Avatar System**
-  - Image with fallback to initials generation
-  - Multiple size variants and status indicators
-  - Hover effects and accessibility features
-  - Integration with user profile systems
-
-- **Toast System Infrastructure**
-  - `useToast` hook with context-based state management
-  - ToastProvider with configurable positioning and behavior
-  - 4 semantic variants (default, success, warning, danger) with automatic icons
-  - Action buttons support with custom callbacks
-  - Auto-dismiss with customizable duration and queue management
-  - Complete Radix UI integration with animations and accessibility
-
-- **Enhanced Component Integration**
-  - `ToastShowcaseDemo` component for comprehensive toast demonstrations
-  - Updated UI component exports and barrel files
-  - Extended showcase system with new component categories
-
-### Dependencies
-- Added Radix UI components: `@radix-ui/react-accordion`, `@radix-ui/react-progress`, `@radix-ui/react-toast`, `@radix-ui/react-popover`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-avatar`
-
 ### Planned
-- Complete navigation components (FooterMenu, MainMenu, ProfileMenu)
-- Implement missing hooks (useLocalStorage, useModal, useThemeStyles)
-- Add ShowFeedback and ShowActions showcase components
+- Error Boundary component for graceful error handling
 - Authentication system implementation
-- Advanced form validation patterns
+- Testing suite with Vitest + Testing Library
+
+---
+
+## [3.0.0] - 2025-12-15
+
+### Breaking Changes
+- **Removed atomic components layer** - `ThemedText`, `ThemedSurface`, `ThemedImage`, `ThemedBorder`, `ThemedShadow` components have been removed
+- Components now use Tailwind classes directly with CSS variables
+
+### Removed
+- `src/core/components/atomic/` folder and all its contents
+- `ThemedText` component - use `<span className="text-text-primary">` instead
+- `ThemedSurface` component - use `<div className="bg-bg-primary">` instead
+- `ThemedImage` component - use `useThemedImage` hook directly instead
+- `ThemedBorder` component - use `border border-border-default` classes
+- `ThemedShadow` component - use `shadow-themed-*` classes
+
+### Changed
+- **Theming architecture simplified** from 3 layers to 2 layers:
+  - Before: CSS Variables → Tailwind Theme → Atomic Components
+  - After: CSS Variables → Tailwind Theme → Direct usage
+- `typography.css` now uses theme variables instead of hardcoded colors
+- `Logo.tsx` refactored to use `useThemedIcon` hook directly
+- All components migrated from atomic wrappers to direct Tailwind classes
+
+### Fixed
+- Vite HMR WebSocket configuration - now works with both `localhost` and custom hosts
+- Removed debug Redux selector from Dashboard that was causing console warnings
+
+### Migration Guide
+```tsx
+// BEFORE (with ThemedSurface)
+<ThemedSurface variant="primary" borderVariant="default">
+  <ThemedText variant="secondary">Content</ThemedText>
+</ThemedSurface>
+
+// AFTER (direct Tailwind classes)
+<div className="bg-bg-primary border border-border-default">
+  <span className="text-text-secondary">Content</span>
+</div>
+```
+
+**Mapping reference:**
+| Old | New |
+|-----|-----|
+| `<ThemedText variant="primary">` | `<span className="text-text-primary">` |
+| `<ThemedText variant="secondary">` | `<span className="text-text-secondary">` |
+| `<ThemedSurface variant="primary">` | `<div className="bg-bg-primary">` |
+| `<ThemedSurface variant="modal">` | `<div className="bg-bg-modal">` |
+| `borderVariant="default"` | `border border-border-default` |
+| `<ThemedImage imageKey="icon">` | `useThemedIcon()` hook |
 
 ---
 
@@ -81,21 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `CenteredPage` component for full viewport centering with animations
   - `CenteredSection` component for flexible section centering with icons
 
-- **Enhanced Barrel Exports**
-  - Services barrel file with typed exports
-  - Updated info and layout component exports
-  - Clean import patterns across all component categories
-
 ### Changed
-- Updated `edg-frontend-template.md` with completed component status (🟡→🟢)
 - Enhanced documentation with detailed component specifications
 - Improved TypeScript interfaces across all new components
-
-### Technical Improvements
-- Zero `any` types - Complete TypeScript safety
-- Consistent error handling patterns
-- Responsive design patterns for all new components
-- Accessibility-first approach with ARIA labels and keyboard navigation
 
 ---
 
@@ -134,16 +126,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 4 semantic underline states for form components
   - Autofill override CSS for browser consistency
   - Extended theme variables for form elements
-  - Complete light/dark mode integration
-
-- **Showcase System**
-  - `ShowForms` component with complete form demonstrations
-  - `ShowDataDisplay` component for table and badge examples
-  - `ComponentExplorer` for interactive component documentation
-  - `ComponentModal` for detailed component viewing
-
-### Dependencies
-- Added Radix UI components: `@radix-ui/react-select`, `@radix-ui/react-checkbox`, `@radix-ui/react-switch`, `@radix-ui/react-radio-group`
 
 ---
 
@@ -154,28 +136,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `UserMenu` component for profile management
   - `SettingsMenu` component for app configuration
   - Smart menu exclusivity (only one open at a time)
-  - Auto-close behavior with Redux integration
 
 - **Enhanced UI Components**
   - `UserAvatar` component with initials and hover effects
   - `HeaderGroup` component for optimized title/subtitle spacing
   - `TitledSurface` component with fieldset-style title borders
 
-- **Redux State Extensions**
-  - Dual menu state management (userMenuOpen, settingsMenuOpen)
-  - Mobile menu state integration
-  - Enhanced UI hooks with exclusive menu actions
-
 ### Changed
 - **Header System Restructuring**
   - 3-zone layout: LEFT (Logo + Mobile menu), CENTER (Navigation), RIGHT (User controls)
   - Responsive behavior with conditional element visibility
-  - Integrated user controls with avatar and settings icon
-
-- **Layout Improvements**
-  - Updated MainLayout for menu integration
-  - Enhanced responsive patterns for mobile/desktop
-  - Improved spacing and alignment consistency
 
 ---
 
@@ -194,38 +164,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Theme persistence via localStorage middleware
 
 - **Redux State Management**
-  - `uiSlice` with complete UI state (sidebar, footer, theme)
+  - `uiSlice` with complete UI state
   - Persistence middleware for automatic localStorage sync
-  - Typed hooks and selectors for clean state access
-
-### Enhanced
-- **Atomic Components**
-  - `ThemedSurface` with 8 semantic variants
-  - `ThemedText` with complete text semantic system
-  - `ThemedImage` with automatic theme-based switching
-  - `ThemedBorder` and `ThemedShadow` utilities
-
-- **Image System**
-  - `useThemedImage` hook for automatic light/dark switching
-  - Asset management for theme-responsive images
-  - Performance optimization with useMemo
-
-### Fixed
-- Border styling conflicts in sidebar layout
-- Page height overflow issues with proper container chains
-- Button consistency across responsive breakpoints
+  - Typed hooks and selectors
 
 ---
 
 ## [1.1.0] - 2025-06-25
 
 ### Added
-- **Atomic Design System**
-  - `ThemedSurface` component for backgrounds and surfaces
-  - `ThemedText` component for semantic text styling
-  - CSS custom properties for complete theme customization
-  - Responsive design patterns with mobile-first approach
-
 - **Navigation System**
   - Route configuration with centralized definitions
   - Navigation configuration with icon mapping
@@ -235,12 +182,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Button` component with variants and loading states
   - `Modal` and `ConfirmModal` components
   - `Spinner` component for loading indicators
-
-### Technical
-- TypeScript configuration optimization
-- Barrel file exports for clean imports
-- ESLint and Prettier configuration
-- Vite build optimization
 
 ---
 
@@ -253,67 +194,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Redux Toolkit setup with persistence middleware
   - Lucide React icons integration
 
-- **Development Environment**
-  - Environment configuration (.env files)
-  - Development and production build scripts
-  - Hot reload and fast refresh setup
-
 - **Project Structure**
   - Feature-based architecture
-  - Atomic design component organization
   - Scalable folder structure with clear separation of concerns
 
-### Technical Foundation
-- Modern React patterns with hooks and functional components
-- TypeScript strict mode configuration
-- CSS-in-JS ready architecture
-- Mobile-first responsive design setup
+---
+
+## Version Guidelines
+
+- **Major (X.0.0)**: Breaking changes, removal of features
+- **Minor (X.Y.0)**: New components, backward-compatible features
+- **Patch (X.Y.Z)**: Bug fixes, documentation updates
 
 ---
 
-## Version Numbering Guidelines
-
-### Major Version (X.0.0)
-- Breaking changes to component APIs
-- Major architectural changes
-- Removal of deprecated features
-- New major feature sets that change core functionality
-
-### Minor Version (X.Y.0)
-- New components or features
-- Enhancements to existing components
-- New hooks or utilities
-- Backward-compatible API changes
-
-### Patch Version (X.Y.Z)
-- Bug fixes
-- Performance improvements
-- Documentation updates
-- Small tweaks and adjustments
-
----
-
-## Contributing Guidelines
-
-When adding entries to this changelog:
-
-1. **Always add new entries to the [Unreleased] section first**
-2. **Use clear, descriptive language for changes**
-3. **Group changes by type: Added, Changed, Deprecated, Removed, Fixed, Security**
-4. **Include component locations for new additions**
-5. **Mention breaking changes prominently**
-6. **Link to relevant documentation or issues when applicable**
-
----
-
-## Links and References
-
-- [Project Repository](https://github.com/LarisPigasse/edg-frontend-template)
-- [Component Documentation](./COMPONENTS.md)
-- [Project Architecture](./edg-frontend-template.md)
-- [Keep a Changelog](https://keepachangelog.com/)
-- [Semantic Versioning](https://semver.org/)
-
----
-
-*This changelog is maintained automatically as part of the development process and reflects the current state of the EDG Frontend Template.*
+**Repository**: [GitHub](https://github.com/LarisPigasse/edg-frontend-template)

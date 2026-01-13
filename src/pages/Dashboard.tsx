@@ -2,6 +2,9 @@
 import React from 'react';
 
 const Dashboard: React.FC = () => {
+  // TEST: Decommentare per testare ErrorBoundary
+  // throw new Error('Test ErrorBoundary: errore simulato!');
+
   return (
     <div className='space-y-8'>
       <div className='text-center'>

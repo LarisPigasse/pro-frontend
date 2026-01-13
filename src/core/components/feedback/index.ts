@@ -3,6 +3,10 @@ export { default as Alert } from './alert/Alert';
 export { alertData } from './alert/Alert.data';
 export type { AlertVariant } from './alert/Alert';
 
+// ErrorBoundary - import diretto senza barrel interno
+export { default as ErrorBoundary } from './error-boundary/ErrorBoundary';
+export { default as ErrorFallback } from './error-boundary/ErrorFallback';
+
 // Progress
 export { progressData } from './progress/Progress.data';
 export { default as Progress } from './progress/Progress';

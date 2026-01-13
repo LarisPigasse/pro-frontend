@@ -7,7 +7,7 @@ import { initializeFromStorage } from './app/slices';
 import MainLayout from './core/components/layout/custom/MainLayout';
 import { UserMenu, MobileMenu } from './core/components/navigation';
 import { ROUTES } from './config';
-import { ToastProvider } from './core/components/feedback';
+import { ToastProvider, ErrorBoundary } from './core/components/feedback';
 
 // ✅ EAGER LOADING - Pagina principale, caricata subito
 import { Dashboard } from './pages';
@@ -47,44 +47,61 @@ const PageLoadingFallback: React.FC = () => (
   </div>
 );
 
+/**
+ * Callback per logging errori (opzionale)
+ * Può essere esteso per inviare errori a servizi di monitoring
+ */
+const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
+  // In produzione, qui potresti inviare l'errore a un servizio di monitoring
+  // es: Sentry, LogRocket, DataDog, ecc.
+  console.error('Application error:', error.message);
+
+  // Esempio di integrazione con servizio esterno:
+  // if (process.env.NODE_ENV === 'production') {
+  //   errorTrackingService.captureException(error, { extra: errorInfo });
+  // }
+};
+
 const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <Provider store={store}>
-        <AppInitializer>
-          <Router>
-            <div className='App'>
-              {/* Layout principale con routing */}
-              <MainLayout>
-                {/* Suspense wrapper per lazy loaded routes */}
-                <Suspense fallback={<PageLoadingFallback />}>
-                  <Routes>
-                    <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+    <ErrorBoundary onError={handleError}>
+      <ToastProvider>
+        <Provider store={store}>
+          <AppInitializer>
+            <Router>
+              <div className='App'>
+                {/* Layout principale con routing */}
+                <MainLayout>
+                  {/* Suspense wrapper per lazy loaded routes */}
+                  <Suspense fallback={<PageLoadingFallback />}>
+                    <Routes>
+                      <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.HOME} replace />} />
 
-                    {/* ✅ Dashboard: Eager loading (caricata subito) */}
-                    <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+                      {/* ✅ Dashboard: Eager loading (caricata subito) */}
+                      <Route path={ROUTES.HOME} element={<Dashboard />} />
 
-                    {/* ✅ Explorer: Lazy loading (caricata solo quando necessario) */}
-                    <Route path={ROUTES.EXPLORER} element={<Explorer />} />
+                      {/* ✅ Explorer: Lazy loading (caricata solo quando necessario) */}
+                      <Route path={ROUTES.EXPLORER} element={<Explorer />} />
 
-                    {/* ✅ Settings: Placeholder NotFound (lazy) */}
-                    <Route path={ROUTES.SETTINGS} element={<NotFound />} />
+                      {/* ✅ Settings: Placeholder NotFound (lazy) */}
+                      <Route path={ROUTES.SETTINGS} element={<NotFound />} />
 
-                    {/* ✅ 404: Lazy loading */}
-                    <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
-                    <Route path='*' element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </MainLayout>
+                      {/* ✅ 404: Lazy loading */}
+                      <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+                      <Route path='*' element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </MainLayout>
 
-              {/* Menu components - renderizzati al root level per z-index corretto */}
-              <UserMenu />
-              <MobileMenu />
-            </div>
-          </Router>
-        </AppInitializer>
-      </Provider>
-    </ToastProvider>
+                {/* Menu components - renderizzati al root level per z-index corretto */}
+                <UserMenu />
+                <MobileMenu />
+              </div>
+            </Router>
+          </AppInitializer>
+        </Provider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 };
 

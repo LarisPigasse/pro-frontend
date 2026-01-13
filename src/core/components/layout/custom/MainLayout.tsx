@@ -1,78 +1,62 @@
-import React from "react";
+// src/core/components/layout/custom/MainLayout.tsx
+import React from 'react';
 
-import { Header, Footer, Sidebar } from "..";
-import { SettingsMenu } from "../../navigation";
-import { UserMenu } from "../../navigation";
-import { useUISettings } from "../../../../app/hooks";
-import { useIsMobile } from "../../../hooks";
+import { Header, Footer } from '..';
+import { SettingsMenu, UserMenu } from '../../navigation';
+import { useUISettings } from '../../../../app/hooks';
+import { useIsMobile } from '../../../hooks';
+import backgroundImage from '../../../../assets/background.jpg';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const { footerVisible, sidebarVisible } = useUISettings();
+  const { footerVisible } = useUISettings();
   const isMobile = useIsMobile();
 
-  // Logica per Header - semplificata
-  const shouldShowLogo = !isMobile && !sidebarVisible;
-  const shouldShowNavigation = !isMobile && !sidebarVisible;
-
-  // Layout Mobile - semplice, nessuna sidebar
   if (isMobile) {
     return (
-      <div className="bg-bg-base min-h-screen">
-        <Header showLogo={shouldShowLogo} showNavigation={shouldShowNavigation} />
-        <main className="bg-bg-base min-h-screen">
-          <div className="w-full px-4 sm:px-6 py-8">{children}</div>
+      <div className='min-h-screen flex flex-col relative'>
+        {/* Background fisso per mobile */}
+        <div
+          className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat'
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+        <Header />
+        <main className='flex-1'>
+          <div className='w-full px-4 sm:px-6 py-8'>{children}</div>
         </main>
         {footerVisible && <Footer showVersionInfo={true} />}
-        {/* ✨ MENU COMPONENTS - Renderizzati sempre */}
         <SettingsMenu />
-        {/* <UserMenu /> */} {/* Uncomment quando UserMenu sarà pronto */}
+        <UserMenu />
       </div>
     );
   }
 
-  // Layout Desktop - GRID con Header e Sidebar Sticky
   return (
-    <div className="bg-bg-base min-h-screen">
-      <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
-        {/* Header Sticky - sempre in cima */}
-        <header className="sticky top-0 z-40 col-span-full">
-          <Header showLogo={shouldShowLogo} showNavigation={shouldShowNavigation} />
+    <div className='min-h-screen relative'>
+      {/* Background fisso per desktop */}
+      <div
+        className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat'
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      />
+      <div className='grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen'>
+        <header className='sticky top-0 z-40 col-span-full'>
+          <Header />
         </header>
 
-        {/* Content Area - con sidebar e main */}
-        <div className="flex min-h-0">
-          {/* Sidebar Sticky - sempre visibile a sinistra */}
-          {sidebarVisible && (
-            <div
-              className="sticky top-12"
-              style={{
-                height: footerVisible
-                  ? "calc(100vh - 3.125rem - 2.375rem)" // header + footer compatto
-                  : "calc(100vh - 3.125rem)", // solo header
-              }}
-            >
-              <Sidebar />
-            </div>
-          )}
+        <main className='flex-1 min-w-0 overflow-y-auto flex flex-col'>
+          <div className='w-full px-4 sm:px-6 lg:px-8 py-8 flex-1'>{children}</div>
+        </main>
 
-          {/* Main Content - solo questo scrolla */}
-          <main className="bg-bg-base flex-1 min-w-0 overflow-y-auto flex flex-col">
-            <div className="w-full px-4 sm:px-6 py-8 flex-1">{children}</div>
-          </main>
-        </div>
-
-        {/* Footer - sempre in fondo */}
         {footerVisible && (
-          <footer className="sticky bottom-0 z-40 col-span-full">
+          <footer className='sticky bottom-0 z-40 col-span-full'>
             <Footer showVersionInfo={true} />
           </footer>
         )}
       </div>
-      {/* MENU COMPONENTS - Renderizzati sempre alla fine */}
+
       <SettingsMenu />
       <UserMenu />
     </div>

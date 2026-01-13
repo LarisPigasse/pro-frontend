@@ -1,38 +1,117 @@
 // src/config/navigation.config.ts
-import { ROUTES } from "./routes.config";
+import type { LucideIcon } from 'lucide-react';
+import { Home, Users, Truck, Package, Settings, FolderOpen } from 'lucide-react';
+import { ROUTES } from './routes.config';
 
-export interface NavigationItem {
+/**
+ * Sottomenu di un modulo
+ */
+export interface SubMenuItem {
   id: string;
   label: string;
   href: string;
-  icon: "home" | "dashboard" | "components" | "settings";
-  description?: string;
 }
 
-export const NAVIGATION_ITEMS: NavigationItem[] = [
+/**
+ * Configurazione di un modulo
+ * - Se ha children, mostra il sottomenu quando attivo
+ * - Se non ha children, è una voce semplice (es. Home)
+ */
+export interface ModuleConfig {
+  id: string;
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  children?: SubMenuItem[];
+}
+
+/**
+ * Configurazione dei moduli dell'applicazione
+ *
+ * Per aggiungere un nuovo modulo:
+ * 1. Aggiungi le routes in routes.config.ts
+ * 2. Aggiungi il modulo qui con i suoi children
+ */
+export const MODULES: ModuleConfig[] = [
   {
-    id: "dashboard",
-    label: "Dashboard",
-    href: ROUTES.DASHBOARD,
-    icon: "dashboard", // Usa LayoutDashboard
-    description: "Panoramica e dashboard principale",
+    id: 'home',
+    label: 'HOME',
+    href: ROUTES.HOME,
+    icon: Home,
+    // Home non ha children, mostra tutti i moduli
   },
   {
-    id: "explorer",
-    label: "Componenti",
-    href: ROUTES.EXPLORER,
-    icon: "components", // Usa Package/Components icon
-    description: "Esplora tutti i componenti del design system",
+    id: 'anagrafiche',
+    label: 'ANAGRAFICHE',
+    href: ROUTES.ANAGRAFICHE,
+    icon: Users,
+    children: [
+      { id: 'clienti', label: 'Clienti', href: ROUTES.ANAGRAFICHE_CLIENTI },
+      { id: 'destinatari', label: 'Destinatari', href: ROUTES.ANAGRAFICHE_DESTINATARI },
+      { id: 'mezzi', label: 'Mezzi', href: ROUTES.ANAGRAFICHE_MEZZI },
+    ],
   },
   {
-    id: "settings",
-    label: "Impostazioni",
-    href: ROUTES.SETTINGS,
-    icon: "settings",
-    description: "Configurazioni e impostazioni applicazione",
+    id: 'spedizioni',
+    label: 'SPEDIZIONI',
+    href: ROUTES.SPEDIZIONI,
+    icon: Truck,
+    children: [
+      { id: 'nuova', label: 'Nuova', href: ROUTES.SPEDIZIONI_NUOVA },
+      { id: 'incorso', label: 'In corso', href: ROUTES.SPEDIZIONI_INCORSO },
+      { id: 'storico', label: 'Storico', href: ROUTES.SPEDIZIONI_STORICO },
+    ],
+  },
+  {
+    id: 'sistema',
+    label: 'SISTEMA',
+    href: ROUTES.SISTEMA,
+    icon: Truck,
+    children: [
+      { id: 'account', label: 'Account', href: ROUTES.SISTEMA_ACCOUNT },
+      { id: 'operatori', label: 'Operatori', href: ROUTES.SISTEMA_OPERATORI },
+      { id: 'partner', label: 'Partner', href: ROUTES.SISTEMA_PARTNER },
+    ],
   },
 ];
 
+/**
+ * Voci di sistema (non sono moduli, sempre visibili in altre posizioni)
+ */
+export const SYSTEM_ITEMS = {
+  explorer: {
+    id: 'explorer',
+    label: 'Explorer',
+    href: ROUTES.EXPLORER,
+    icon: FolderOpen,
+  },
+  settings: {
+    id: 'settings',
+    label: 'Impostazioni',
+    href: ROUTES.SETTINGS,
+    icon: Settings,
+  },
+} as const;
+
+/**
+ * Helper: trova il modulo attivo dalla pathname
+ */
+export const getActiveModule = (pathname: string): ModuleConfig | null => {
+  // Home è attivo solo se pathname è esattamente "/"
+  if (pathname === '/') {
+    return MODULES.find(m => m.id === 'home') || null;
+  }
+
+  // Trova il modulo che matcha il pathname
+  return MODULES.find(m => m.id !== 'home' && pathname.startsWith(m.href)) || null;
+};
+
+/**
+ * Helper: verifica se siamo in Home (mostra tutti i moduli)
+ */
+export const isHomeActive = (pathname: string): boolean => {
+  return pathname === '/' || pathname === ROUTES.HOME;
+};
+
 // Type exports
-export type NavigationIconType = NavigationItem["icon"];
-export type NavigationItemId = NavigationItem["id"];
+export type ModuleId = ModuleConfig['id'];
