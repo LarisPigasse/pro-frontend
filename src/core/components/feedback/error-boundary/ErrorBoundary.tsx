@@ -1,5 +1,6 @@
 // src/core/components/feedback/error-boundary/ErrorBoundary.tsx
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import ErrorFallback from './ErrorFallback';
 
 interface ErrorBoundaryProps {
@@ -66,7 +67,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     }
 
     // Log in console (solo development)
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('ErrorBoundary caught an error:', error);
       console.error('Component stack:', errorInfo.componentStack);
     }
@@ -82,7 +83,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   render(): ReactNode {
     const { hasError, error, errorInfo } = this.state;
-    const { children, fallback, showDetails = process.env.NODE_ENV === 'development' } = this.props;
+    const { children, fallback, showDetails = import.meta.env.DEV } = this.props;
 
     if (hasError) {
       // Se è fornito un fallback personalizzato, usalo

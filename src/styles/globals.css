@@ -132,6 +132,17 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--text-primary) !important;
 }
 
+/* Autofill detection animations */
+@keyframes onAutoFillStart {
+  from { /* empty */ }
+  to { /* empty */ }
+}
+
+@keyframes onAutoFillCancel {
+  from { /* empty */ }
+  to { /* empty */ }
+}
+
 /* Spinner dots animation */
 @keyframes spinnerPulse {
   0%,

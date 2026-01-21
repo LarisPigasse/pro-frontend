@@ -102,7 +102,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const config = sizeConfig[size];
 
   // Format date to string
-  const formatDate = (date: Date): string => {
+  const formatDate = React.useCallback((date: Date): string => {
     if (!date || isNaN(date.getTime())) return "";
 
     const day = date.getDate().toString().padStart(2, "0");
@@ -117,10 +117,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       default: // DD/MM/YYYY
         return `${day}/${month}/${year}`;
     }
-  };
+  }, [format]);
 
   // Parse string to date
-  const parseDate = (dateString: string): Date | null => {
+  const parseDate = React.useCallback((dateString: string): Date | null => {
     if (!dateString) return null;
 
     let day: number, month: number, year: number;
@@ -158,7 +158,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
     const date = new Date(year, month - 1, day);
     return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year ? date : null;
-  };
+  }, [format]);
 
   // Update input value when external value changes
   useEffect(() => {
@@ -166,7 +166,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     if (value) {
       setViewDate(value);
     }
-  }, [value, format]);
+  }, [value, format, formatDate]);
 
   // Check if date is disabled
   const isDateDisabled = (date: Date): boolean => {

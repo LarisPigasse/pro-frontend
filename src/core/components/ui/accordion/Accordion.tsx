@@ -124,6 +124,7 @@ export const Accordion = ({
           type: "single" as const,
           defaultValue: defaultValue as string,
           value: props.value as string,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onValueChange: onValueChange as any,
           collapsible,
         }
@@ -131,12 +132,13 @@ export const Accordion = ({
           type: "multiple" as const,
           defaultValue: defaultValue as string[],
           value: props.value as string[],
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onValueChange: onValueChange as any,
-        } as any;
+        } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   return (
     <div className={cn("w-full bg-bg-primary", className)} {...props}>
-      {/* @ts-ignore */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <AccordionPrimitive.Root className={cn("w-full", variantStyles.container)} {...(rootProps as any)}>
         {items.map((item) => (
           <AccordionPrimitive.Item

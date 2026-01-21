@@ -59,6 +59,7 @@ export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
     const childrenWithProps = React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
         return React.cloneElement(child, {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           id: (child as React.ReactElement<any>).props.id || id,
           "aria-describedby": error ? `${id}-error` : helperText ? `${id}-helper` : undefined,
           "aria-invalid": hasError ? "true" : undefined,

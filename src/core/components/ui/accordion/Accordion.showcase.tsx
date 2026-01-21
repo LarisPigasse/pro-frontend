@@ -399,7 +399,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Single Mode (Collapsible)
             </span>
-            {/* @ts-ignore */}
             <Accordion type="single" items={basicFaqItems.slice(0, 3)} defaultValue="faq-1" collapsible variant="default" />
             <span className="text-sm mt-2 text-text-secondary">
               Solo un item può essere aperto alla volta. Collapsible permette di chiudere tutto.
@@ -410,7 +409,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Multiple Mode
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="multiple"
               items={settingsItems.slice(0, 3)}
@@ -431,7 +429,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Default - Minimalista
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -447,7 +444,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Bordered - Card Style
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -471,7 +467,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Separated - Spacing Emphasis
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -500,7 +495,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Small - Compact Spaces
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -521,7 +515,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Medium - Standard (Default)
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -542,7 +535,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Large - Prominent Display
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={[
@@ -572,7 +564,6 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Accordion Controllato
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="single"
               items={basicFaqItems}
@@ -595,14 +586,13 @@ export const AccordionShowcase: React.FC = () => {
             <span className="font-medium mb-3 block text-text-secondary">
               Multiple con Analytics
             </span>
-            {/* @ts-ignore */}
             <Accordion
               type="multiple"
               items={settingsItems}
               value={multipleValues}
               onValueChange={handleMultipleChange}
               variant="separated"
-            />
+              />
             <div className="mt-3 p-3 bg-bg-info rounded-lg">
               <span className="text-sm font-medium mb-2 block text-text-primary">
                 📊 Analytics Dashboard

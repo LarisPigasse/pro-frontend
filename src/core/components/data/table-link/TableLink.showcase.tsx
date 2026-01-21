@@ -67,6 +67,7 @@ export const TableLinkShowcase: React.FC = () => {
                 >
                   {project.priority}
                 </Badge>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <Badge variant={getStatusVariant(project.status) as any}>{project.status}</Badge>
                 <TableLink
                   variant="primary"

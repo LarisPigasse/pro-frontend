@@ -384,6 +384,7 @@ export const AvatarShowcase: React.FC = () => {
                 <div key={id} className="relative">
                   <Avatar
                     initials={id}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     variant={["primary", "secondary", "success", "info"][index] as any}
                     size="lg"
                     clickable
@@ -477,8 +478,10 @@ export const AvatarShowcase: React.FC = () => {
                   src={user.avatar}
                   alt={user.name}
                   initials={user.initials}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   status={user.status as any}
                   size="md"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   variant={getStatusVariant(user.status) as any}
                   clickable
                 />
@@ -487,6 +490,7 @@ export const AvatarShowcase: React.FC = () => {
                     <span className="text-text-primary font-medium">
                       {user.name}
                     </span>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <Badge variant={getStatusVariant(user.status) as any} size="xs">
                       {user.status}
                     </Badge>

@@ -20,6 +20,7 @@ interface PersistedUISettings {
 // Utility per il localStorage
 export const storageUtils = {
   // Salva le impostazioni UI nel localStorage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   saveUISettings: (uiState: any) => {
     try {
       const settingsToSave: PersistedUISettings = {
@@ -69,8 +70,11 @@ export const storageUtils = {
 // Tipizzazione corretta per il middleware Redux
 export const persistenceMiddleware: Middleware<
   Record<string, never>, // Extra dispatch signature
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any, // State type (was RootState) - using any to avoid circular dependency
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any // Dispatch type (was AppDispatch)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = (store) => (next) => (action: any) => {
   // Esegui l'action
   const result = next(action);

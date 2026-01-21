@@ -1,5 +1,6 @@
 // src/core/components/feedback/error-boundary/ErrorFallback.tsx
-import React, { ErrorInfo } from 'react';
+import React from 'react';
+import type { ErrorInfo } from 'react';
 import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ErrorFallbackProps {

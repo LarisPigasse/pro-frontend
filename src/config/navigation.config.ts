@@ -1,6 +1,6 @@
 // src/config/navigation.config.ts
 import type { LucideIcon } from 'lucide-react';
-import { Home, Users, Truck, Package, Settings, FolderOpen } from 'lucide-react';
+import { Home, Users, Truck, Settings, FolderOpen } from 'lucide-react';
 import { ROUTES } from './routes.config';
 
 /**

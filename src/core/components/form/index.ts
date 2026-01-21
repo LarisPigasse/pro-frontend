@@ -15,6 +15,7 @@ export type { FormFieldSize, FormFieldSpacing } from './form-field/FormField';
 
 // Input
 export { default as Input } from './input/Input';
+export { default as PasswordInput } from './input/PasswordInput';
 export { inputData } from './input/Input.data';
 
 // Label

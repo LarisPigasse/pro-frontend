@@ -3,6 +3,7 @@
 export const ROUTES = {
   // Home
   HOME: '/',
+  DASHBOARD: '/',
 
   // Modulo Anagrafiche
   ANAGRAFICHE: '/anagrafiche',
@@ -21,6 +22,9 @@ export const ROUTES = {
   SISTEMA_ACCOUNT: '/sistema/account',
   SISTEMA_OPERATORI: '/sistema/operatori',
   SISTEMA_PARTNER: '/sistema/partner',
+
+  // Auth
+  LOGIN: '/login',
 
   // User menu
   EXPLORER: '/explorer',

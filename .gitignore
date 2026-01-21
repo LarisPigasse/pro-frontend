@@ -30,6 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+*.log
+*_errors.txt
+*_report.txt
+*_verify.txt
 
 # Runtime data
 pids

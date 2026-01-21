@@ -121,7 +121,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   }, [step]);
 
   // Format time to string
-  const formatTime = (time: TimeValue): string => {
+  const formatTime = React.useCallback((time: TimeValue): string => {
     if (!time) return "";
 
     const { hours, minutes } = time;
@@ -133,10 +133,10 @@ export const TimePicker: React.FC<TimePickerProps> = ({
     }
 
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-  };
+  }, [format]);
 
   // Parse string to time
-  const parseTime = (timeString: string): TimeValue | null => {
+  const parseTime = React.useCallback((timeString: string): TimeValue | null => {
     if (!timeString) return null;
 
     const timeRegex = format === "12h" ? /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i : /^(\d{1,2}):(\d{2})$/;
@@ -156,7 +156,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
     if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
 
     return { hours, minutes };
-  };
+  }, [format]);
 
   // Check if time is in valid range
   const isTimeInRange = (time: TimeValue): boolean => {
@@ -187,7 +187,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
     } else {
       setInputValue("");
     }
-  }, [value, format]);
+  }, [value, format, formatTime]);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

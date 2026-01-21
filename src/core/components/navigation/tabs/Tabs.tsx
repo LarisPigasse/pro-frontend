@@ -28,7 +28,8 @@ export const Tabs: React.FC<TabsProps> = ({
   items,
   defaultTab,
   variant = "default",
-  size = "md",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  size: _size = "md",
   onTabChange,
   className = "",
   ...props
