@@ -14,10 +14,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Logo } from '../../../core/components/info';
 import { LoginForm } from '../components';
 import { useAuth } from '../hooks';
+import { useUISettings } from '../../../app/hooks';
+import { ROUTES } from '../../../config';
 
 // ============================================================================
 // TYPES
@@ -36,6 +38,7 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, initializing } = useAuth();
+  const { closeAllMenus } = useUISettings();
 
   // Recupera la pagina da cui l'utente è stato reindirizzato (se presente)
   const locationState = location.state as LocationState | null;
@@ -61,9 +64,13 @@ export const LoginPage: React.FC = () => {
 
   /**
    * Callback chiamato dopo login riuscito.
-   * Naviga alla pagina originale o alla home.
+   * Chiude tutti i menu aperti e naviga alla pagina originale o alla home.
    */
   const handleLoginSuccess = () => {
+    // Chiude tutti i menu (user menu, settings menu, mobile menu, ecc.)
+    closeAllMenus();
+
+    // Naviga alla pagina originale o alla home
     navigate(returnTo, { replace: true });
   };
 
@@ -107,16 +114,9 @@ export const LoginPage: React.FC = () => {
 
           {/* Link password dimenticata */}
           <div className='mt-6 text-center'>
-            <button
-              type='button'
-              className='text-sm text-text-link hover:text-text-link-hover transition-colors'
-              onClick={() => {
-                // TODO: Implementare pagina reset password
-                console.log('Reset password clicked');
-              }}
-            >
+            <Link to={ROUTES.FORGOT_PASSWORD} className='text-sm text-text-link hover:text-text-link-hover transition-colors'>
               Password dimenticata?
-            </button>
+            </Link>
           </div>
         </div>
 

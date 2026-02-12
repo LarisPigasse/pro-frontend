@@ -71,6 +71,7 @@ export const MODULES: ModuleConfig[] = [
       { id: 'account', label: 'Account', href: ROUTES.SISTEMA_ACCOUNT },
       { id: 'operatori', label: 'Operatori', href: ROUTES.SISTEMA_OPERATORI },
       { id: 'partner', label: 'Partner', href: ROUTES.SISTEMA_PARTNER },
+      { id: 'logs', label: 'Logs', href: ROUTES.SISTEMA_LOGS },
     ],
   },
 ];

@@ -8,7 +8,14 @@ import MainLayout from './core/components/layout/custom/MainLayout';
 import { UserMenu, MobileMenu } from './core/components/navigation';
 import { ROUTES } from './config';
 import { ToastProvider, ErrorBoundary } from './core/components/feedback';
-import { initializeAuth, LoginPage, PrivateRoute } from './features/auth';
+import {
+  initializeAuth,
+  LoginPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  ChangePasswordPage,
+  PrivateRoute,
+} from './features/auth';
 
 // ✅ EAGER LOADING - Pagina principale, caricata subito
 import { Dashboard } from './pages';
@@ -18,6 +25,9 @@ import { Dashboard } from './pages';
 // NotFound: caricato solo quando serve (404)
 const Explorer = lazy(() => import('./pages/Explorer'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+
+// ✅ LOGS - Sistema logs (solo root)
+const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
 
 // Componente per inizializzazione completa del tema e settings
 const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -78,8 +88,10 @@ const App: React.FC = () => {
             <Router>
               <Suspense fallback={<PageLoadingFallback />}>
                 <Routes>
-                  {/* ✅ Login: Pagina pubblica FUORI da MainLayout */}
+                  {/* ✅ Auth Pages: Pagine pubbliche FUORI da MainLayout */}
                   <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+                  <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+                  <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
                   {/* ✅ Tutte le altre route: DENTRO MainLayout */}
                   <Route
@@ -94,6 +106,16 @@ const App: React.FC = () => {
                               element={
                                 <PrivateRoute>
                                   <Dashboard />
+                                </PrivateRoute>
+                              }
+                            />
+
+                            {/* ✅ Change Password: Route protetta */}
+                            <Route
+                              path={ROUTES.CHANGE_PASSWORD}
+                              element={
+                                <PrivateRoute>
+                                  <ChangePasswordPage />
                                 </PrivateRoute>
                               }
                             />
@@ -114,6 +136,16 @@ const App: React.FC = () => {
                               element={
                                 <PrivateRoute>
                                   <NotFound />
+                                </PrivateRoute>
+                              }
+                            />
+
+                            {/* ✅ Logs Sistema: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SISTEMA_LOGS}
+                              element={
+                                <PrivateRoute requiredPermission="sistema.logs">
+                                  <LogsListPage />
                                 </PrivateRoute>
                               }
                             />

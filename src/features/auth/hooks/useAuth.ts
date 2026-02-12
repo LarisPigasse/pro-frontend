@@ -20,8 +20,9 @@
  * ```
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { authApi } from '../api';
 import {
   // Thunks
   login as loginThunk,
@@ -37,7 +38,7 @@ import {
   selectAuthError,
   selectPermissions,
 } from '../store';
-import type { LoginRequest, AccountType } from '../types';
+import type { LoginRequest, ChangePasswordRequest, AccountType } from '../types';
 
 /**
  * Hook principale per la gestione dell'autenticazione.
@@ -45,6 +46,10 @@ import type { LoginRequest, AccountType } from '../types';
  */
 export function useAuth() {
   const dispatch = useAppDispatch();
+
+  // Stato locale per operazioni non-redux (changePassword)
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
 
   // ============================================================================
   // STATO - Valori letti da Redux
@@ -91,12 +96,77 @@ export function useAuth() {
   }, [dispatch]);
 
   /**
+   * Cambia la password dell'utente loggato.
+   * Richiede la password attuale per motivi di sicurezza.
+   *
+   * @param data - Contiene currentPassword e newPassword
+   * @returns true se cambio riuscito, false se fallito
+   *
+   * @example
+   * const success = await changePassword({
+   *   currentPassword: 'OldPass123!',
+   *   newPassword: 'NewPass456!'
+   * });
+   * if (success) {
+   *   navigate('/login'); // Logout implicito
+   * }
+   */
+  const changePassword = useCallback(async (data: ChangePasswordRequest): Promise<boolean> => {
+    setChangePasswordLoading(true);
+    setChangePasswordError(null);
+
+    try {
+      const response = await authApi.changePassword(data);
+
+      if (!response.success) {
+        // Traduce gli errori del backend in messaggi user-friendly
+        let userFriendlyError = response.error || 'Cambio password fallito';
+
+        // Mappa degli errori dal backend con messaggi user-friendly
+        const errorMessages: Record<string, string> = {
+          'Accesso diretto non consentito': 'Password attuale errata',
+          Unauthorized: 'Password attuale errata',
+          'Invalid credentials': 'Password attuale errata',
+          'currentPassword is invalid': 'Password attuale errata',
+        };
+
+        // Controlla se l'errore corrisponde a uno dei pattern noti
+        for (const [backendError, friendlyMessage] of Object.entries(errorMessages)) {
+          if (userFriendlyError.toLowerCase().includes(backendError.toLowerCase())) {
+            userFriendlyError = friendlyMessage;
+            break;
+          }
+        }
+
+        setChangePasswordError(userFriendlyError);
+        return false;
+      }
+
+      // Cambio riuscito
+      return true;
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Errore durante il cambio password';
+      setChangePasswordError(errorMsg);
+      return false;
+    } finally {
+      setChangePasswordLoading(false);
+    }
+  }, []);
+
+  /**
    * Pulisce il messaggio di errore corrente.
    * Utile dopo che l'utente ha visto l'errore.
    */
   const clearAuthError = useCallback(() => {
     dispatch(clearError());
   }, [dispatch]);
+
+  /**
+   * Pulisce l'errore di changePassword.
+   */
+  const clearChangePasswordError = useCallback(() => {
+    setChangePasswordError(null);
+  }, []);
 
   // ============================================================================
   // HELPER PERMESSI - Verifica autorizzazioni utente
@@ -230,7 +300,7 @@ export function useAuth() {
   // ============================================================================
 
   return {
-    // Stato
+    // Stato Redux
     isAuthenticated,
     account,
     loading,
@@ -238,11 +308,17 @@ export function useAuth() {
     error,
     permissions,
 
+    // Stato changePassword (locale)
+    changePasswordLoading,
+    changePasswordError,
+
     // Azioni
     initialize,
     login,
     logout,
+    changePassword,
     clearAuthError,
+    clearChangePasswordError,
 
     // Helper permessi
     hasPermission,

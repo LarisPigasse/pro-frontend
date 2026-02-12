@@ -36,6 +36,10 @@ export const APP_CONFIG = {
 export { ROUTES } from './routes.config';
 export type { RouteKeys, RouteValues } from './routes.config';
 
+// Layout Config
+export { LAYOUT_CONFIG } from './layoutConfig';
+export type { LayoutConfigKeys } from './layoutConfig';
+
 // Navigation - Moduli
 export { MODULES, SYSTEM_ITEMS, getActiveModule, isHomeActive } from './navigation.config';
 export type { ModuleConfig, SubMenuItem, ModuleId } from './navigation.config';

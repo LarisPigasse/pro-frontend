@@ -1,12 +1,12 @@
 // src/core/components/layout/custom/Header.tsx
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, Settings, Bell } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, Settings, Bell, ArrowLeft } from 'lucide-react';
 
 import { UserAvatar, Logo } from '../../info';
 import { useUISettings } from '../../../../app/hooks';
 import { useIsMobile } from '../../../hooks';
-import { MODULES, getActiveModule } from '../../../../config';
+import { MODULES, getActiveModule, ROUTES } from '../../../../config';
 import type { SubMenuItem } from '../../../../config';
 
 interface HeaderProps {
@@ -18,8 +18,12 @@ const Header: React.FC<HeaderProps> = ({ userInitials = 'AD', userName = 'Admin 
   const { toggleSettingsMenu, toggleUserMenu, toggleMobileMenu } = useUISettings();
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const activeModule = getActiveModule(location.pathname);
+
+  // Determina se siamo sulla Home
+  const isHome = location.pathname === '/' || location.pathname === ROUTES.HOME;
 
   const isActiveLink = (href: string) => location.pathname === href;
 
@@ -30,9 +34,28 @@ const Header: React.FC<HeaderProps> = ({ userInitials = 'AD', userName = 'Admin 
     return location.pathname.startsWith(moduleHref);
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   const renderDesktopNav = () => {
     return (
       <nav className='hidden md:flex items-center'>
+        {/* Pulsante Torna Indietro - Prima di HOME */}
+        <button
+          onClick={handleGoBack}
+          disabled={isHome}
+          className={`p-2 rounded-lg transition-colors mr-2 ${
+            isHome
+              ? 'text-text-disabled cursor-not-allowed opacity-40'
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+          }`}
+          title={isHome ? 'Torna indietro (disabilitato sulla home)' : 'Torna alla pagina precedente'}
+          aria-label='Torna indietro'
+        >
+          <ArrowLeft className='w-4 h-4' />
+        </button>
+
         {MODULES.map((module, index) => {
           const isActive = isModuleActive(module.href, module.id);
           const isCurrentModule = activeModule?.id === module.id;
@@ -86,9 +109,13 @@ const Header: React.FC<HeaderProps> = ({ userInitials = 'AD', userName = 'Admin 
     <header className='bg-bg-primary border-b border-border-default'>
       <div className='w-full px-2 sm:px-4'>
         <div className='flex items-center h-10'>
-          {/* LEFT AREA - Logo + Navigation */}
-          <div className='flex items-center space-x-6'>
+          {/* LEFT AREA - Logo (FISSO) */}
+          <div className='flex-shrink-0'>
             <Logo />
+          </div>
+
+          {/* NAVIGATION - Centr dopo logo */}
+          <div className='ml-6'>
             {isMobile ? (
               <button
                 onClick={toggleMobileMenu}

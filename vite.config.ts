@@ -23,6 +23,14 @@ export default defineConfig({
     headers: {
       'Cache-Control': 'no-cache',
     },
+    // Proxy per API - inoltra /auth all'API Gateway
+    proxy: {
+      '/auth': {
+        target: 'http://api-gateway-1:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 
   resolve: {

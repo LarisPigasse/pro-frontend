@@ -22,6 +22,49 @@ import type {
 } from '../types';
 
 // ============================================================================
+// STORAGE HELPER
+// ============================================================================
+
+/**
+ * Recupera il token dal storage corretto (localStorage o sessionStorage).
+ * Usa la stessa logica di authSlice per determinare quale storage è attivo.
+ */
+function getAccessToken(): string | null {
+  // Prova prima localStorage
+  const localToken = localStorage.getItem('edg_access_token');
+  if (localToken) {
+    return localToken;
+  }
+
+  // Se non c'è in localStorage, prova sessionStorage
+  const sessionToken = sessionStorage.getItem('edg_access_token');
+  if (sessionToken) {
+    return sessionToken;
+  }
+
+  return null;
+}
+
+/**
+ * Recupera il refresh token dal storage corretto (localStorage o sessionStorage).
+ */
+function getRefreshToken(): string | null {
+  // Prova prima localStorage
+  const localToken = localStorage.getItem('edg_refresh_token');
+  if (localToken) {
+    return localToken;
+  }
+
+  // Se non c'è in localStorage, prova sessionStorage
+  const sessionToken = sessionStorage.getItem('edg_refresh_token');
+  if (sessionToken) {
+    return sessionToken;
+  }
+
+  return null;
+}
+
+// ============================================================================
 // CONFIGURAZIONE
 // ============================================================================
 
@@ -29,7 +72,7 @@ import type {
  * Base URL per le API. Usa variabile d'ambiente o fallback a /api.
  * In sviluppo, Vite proxya /api verso l'API Gateway.
  */
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 const AUTH_ENDPOINT = `${API_BASE_URL}/auth`;
 
 // ============================================================================
@@ -44,18 +87,20 @@ const AUTH_ENDPOINT = `${API_BASE_URL}/auth`;
  * - Ritorna sempre una struttura ApiResponse<T>
  */
 async function fetchWithAuth<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-  // Recupera il token dal localStorage (se esiste)
-  const token = localStorage.getItem('edg_access_token');
+  // Recupera il token dal localStorage o sessionStorage (quello attivo)
+  const token = getAccessToken();
 
-  // Prepara gli headers
-  const headers: HeadersInit = {
+  // Prepara gli headers come Record (oggetto normale)
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(options.headers || {}),
+    ...(typeof options.headers === 'object' && options.headers !== null && !(options.headers instanceof Headers)
+      ? (options.headers as Record<string, string>)
+      : {}),
   };
 
   // Aggiunge Authorization se abbiamo un token
   if (token) {
-    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   try {
@@ -81,6 +126,7 @@ async function fetchWithAuth<T>(url: string, options: RequestInit = {}): Promise
     return data as ApiResponse<T>;
   } catch (error) {
     // Errore di rete o parsing
+    console.error('❌ [authApi] Errore di rete:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Errore di connessione',
@@ -113,7 +159,7 @@ export const authApi = {
    * Invalida la sessione corrente sul server.
    */
   logout(): Promise<ApiResponse<void>> {
-    const refreshToken = localStorage.getItem('edg_refresh_token');
+    const refreshToken = getRefreshToken();
 
     return fetchWithAuth<void>(`${AUTH_ENDPOINT}/logout`, {
       method: 'POST',

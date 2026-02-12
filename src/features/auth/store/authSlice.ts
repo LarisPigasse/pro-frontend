@@ -12,7 +12,7 @@
  * - rememberMe = false: sessionStorage (si cancella alla chiusura del browser)
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../../../app/store';
 import { authApi } from '../api';
 import type { AuthState, AuthAccount, LoginRequest, LoginResponse } from '../types';
@@ -384,13 +384,20 @@ const authSlice = createSlice({
 
 export const { clearError, updateAccount, resetAuth } = authSlice.actions;
 
+// Selettori base (non memoizzati)
 export const selectAuth = (state: RootState) => state.auth;
 export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
 export const selectAccount = (state: RootState) => state.auth.account;
 export const selectAuthLoading = (state: RootState) => state.auth.loading;
 export const selectAuthInitializing = (state: RootState) => state.auth.initializing;
 export const selectAuthError = (state: RootState) => state.auth.error;
-export const selectPermissions = (state: RootState) => state.auth.account?.permissions || [];
+
+// Selettore memoizzato per evitare re-render inutili
+// Ritorna sempre lo stesso array reference se permissions non cambia
+export const selectPermissions = createSelector(
+  [selectAccount],
+  (account) => account?.permissions || []
+);
 
 export const authReducer = authSlice.reducer;
 export default authSlice.reducer;

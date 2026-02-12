@@ -89,4 +89,4 @@ export { PrivateRoute, LoginForm } from './components';
 // PAGES - Pagine complete
 // ============================================================================
 
-export { LoginPage } from './pages';
+export { LoginPage, ForgotPasswordPage, ResetPasswordPage, ChangePasswordPage } from './pages';

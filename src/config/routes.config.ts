@@ -22,9 +22,13 @@ export const ROUTES = {
   SISTEMA_ACCOUNT: '/sistema/account',
   SISTEMA_OPERATORI: '/sistema/operatori',
   SISTEMA_PARTNER: '/sistema/partner',
+  SISTEMA_LOGS: '/sistema/logs',
 
   // Auth
   LOGIN: '/login',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
+  CHANGE_PASSWORD: '/change-password',
 
   // User menu
   EXPLORER: '/explorer',

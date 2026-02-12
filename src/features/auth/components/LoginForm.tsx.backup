@@ -49,7 +49,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState<FormState>({
     email: '',
     password: '',
-    rememberMe: false, // ⚠️ SECURITY: Disattivato di default (opt-in)
+    rememberMe: true, // Default: ricorda la sessione
   });
 
   // Errori di validazione locale

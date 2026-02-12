@@ -62,7 +62,6 @@ export interface ChangePasswordRequest {
  */
 export interface ResetPasswordRequest {
   email: string;
-  accountType: AccountType;
 }
 
 /**
