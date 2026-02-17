@@ -4,7 +4,7 @@
  * Modal dettaglio singolo evento log
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import type { LogEvent } from '../types';
 import {
@@ -14,110 +14,162 @@ import {
   getLogMessage,
   getLogUser,
 } from '../utils/logFormatters';
+import Badge from '@/core/components/ui/badge/Badge';
+import Button from '@/core/components/ui/button/Button';
 
 interface LogDetailModalProps {
-  log: LogEvent;
+  log: LogEvent | null;
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) => {
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-        onClick={onClose}
-      />
+export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, isOpen, onClose }) => {
+  // Close modal on ESC
+  useEffect(() => {
+    if (!isOpen) return;
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEsc);
+    document.body.style.overflow = 'hidden'; // Lock scroll
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset'; // Unlock scroll
+    };
+  }, [isOpen, onClose]);
+
+  // Handle backdrop click
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  if (!isOpen || !log) return null;
+
+  // Mapping severità a varianti Badge
+  const severityMap: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
+    INFO: 'info',
+    WARNING: 'warning',
+    ERROR: 'danger',
+    CRITICAL: 'danger',
+  };
+
+  // Mapping esito a varianti Badge
+  const outcomeMap: Record<string, 'success' | 'warning' | 'danger'> = {
+    successo: 'success',
+    parziale: 'warning',
+    fallito: 'danger',
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+      {/* Modal Container */}
+      <div className="relative w-full max-w-4xl max-h-[90vh] mx-4 flex flex-col">
+        <div className="rounded-xl shadow-xl overflow-hidden flex flex-col bg-bg-modal border border-border-default">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Dettaglio Evento</h2>
+          <div className="flex items-center justify-between p-6 border-b border-border-default flex-shrink-0">
+            <h2 className="text-xl font-semibold text-text-primary">Dettaglio Evento</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 rounded-lg hover:bg-bg-hover transition-colors"
+              aria-label="Chiudi modal"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 text-text-secondary" />
             </button>
           </div>
 
-          {/* Content */}
-          <div className="px-6 py-4 overflow-y-auto max-h-[calc(90vh-120px)]">
+          {/* Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Overview */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Timestamp
                 </label>
-                <p className="text-gray-900">{formatTimestamp(log.timestamp)}</p>
+                <p className="text-text-primary">{formatTimestamp(log.timestamp)}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   ID Evento
                 </label>
-                <p className="text-gray-900 font-mono text-sm">{log._id}</p>
+                <p className="text-text-primary font-mono text-sm">{log._id}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Categoria
                 </label>
-                <p className="text-gray-900">{getCategoryLabel(log.categoria || 'LEGACY')}</p>
+                <Badge variant="info" size="sm" text={getCategoryLabel(log.categoria || 'LEGACY')} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Severità
                 </label>
-                <p className="text-gray-900">{getSeverityLabel(log.criticita || 'INFO')}</p>
+                <Badge 
+                  variant={severityMap[log.criticita || 'INFO']} 
+                  size="sm" 
+                  text={getSeverityLabel(log.criticita || 'INFO')}
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Utente
                 </label>
-                <p className="text-gray-900">{getLogUser(log)}</p>
+                <p className="text-text-primary">{getLogUser(log)}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Esito
                 </label>
-                <p className="text-gray-900 capitalize">{log.risultato.esito}</p>
+                <Badge 
+                  variant={outcomeMap[log.risultato.esito]} 
+                  size="sm" 
+                  text={log.risultato.esito}
+                />
               </div>
             </div>
 
             {/* Message */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-500 mb-1">
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Messaggio
               </label>
-              <p className="text-gray-900">{getLogMessage(log)}</p>
+              <p className="text-text-primary">{getLogMessage(log)}</p>
             </div>
 
             {/* Azione */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Azione</h3>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+            <div>
+              <h3 className="text-sm font-medium text-text-primary mb-3">Azione</h3>
+              <div className="bg-bg-secondary rounded-lg p-4 space-y-2">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-sm text-gray-500">Tipo:</span>
-                    <span className="ml-2 text-sm text-gray-900">{log.azione.tipo}</span>
+                    <span className="text-sm text-text-secondary">Tipo:</span>
+                    <span className="ml-2 text-sm text-text-primary">{log.azione.tipo}</span>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-500">Entità:</span>
-                    <span className="ml-2 text-sm text-gray-900">{log.azione.entita}</span>
+                    <span className="text-sm text-text-secondary">Entità:</span>
+                    <span className="ml-2 text-sm text-text-primary">{log.azione.entita}</span>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-500">ID Entità:</span>
-                    <span className="ml-2 text-sm text-gray-900 font-mono">{log.azione.idEntita}</span>
+                    <span className="text-sm text-text-secondary">ID Entità:</span>
+                    <span className="ml-2 text-sm text-text-primary font-mono">{log.azione.idEntita}</span>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-500">Operazione:</span>
-                    <span className="ml-2 text-sm text-gray-900">{log.azione.operazione}</span>
+                    <span className="text-sm text-text-secondary">Operazione:</span>
+                    <span className="ml-2 text-sm text-text-primary">{log.azione.operazione}</span>
                   </div>
                 </div>
               </div>
@@ -125,10 +177,10 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
 
             {/* Contesto */}
             {log.contesto && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Contesto</h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <pre className="text-sm text-gray-900 whitespace-pre-wrap font-mono">
+              <div>
+                <h3 className="text-sm font-medium text-text-primary mb-3">Contesto</h3>
+                <div className="bg-bg-secondary rounded-lg p-4">
+                  <pre className="text-sm text-text-primary whitespace-pre-wrap font-mono">
                     {JSON.stringify(log.contesto, null, 2)}
                   </pre>
                 </div>
@@ -137,10 +189,10 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
 
             {/* Metadata */}
             {log.metadata && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Metadata</h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <pre className="text-sm text-gray-900 whitespace-pre-wrap font-mono">
+              <div>
+                <h3 className="text-sm font-medium text-text-primary mb-3">Metadata</h3>
+                <div className="bg-bg-secondary rounded-lg p-4">
+                  <pre className="text-sm text-text-primary whitespace-pre-wrap font-mono">
                     {JSON.stringify(log.metadata, null, 2)}
                   </pre>
                 </div>
@@ -149,17 +201,17 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
 
             {/* Stato (se presente) */}
             {log.stato && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Cambiamenti Stato</h3>
+              <div>
+                <h3 className="text-sm font-medium text-text-primary mb-3">Cambiamenti Stato</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {/* Stato Precedente */}
                   {log.stato.precedente && (
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-2">
+                      <label className="block text-xs font-medium text-text-secondary mb-2">
                         Precedente
                       </label>
-                      <div className="bg-red-50 rounded-lg p-3">
-                        <pre className="text-xs text-gray-900 whitespace-pre-wrap font-mono">
+                      <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
+                        <pre className="text-xs text-text-primary whitespace-pre-wrap font-mono">
                           {JSON.stringify(log.stato.precedente, null, 2)}
                         </pre>
                       </div>
@@ -169,11 +221,11 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
                   {/* Stato Nuovo */}
                   {log.stato.nuovo && (
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-2">
+                      <label className="block text-xs font-medium text-text-secondary mb-2">
                         Nuovo
                       </label>
-                      <div className="bg-green-50 rounded-lg p-3">
-                        <pre className="text-xs text-gray-900 whitespace-pre-wrap font-mono">
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+                        <pre className="text-xs text-text-primary whitespace-pre-wrap font-mono">
                           {JSON.stringify(log.stato.nuovo, null, 2)}
                         </pre>
                       </div>
@@ -185,27 +237,22 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
 
             {/* Tags */}
             {log.tags && log.tags.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Tags</h3>
+              <div>
+                <h3 className="text-sm font-medium text-text-primary mb-3">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {log.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                    >
-                      {tag}
-                    </span>
+                    <Badge key={index} variant="default" size="sm" text={tag} />
                   ))}
                 </div>
               </div>
             )}
 
             {/* Raw JSON (collapsible) */}
-            <details className="mb-4">
-              <summary className="text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900">
+            <details>
+              <summary className="text-sm font-medium text-text-primary cursor-pointer hover:text-text-link">
                 Visualizza JSON Completo
               </summary>
-              <div className="mt-3 bg-gray-900 rounded-lg p-4 overflow-x-auto">
+              <div className="mt-3 bg-gray-900 dark:bg-gray-950 rounded-lg p-4 overflow-x-auto">
                 <pre className="text-xs text-green-400 font-mono">
                   {JSON.stringify(log, null, 2)}
                 </pre>
@@ -214,13 +261,10 @@ export const LogDetailModal: React.FC<LogDetailModalProps> = ({ log, onClose }) 
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-border-default flex-shrink-0">
+            <Button onClick={onClose} variant="outline" size="md">
               Chiudi
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,10 +1,10 @@
 // src/core/components/ui/Table.tsx
-import React from "react";
+import React, { useState, useMemo } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../../utils/";
 import { ActionMenu, EditAction, DeleteAction } from "../../actions";
 import type { Action } from "../../actions";
-import { X } from "lucide-react";
+import { X, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 export interface TableColumn<T> {
   header: string | (() => ReactNode);
@@ -70,9 +70,16 @@ interface TableProps<T> {
   rowActions?: TableRowActions<T>;
 }
 
+// Sorting configuration
+interface SortConfig<T> {
+  key: keyof T | string;
+  direction: 'asc' | 'desc';
+}
+
 /**
- * Componente Table semplificato per il theme system EDG.
- * Per tabelle complesse con sorting/filtering/pagination usare TanStack Table.
+ * Componente Table con sorting client-side per il theme system EDG.
+ * Supporta ordinamento su colonne con sortable=true.
+ * Per tabelle enterprise con server-side sorting, usare TanStack Table.
  */
 function Table<T>({
   data,
@@ -87,6 +94,9 @@ function Table<T>({
   onRowClick,
   rowActions,
 }: TableProps<T>) {
+  // 🔄 Sorting state
+  const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
+
   // 📏 Size variants con CSS custom properties
   const sizeClasses = {
     sm: "text-sm",
@@ -106,7 +116,47 @@ function Table<T>({
     lg: "px-6 py-4",
   };
 
-  // 📊 Prepare columns with actions (MOVED BEFORE EARLY RETURNS)
+  // 📊 Sort data based on current config
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return data;
+
+    const sorted = [...data].sort((a, b) => {
+      // Get column definition
+      const column = columns.find((col) => {
+        if (typeof col.accessor === 'function') return false;
+        return col.accessor === sortConfig.key;
+      });
+
+      if (!column || typeof column.accessor === 'function') return 0;
+
+      const aValue = a[column.accessor];
+      const bValue = b[column.accessor];
+
+      // Handle null/undefined
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Compare values
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else if (aValue instanceof Date && bValue instanceof Date) {
+        comparison = aValue.getTime() - bValue.getTime();
+      } else {
+        // Fallback to string comparison
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [data, sortConfig, columns]);
+
+  // 📊 Prepare columns with actions
   const preparedColumns = React.useMemo(() => {
     const cols = [...columns];
 
@@ -126,6 +176,42 @@ function Table<T>({
 
     return cols;
   }, [columns, rowActions]);
+
+  // 🎯 Handle column header click for sorting
+  const handleSort = (column: TableColumn<T>) => {
+    if (!column.sortable || typeof column.accessor === 'function') return;
+
+    const key = column.accessor as keyof T;
+
+    setSortConfig((current) => {
+      // If clicking same column, toggle direction
+      if (current && current.key === key) {
+        return current.direction === 'asc'
+          ? { key, direction: 'desc' }
+          : null; // Third click removes sorting
+      }
+      // New column, start with ascending
+      return { key, direction: 'asc' };
+    });
+  };
+
+  // 🎨 Get sorting icon for column
+  const getSortIcon = (column: TableColumn<T>) => {
+    if (!column.sortable || typeof column.accessor === 'function') return null;
+
+    const key = column.accessor as keyof T;
+    const isActive = sortConfig?.key === key;
+
+    if (!isActive) {
+      return <ArrowUpDown className="w-4 h-4 text-text-placeholder" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+      <ArrowUp className="w-4 h-4 text-violet-600" />
+    ) : (
+      <ArrowDown className="w-4 h-4 text-violet-600" />
+    );
+  };
 
   // 🔄 Loading state
   if (isLoading) {
@@ -310,25 +396,18 @@ function Table<T>({
             {preparedColumns.map((column, index) => (
               <th
                 key={index}
+                onClick={() => handleSort(column)}
                 className={cn(
                   headerPaddingClasses[size],
                   "text-xs font-medium text-text-secondary uppercase tracking-wider",
                   column.className?.includes("text-right") ? "text-right" : "text-left",
+                  column.sortable && "cursor-pointer hover:bg-bg-hover transition-colors",
                   column.className
                 )}
               >
                 <div className="flex items-center space-x-1">
                   <span>{typeof column.header === "function" ? column.header() : column.header}</span>
-                  {column.sortable && (
-                    <svg className="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                      />
-                    </svg>
-                  )}
+                  {column.sortable && getSortIcon(column)}
                 </div>
               </th>
             ))}
@@ -337,7 +416,7 @@ function Table<T>({
 
         {/* 📋 Table Body */}
         <tbody className="bg-bg-primary divide-y divide-border-default">
-          {data.map((item, rowIndex) => (
+          {sortedData.map((item, rowIndex) => (
             <tr
               key={keyExtractor(item)}
               onClick={() => handleRowClick(item)}
@@ -405,4 +484,3 @@ function Table<T>({
 }
 
 export default Table;
-

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useThemedIcon } from '../../hooks/useThemedImage';
+import { useThemedIcon } from '../../hooks/';
 import { APP_CONFIG } from '../../../config';
 
 interface LogoProps {

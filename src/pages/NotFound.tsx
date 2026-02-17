@@ -13,7 +13,7 @@ const NotFound: React.FC = () => {
   };
 
   return (
-    <div className='min-h-full flex items-center justify-center p-4 bg-bg-base'>
+    <div className='min-h-full flex items-center justify-center p-4'>
       <div className='max-w-lg w-full'>
         {/* 404 Error */}
         <div className='mb-8 text-center'>

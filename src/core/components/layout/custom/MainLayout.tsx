@@ -5,7 +5,7 @@ import { Header, Footer } from '..';
 import { SettingsMenu, UserMenu } from '../../navigation';
 import { useUISettings } from '../../../../app/hooks';
 import { useIsMobile } from '../../../hooks';
-import backgroundImage from '../../../../assets/background.jpg';
+import { useThemedBg } from '../../../hooks';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -14,15 +14,13 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { footerVisible } = useUISettings();
   const isMobile = useIsMobile();
+  const bgSrc = useThemedBg();
 
   if (isMobile) {
     return (
       <div className='min-h-screen flex flex-col relative'>
         {/* Background fisso per mobile */}
-        <div
-          className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat'
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
+        <div className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: `url(${bgSrc})` }} />
         <Header />
         <main className='flex-1'>
           <div className='w-full px-4 sm:px-6 py-8'>{children}</div>
@@ -37,17 +35,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className='min-h-screen relative'>
       {/* Background fisso per desktop */}
-      <div
-        className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat'
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
+      <div className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: `url(${bgSrc})` }} />
       <div className='grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen'>
         <header className='sticky top-0 z-40 col-span-full'>
           <Header />
         </header>
 
         <main className='flex-1 min-w-0 overflow-y-auto flex flex-col'>
-          <div className='w-full px-4 sm:px-6 lg:px-8 py-8 flex-1'>{children}</div>
+          <div className='w-full px-0 py-0 flex-1'>{children}</div>
         </main>
 
         {footerVisible && (

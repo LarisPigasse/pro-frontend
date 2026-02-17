@@ -1,16 +1,24 @@
 // src/core/hooks/useThemedImage.ts
-import { useMemo } from "react";
-import { useUISettings } from "../../app/hooks";
+import { useMemo } from 'react';
+import { useUISettings } from '../../app/hooks';
 
 // Mapping delle immagini disponibili
 const THEMED_IMAGES = {
   logo: {
-    light: "/src/assets/logo.png",
-    dark: "/src/assets/logo-reverse.png",
+    light: '/src/assets/logo.png',
+    dark: '/src/assets/logo-reverse.png',
   },
   icon: {
-    light: "/src/assets/icon.png",
-    dark: "/src/assets/icon-reverse.png",
+    light: '/src/assets/icon.png',
+    dark: '/src/assets/icon-reverse.png',
+  },
+  bg: {
+    light: '/src/assets/bgbase.jpg',
+    dark: '/src/assets/bgdark.jpg',
+  },
+  edg: {
+    light: '/src/assets/edg.png',
+    dark: '/src/assets/edgdark.png',
   },
 } as const;
 
@@ -29,12 +37,22 @@ export const useThemedImage = (imageKey: ThemedImageKey): string => {
 
 // Hook specifico per il logo (convenience)
 export const useThemedLogo = (): string => {
-  return useThemedImage("logo");
+  return useThemedImage('logo');
 };
 
 // Hook specifico per l'icona (convenience)
 export const useThemedIcon = (): string => {
-  return useThemedImage("icon");
+  return useThemedImage('icon');
+};
+
+// Hook specifico per il background (convenience)
+export const useThemedBg = (): string => {
+  return useThemedImage('bg');
+};
+
+// Hook specifico per il logo grande edg (convenience)
+export const useThemedEdg = (): string => {
+  return useThemedImage('edg');
 };
 
 export default useThemedImage;

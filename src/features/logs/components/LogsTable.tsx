@@ -4,20 +4,22 @@
  * Tabella principale eventi logs
  */
 
-import React, { useState } from 'react';
-import { Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import type { LogEvent } from '../types';
 import {
   formatTimestamp,
   getCategoryLabel,
-  getCategoryColor,
   getSeverityLabel,
-  getSeverityColor,
   getLogMessage,
   getLogUser,
-  getOutcomeColor,
 } from '../utils/logFormatters';
 import { LogDetailModal } from './LogDetailModal';
+import Table from '@/core/components/data/table/Table';
+import type { TableColumn } from '@/core/components/data/table/Table';
+import Badge from '@/core/components/ui/badge/Badge';
+import Button from '@/core/components/ui/button/Button';
+import { Card } from '@/core/components/layout';
 
 interface LogsTableProps {
   logs: LogEvent[];
@@ -33,159 +35,162 @@ export const LogsTable: React.FC<LogsTableProps> = ({
   logs,
   loading,
   page,
-  limit,
   hasMore,
   onNextPage,
   onPrevPage,
 }) => {
   const [selectedLog, setSelectedLog] = useState<LogEvent | null>(null);
 
+  // 📊 Definizione colonne
+  const columns = useMemo<TableColumn<LogEvent>[]>(() => [
+    {
+      header: 'Timestamp',
+      accessor: (log) => formatTimestamp(log.timestamp),
+      className: 'w-40',
+    },
+    {
+      header: 'Categoria',
+      accessor: (log) => (
+        <Badge variant="info" size="xs" text={getCategoryLabel(log.categoria || 'LEGACY')} />
+      ),
+      className: 'w-32',
+    },
+    {
+      header: 'Severità',
+      accessor: (log) => {
+        const severityMap: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
+          INFO: 'info',
+          WARNING: 'warning',
+          ERROR: 'danger',
+          CRITICAL: 'danger',
+        };
+        return (
+          <Badge
+            variant={severityMap[log.criticita || 'INFO']}
+            size="xs"
+            text={getSeverityLabel(log.criticita || 'INFO')}
+          />
+        );
+      },
+      className: 'w-28',
+    },
+    {
+      header: 'Utente',
+      accessor: (log) => getLogUser(log),
+      className: 'w-48',
+    },
+    {
+      header: 'Messaggio',
+      accessor: (log) => (
+        <span className="truncate block max-w-md" title={getLogMessage(log)}>
+          {getLogMessage(log)}
+        </span>
+      ),
+    },
+    {
+      header: 'Esito',
+      accessor: (log) => {
+        const outcomeMap: Record<string, 'success' | 'warning' | 'danger'> = {
+          successo: 'success',
+          parziale: 'warning',
+          fallito: 'danger',
+        };
+        return (
+          <Badge
+            variant={outcomeMap[log.risultato.esito]}
+            size="xs"
+            text={log.risultato.esito}
+          />
+        );
+      },
+      className: 'w-28',
+    },
+    {
+      header: '',
+      accessor: (log) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedLog(log);
+          }}
+          className="p-1.5 rounded-md text-text-secondary hover:text-violet-600 hover:bg-bg-hover transition-colors"
+          title="Visualizza dettagli"
+        >
+          <Eye className="w-4 h-4" />
+        </button>
+      ),
+      className: 'w-12 text-center',
+    },
+  ], []);
+
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-8 text-center">
-          <div className="inline-flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-          </div>
-          <p className="mt-4 text-sm text-gray-600">Caricamento logs...</p>
+      <Card variant="default" padding="lg">
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-text-secondary">Caricamento logs...</p>
         </div>
-      </div>
+      </Card>
     );
   }
 
   if (logs.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <p className="text-gray-600">Nessun log trovato</p>
-      </div>
+      <Card variant="default" padding="lg">
+        <p className="text-center text-text-secondary py-8">Nessun log trovato</p>
+      </Card>
     );
   }
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <Card variant="default" padding="none">
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Timestamp
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Categoria
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Severità
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Utente
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Messaggio
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Esito
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Azioni
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {logs.map((log) => (
-                <tr key={log._id} className="hover:bg-gray-50 transition-colors">
-                  {/* Timestamp */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTimestamp(log.timestamp)}
-                  </td>
-
-                  {/* Categoria */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(
-                        log.categoria || 'LEGACY'
-                      )}`}
-                    >
-                      {getCategoryLabel(log.categoria || 'LEGACY')}
-                    </span>
-                  </td>
-
-                  {/* Severità */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(
-                        log.criticita || 'INFO'
-                      )}`}
-                    >
-                      {getSeverityLabel(log.criticita || 'INFO')}
-                    </span>
-                  </td>
-
-                  {/* Utente */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {getLogUser(log)}
-                  </td>
-
-                  {/* Messaggio */}
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate">
-                    {getLogMessage(log)}
-                  </td>
-
-                  {/* Esito */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`text-sm font-medium ${getOutcomeColor(log.risultato.esito)}`}>
-                      {log.risultato.esito}
-                    </span>
-                  </td>
-
-                  {/* Azioni */}
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <button
-                      onClick={() => setSelectedLog(log)}
-                      className="text-violet-600 hover:text-violet-900 transition-colors"
-                      title="Visualizza dettagli"
-                    >
-                      <Eye className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table<LogEvent>
+          data={logs}
+          columns={columns}
+          keyExtractor={(log) => log._id}
+          size="sm"
+          hoverable
+        />
 
         {/* Pagination */}
-        <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-          <div className="text-sm text-gray-700">
-            Pagina <span className="font-medium">{page}</span>
+        <div className="bg-bg-secondary px-4 py-3 flex items-center justify-between border-t border-border-default">
+          <div className="text-sm text-text-secondary">
+            Pagina <span className="font-medium text-text-primary">{page}</span>
             {' · '}
-            <span className="font-medium">{logs.length}</span> eventi
+            <span className="font-medium text-text-primary">{logs.length}</span> eventi
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={onPrevPage}
               disabled={page === 1}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              variant="outline"
+              size="sm"
+              leftIcon={<ChevronLeft className="w-4 h-4" />}
             >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
+              Indietro
+            </Button>
+            <Button
               onClick={onNextPage}
               disabled={!hasMore}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              variant="outline"
+              size="sm"
+              rightIcon={<ChevronRight className="w-4 h-4" />}
             >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+              Avanti
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Detail Modal */}
-      {selectedLog && (
-        <LogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
-      )}
+      <LogDetailModal
+        log={selectedLog}
+        isOpen={!!selectedLog}
+        onClose={() => setSelectedLog(null)}
+      />
     </>
   );
 };

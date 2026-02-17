@@ -12,9 +12,11 @@ import { LogStatsCards, LogFiltersPanel, LogsTable } from '../components';
 import type { LogFilters } from '../types';
 import { logsApi } from '../api/logsApi';
 import { downloadFile, generateExportFilename } from '../utils/logFormatters';
+import Button from '@/core/components/ui/button/Button';
+import Alert from '@/core/components/feedback/alert/Alert';
 
 export const LogsListPage: React.FC = () => {
-  const [filters, setFilters] = useState<LogFilters>({ limit: 50 });
+  const [filters, setFilters] = useState<LogFilters>({});
 
   // Data fetching hooks
   const {
@@ -40,7 +42,7 @@ export const LogsListPage: React.FC = () => {
       downloadFile(blob, filename);
     } catch (error) {
       console.error('Export CSV failed:', error);
-      alert('Errore durante l\'export CSV');
+      alert("Errore durante l'export CSV");
     }
   };
 
@@ -51,7 +53,7 @@ export const LogsListPage: React.FC = () => {
       downloadFile(blob, filename);
     } catch (error) {
       console.error('Export JSON failed:', error);
-      alert('Errore durante l\'export JSON');
+      alert("Errore durante l'export JSON");
     }
   };
 
@@ -61,69 +63,69 @@ export const LogsListPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Sistema Logs</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Monitoraggio eventi e attività del sistema EDG
-        </p>
+    <div className='min-h-full p-6'>
+      {/* Header with Stats */}
+      <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6 gap-6'>
+        {/* Left: Title */}
+        <div className='flex-shrink-0'>
+          <h1 className='text-3xl font-bold text-text-primary'>Sistema Logs</h1>
+          <p className='mt-2 text-sm text-text-secondary'>Monitoraggio eventi e attività del sistema EDG</p>
+        </div>
+
+        {/* Right: Stats Cards */}
+        <div className='flex-1 w-full lg:w-auto'>
+          <LogStatsCards stats={stats} loading={statsLoading} />
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <LogStatsCards stats={stats} loading={statsLoading} />
-
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className='flex items-center justify-between mb-6'>
         {/* Left: Filters */}
-        <div className="flex items-center gap-3">
+        <div className='flex items-center gap-3'>
           <LogFiltersPanel onApply={handleApplyFilters} currentFilters={filters} />
 
           {/* Refresh Button */}
-          <button
+          <Button
             onClick={() => refetch()}
             disabled={logsLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-            title="Aggiorna"
+            variant='outline'
+            size='md'
+            leftIcon={<RefreshCw className={`w-4 h-4 ${logsLoading ? 'animate-spin' : ''}`} />}
           >
-            <RefreshCw className={`w-4 h-4 ${logsLoading ? 'animate-spin' : ''}`} />
-            <span>Aggiorna</span>
-          </button>
+            Aggiorna
+          </Button>
         </div>
 
         {/* Right: Export */}
-        <div className="flex items-center gap-3">
-          <div className="relative group">
-            <button className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors">
-              <Download className="w-4 h-4" />
-              <span>Export</span>
-            </button>
+        <div className='relative group'>
+          <Button variant='primary' size='md' leftIcon={<Download className='w-4 h-4' />}>
+            Export
+          </Button>
 
-            {/* Dropdown */}
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
-              <button
-                onClick={handleExportCsv}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg transition-colors"
-              >
-                Esporta CSV
-              </button>
-              <button
-                onClick={handleExportJson}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg transition-colors"
-              >
-                Esporta JSON
-              </button>
-            </div>
+          {/* Dropdown */}
+          <div className='absolute right-0 top-full mt-2 w-48 bg-bg-primary rounded-lg shadow-themed-lg border border-border-default opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10'>
+            <button
+              onClick={handleExportCsv}
+              className='w-full px-4 py-2 text-left text-sm text-text-primary hover:bg-bg-hover rounded-t-lg transition-colors'
+            >
+              Esporta CSV
+            </button>
+            <button
+              onClick={handleExportJson}
+              className='w-full px-4 py-2 text-left text-sm text-text-primary hover:bg-bg-hover rounded-b-lg transition-colors'
+            >
+              Esporta JSON
+            </button>
           </div>
         </div>
       </div>
 
       {/* Error Message */}
       {logsError && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-sm text-red-800">
-            <strong>Errore:</strong> {logsError}
-          </p>
+        <div className='mb-6'>
+          <Alert variant='danger' title='Errore'>
+            {logsError}
+          </Alert>
         </div>
       )}
 

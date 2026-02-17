@@ -108,6 +108,11 @@ export interface LogStats {
   };
   criticalEvents: number;
   lastHourEvents: number;
+  successRate: {
+    overall: number;      // Tasso successo generale (tutti i dati)
+    last30Days: number;   // Tasso successo ultimi 30 giorni
+    trend: number;        // Differenza: last30Days - overall
+  };
 }
 
 // ============================================================================

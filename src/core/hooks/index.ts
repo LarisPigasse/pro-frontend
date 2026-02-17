@@ -1,5 +1,12 @@
 // Barrel file per hooks personalizzati
-export { default as useThemedImage, useThemedLogo, useThemedIcon, type ThemedImageKey } from "./useThemedImage";
+export {
+  default as useThemedImage,
+  useThemedLogo,
+  useThemedIcon,
+  useThemedBg,
+  useThemedEdg,
+  type ThemedImageKey,
+} from './useThemedImage';
 
 export {
   default as useMediaQuery,
@@ -8,7 +15,7 @@ export {
   useIsDesktop,
   useIsLargeScreen,
   BREAKPOINTS,
-} from "./useMediaQuery";
+} from './useMediaQuery';
 
 // Esporta anche altri hooks futuri
 // export { default as useLocalStorage } from './useLocalStorage';
