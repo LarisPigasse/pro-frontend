@@ -29,6 +29,12 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // ✅ LOGS - Sistema logs (solo root)
 const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
 
+// ✅ ALERTS - Alert manager (solo root)
+const AlertsPage = lazy(() => import('./features/alerts/pages/AlertsPage'));
+
+// ✅ SYSTEM - Health dashboard (solo root)
+const SystemPage = lazy(() => import('./features/system/pages/SystemPage'));
+
 // Componente per inizializzazione completa del tema e settings
 const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
@@ -146,6 +152,26 @@ const App: React.FC = () => {
                               element={
                                 <PrivateRoute requiredPermission="sistema.logs">
                                   <LogsListPage />
+                                </PrivateRoute>
+                              }
+                            />
+
+                            {/* ✅ Alert Manager: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SISTEMA_ALERTS}
+                              element={
+                                <PrivateRoute requiredPermission="sistema.alerts">
+                                  <AlertsPage />
+                                </PrivateRoute>
+                              }
+                            />
+
+                            {/* ✅ System Health: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SYSTEM_HEALTH}
+                              element={
+                                <PrivateRoute requiredPermission="system.health">
+                                  <SystemPage />
                                 </PrivateRoute>
                               }
                             />

@@ -1,6 +1,6 @@
 // src/config/navigation.config.ts
 import type { LucideIcon } from 'lucide-react';
-import { Home, Users, Truck, Settings, FolderOpen } from 'lucide-react';
+import { Home, Users, Truck, Settings, FolderOpen, Bell, Monitor } from 'lucide-react';
 import { ROUTES } from './routes.config';
 
 /**
@@ -71,7 +71,9 @@ export const MODULES: ModuleConfig[] = [
       { id: 'account', label: 'Account', href: ROUTES.SISTEMA_ACCOUNT },
       { id: 'operatori', label: 'Operatori', href: ROUTES.SISTEMA_OPERATORI },
       { id: 'partner', label: 'Partner', href: ROUTES.SISTEMA_PARTNER },
-      { id: 'logs', label: 'Logs', href: ROUTES.SISTEMA_LOGS },
+      { id: 'logs',   label: 'Logs',   href: ROUTES.SISTEMA_LOGS   },
+      { id: 'alerts',  label: 'Alerts',  href: ROUTES.SISTEMA_ALERTS  },
+      { id: 'health',  label: 'Health',  href: ROUTES.SYSTEM_HEALTH  },
     ],
   },
 ];

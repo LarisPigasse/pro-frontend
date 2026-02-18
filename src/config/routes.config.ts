@@ -23,6 +23,8 @@ export const ROUTES = {
   SISTEMA_OPERATORI: '/sistema/operatori',
   SISTEMA_PARTNER: '/sistema/partner',
   SISTEMA_LOGS: '/sistema/logs',
+  SISTEMA_ALERTS: '/sistema/alerts',
+  SYSTEM_HEALTH: '/sistema/health',
 
   // Auth
   LOGIN: '/login',
