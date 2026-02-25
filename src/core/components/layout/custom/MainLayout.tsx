@@ -33,15 +33,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className='min-h-screen relative'>
+    <div className='min-h-full relative'>
       {/* Background fisso per desktop */}
-      <div className='fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: `url(${bgSrc})` }} />
       <div className='grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen'>
         <header className='sticky top-0 z-40 col-span-full'>
           <Header />
         </header>
 
-        <main className='flex-1 min-w-0 overflow-y-auto flex flex-col'>
+        <main className='flex-1 min-w-0 overflow-y-auto flex flex-col px-4 py-6 bg-bg-base'>
           <div className='w-full px-0 py-0 flex-1'>{children}</div>
         </main>
 

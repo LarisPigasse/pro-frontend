@@ -5,6 +5,7 @@ export {
   useThemedIcon,
   useThemedBg,
   useThemedEdg,
+  useThemedHome,
   type ThemedImageKey,
 } from './useThemedImage';
 

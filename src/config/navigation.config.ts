@@ -1,6 +1,6 @@
 // src/config/navigation.config.ts
 import type { LucideIcon } from 'lucide-react';
-import { Home, Users, Truck, Settings, FolderOpen, Bell, Monitor } from 'lucide-react';
+import { Home, Users, Truck, Settings } from 'lucide-react';
 import { ROUTES } from './routes.config';
 
 /**
@@ -49,6 +49,8 @@ export const MODULES: ModuleConfig[] = [
       { id: 'clienti', label: 'Clienti', href: ROUTES.ANAGRAFICHE_CLIENTI },
       { id: 'destinatari', label: 'Destinatari', href: ROUTES.ANAGRAFICHE_DESTINATARI },
       { id: 'mezzi', label: 'Mezzi', href: ROUTES.ANAGRAFICHE_MEZZI },
+      { id: 'operatori', label: 'Operatori', href: ROUTES.ANAGRAFICHE_OPERATORI },
+      { id: 'partner', label: 'Partner', href: ROUTES.ANAGRAFICHE_PARTNER },
     ],
   },
   {
@@ -66,14 +68,14 @@ export const MODULES: ModuleConfig[] = [
     id: 'sistema',
     label: 'SISTEMA',
     href: ROUTES.SISTEMA,
-    icon: Truck,
+    icon: Settings,
     children: [
       { id: 'account', label: 'Account', href: ROUTES.SISTEMA_ACCOUNT },
-      { id: 'operatori', label: 'Operatori', href: ROUTES.SISTEMA_OPERATORI },
-      { id: 'partner', label: 'Partner', href: ROUTES.SISTEMA_PARTNER },
-      { id: 'logs',   label: 'Logs',   href: ROUTES.SISTEMA_LOGS   },
-      { id: 'alerts',  label: 'Alerts',  href: ROUTES.SISTEMA_ALERTS  },
-      { id: 'health',  label: 'Health',  href: ROUTES.SYSTEM_HEALTH  },
+      { id: 'sessions', label: 'Sessioni', href: ROUTES.SISTEMA_SESSIONS },
+      { id: 'logs', label: 'Logs', href: ROUTES.SISTEMA_LOGS },
+      { id: 'alerts', label: 'Alerts', href: ROUTES.SISTEMA_ALERTS },
+      { id: 'health', label: 'Health', href: ROUTES.SISTEMA_HEALTH },
+      { id: 'explorer', label: 'Explorer', href: ROUTES.SISTEMA_EXPLORER },
     ],
   },
 ];
@@ -82,12 +84,6 @@ export const MODULES: ModuleConfig[] = [
  * Voci di sistema (non sono moduli, sempre visibili in altre posizioni)
  */
 export const SYSTEM_ITEMS = {
-  explorer: {
-    id: 'explorer',
-    label: 'Explorer',
-    href: ROUTES.EXPLORER,
-    icon: FolderOpen,
-  },
   settings: {
     id: 'settings',
     label: 'Impostazioni',

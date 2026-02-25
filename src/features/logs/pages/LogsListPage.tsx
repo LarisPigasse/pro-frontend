@@ -12,8 +12,8 @@ import { LogStatsCards, LogFiltersPanel, LogsTable } from '../components';
 import type { LogFilters } from '../types';
 import { logsApi } from '../api/logsApi';
 import { downloadFile, generateExportFilename } from '../utils/logFormatters';
-import Button from '@/core/components/ui/button/Button';
-import Alert from '@/core/components/feedback/alert/Alert';
+import { Button } from '@/core/components/ui';
+import { Alert } from '@/core/components/feedback';
 
 export const LogsListPage: React.FC = () => {
   const [filters, setFilters] = useState<LogFilters>({});
@@ -63,13 +63,13 @@ export const LogsListPage: React.FC = () => {
   };
 
   return (
-    <div className='min-h-full p-6'>
+    <div className='min-h-full'>
       {/* Header with Stats */}
       <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6 gap-6'>
         {/* Left: Title */}
         <div className='flex-shrink-0'>
-          <h1 className='text-3xl font-bold text-text-primary'>Sistema Logs</h1>
-          <p className='mt-2 text-sm text-text-secondary'>Monitoraggio eventi e attività del sistema EDG</p>
+          <p className='text-page-title'>EDG Logs</p>
+          <p className='mt-2 text-page-subtitle'>Monitoraggio eventi e attività del sistema</p>
         </div>
 
         {/* Right: Stats Cards */}

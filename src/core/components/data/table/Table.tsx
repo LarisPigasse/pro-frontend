@@ -1,10 +1,10 @@
 // src/core/components/ui/Table.tsx
-import React, { useState, useMemo } from "react";
-import type { ReactNode } from "react";
-import { cn } from "../../../utils/";
-import { ActionMenu, EditAction, DeleteAction } from "../../actions";
-import type { Action } from "../../actions";
-import { X, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import React, { useState, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { cn } from '../../../utils/';
+import { ActionMenu, EditAction, DeleteAction } from '../../actions';
+import type { Action } from '../../actions';
+import { X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 
 export interface TableColumn<T> {
   header: string | (() => ReactNode);
@@ -16,7 +16,7 @@ export interface TableColumn<T> {
   /** Callback per celle cliccabili */
   onCellClick?: (item: T) => void;
   /** Variante colore per celle cliccabili */
-  clickVariant?: "primary" | "secondary" | "danger" | "success";
+  clickVariant?: 'primary' | 'secondary' | 'danger' | 'success';
 }
 
 /** Configurazione azioni per ogni riga */
@@ -24,7 +24,7 @@ export interface TableRowActions<T> {
   /** Abilita colonna azioni */
   enabled: boolean;
   /** Posizione della colonna azioni */
-  position?: "start" | "end";
+  position?: 'start' | 'end';
   /** Header della colonna azioni */
   header?: string;
   /** Azioni personalizzate */
@@ -49,10 +49,10 @@ export interface TableRowActions<T> {
     };
   };
   /** Modalità di visualizzazione */
-  mode?: "menu" | "buttons" | "mixed";
+  mode?: 'menu' | 'buttons' | 'mixed';
 }
 
-export type TableSize = "sm" | "md" | "lg";
+export type TableSize = 'sm' | 'md' | 'lg';
 
 interface TableProps<T> {
   data: T[];
@@ -86,9 +86,9 @@ function Table<T>({
   columns,
   keyExtractor,
   isLoading = false,
-  emptyMessage = "Nessun dato disponibile",
-  className = "",
-  size = "md",
+  emptyMessage = 'Nessun dato disponibile',
+  className = '',
+  size = 'md',
   striped = false,
   hoverable = true,
   onRowClick,
@@ -99,21 +99,21 @@ function Table<T>({
 
   // 📏 Size variants con CSS custom properties
   const sizeClasses = {
-    sm: "text-sm",
-    md: "text-sm",
-    lg: "text-base",
+    sm: 'text-sm',
+    md: 'text-sm',
+    lg: 'text-base',
   };
 
   const cellPaddingClasses = {
-    sm: "px-3 py-2",
-    md: "px-4 py-3",
-    lg: "px-6 py-4",
+    sm: 'px-3 py-2',
+    md: 'px-4 py-3',
+    lg: 'px-6 py-4',
   };
 
   const headerPaddingClasses = {
-    sm: "px-3 py-2",
-    md: "px-4 py-3",
-    lg: "px-6 py-4",
+    sm: 'px-3 py-3',
+    md: 'px-4 py-3',
+    lg: 'px-6 py-4',
   };
 
   // 📊 Sort data based on current config
@@ -122,7 +122,7 @@ function Table<T>({
 
     const sorted = [...data].sort((a, b) => {
       // Get column definition
-      const column = columns.find((col) => {
+      const column = columns.find(col => {
         if (typeof col.accessor === 'function') return false;
         return col.accessor === sortConfig.key;
       });
@@ -162,12 +162,12 @@ function Table<T>({
 
     if (rowActions?.enabled) {
       const actionsColumn: TableColumn<T> = {
-        header: rowActions.header || "Azioni",
+        header: rowActions.header || 'Azioni',
         accessor: () => null, // Will be overridden in render
-        className: "w-20", // Fixed width for actions
+        className: 'w-20', // Fixed width for actions
       };
 
-      if (rowActions.position === "start") {
+      if (rowActions.position === 'start') {
         cols.unshift(actionsColumn);
       } else {
         cols.push(actionsColumn);
@@ -183,12 +183,10 @@ function Table<T>({
 
     const key = column.accessor as keyof T;
 
-    setSortConfig((current) => {
+    setSortConfig(current => {
       // If clicking same column, toggle direction
       if (current && current.key === key) {
-        return current.direction === 'asc'
-          ? { key, direction: 'desc' }
-          : null; // Third click removes sorting
+        return current.direction === 'asc' ? { key, direction: 'desc' } : null; // Third click removes sorting
       }
       // New column, start with ascending
       return { key, direction: 'asc' };
@@ -203,23 +201,23 @@ function Table<T>({
     const isActive = sortConfig?.key === key;
 
     if (!isActive) {
-      return <ArrowUpDown className="w-4 h-4 text-text-placeholder" />;
+      return <ArrowUpDown className='w-4 h-4 text-text-placeholder' />;
     }
 
     return sortConfig.direction === 'asc' ? (
-      <ArrowUp className="w-4 h-4 text-violet-600" />
+      <ArrowUp className='w-4 h-4 text-violet-600' />
     ) : (
-      <ArrowDown className="w-4 h-4 text-violet-600" />
+      <ArrowDown className='w-4 h-4 text-violet-600' />
     );
   };
 
   // 🔄 Loading state
   if (isLoading) {
     return (
-      <div className="p-8 text-center">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-500"></div>
-          <span className="text-text-secondary">Caricamento in corso...</span>
+      <div className='p-8 text-center'>
+        <div className='flex items-center justify-center space-x-2'>
+          <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-violet-500'></div>
+          <span className='text-text-secondary'>Caricamento in corso...</span>
         </div>
       </div>
     );
@@ -228,9 +226,9 @@ function Table<T>({
   // 📭 Empty state
   if (data.length === 0) {
     return (
-      <div className="p-8 text-center flex flex-col items-center justify-center">
-        <X className="h-10 w-10 mb-4" strokeWidth={1.5} />
-        <p className="text-text-secondary">{emptyMessage}</p>
+      <div className='p-8 text-center flex flex-col items-center justify-center'>
+        <X className='h-10 w-10 mb-4' strokeWidth={1.5} />
+        <p className='text-text-secondary'>{emptyMessage}</p>
       </div>
     );
   }
@@ -244,18 +242,18 @@ function Table<T>({
 
   // 🎨 Get clickable cell classes
   const getClickableCellClasses = (column: TableColumn<T>) => {
-    if (!column.clickable) return "";
+    if (!column.clickable) return '';
 
     const variantClasses = {
-      primary: "text-violet-600 hover:text-violet-700 cursor-pointer",
-      secondary: "text-text-secondary hover:text-text-primary cursor-pointer",
-      danger: "text-red-600 hover:text-red-700 cursor-pointer",
-      success: "text-green-600 hover:text-green-700 cursor-pointer",
+      primary: 'text-violet-600 hover:text-violet-700 cursor-pointer',
+      secondary: 'text-text-secondary hover:text-text-primary cursor-pointer',
+      danger: 'text-red-600 hover:text-red-700 cursor-pointer',
+      success: 'text-green-600 hover:text-green-700 cursor-pointer',
     };
 
     return cn(
-      "transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded-sm",
-      variantClasses[column.clickVariant || "primary"]
+      'transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded-sm',
+      variantClasses[column.clickVariant || 'primary']
     );
   };
 
@@ -276,11 +274,11 @@ function Table<T>({
       const canEdit = editConfig.canEdit?.(item) ?? true;
 
       actions.push({
-        id: "edit",
-        label: "Modifica",
+        id: 'edit',
+        label: 'Modifica',
         onClick: () => editConfig.onEdit(item),
         disabled: !canEdit,
-        variant: "default",
+        variant: 'default',
       });
     }
 
@@ -289,11 +287,11 @@ function Table<T>({
       const canDelete = deleteConfig.canDelete?.(item) ?? true;
 
       actions.push({
-        id: "delete",
-        label: "Elimina",
+        id: 'delete',
+        label: 'Elimina',
         onClick: () => {
           if (deleteConfig.requireConfirmation) {
-            const itemName = deleteConfig.getItemName?.(item) || "questo elemento";
+            const itemName = deleteConfig.getItemName?.(item) || 'questo elemento';
             if (window.confirm(`Sei sicuro di voler eliminare ${itemName}?`)) {
               deleteConfig.onDelete(item);
             }
@@ -302,7 +300,7 @@ function Table<T>({
           }
         },
         disabled: !canDelete,
-        variant: "danger",
+        variant: 'danger',
         divider: rowActions.quickActions?.edit?.enabled, // Add divider if edit is also enabled
       });
     }
@@ -317,19 +315,19 @@ function Table<T>({
     const actions = generateRowActions(item);
     if (actions.length === 0) return null;
 
-    const mode = rowActions.mode || "menu";
+    const mode = rowActions.mode || 'menu';
 
     switch (mode) {
-      case "buttons":
+      case 'buttons':
         return (
-          <div className="flex items-center space-x-1">
+          <div className='flex items-center space-x-1'>
             {rowActions.quickActions?.edit?.enabled && (
               <EditAction
                 item={item}
                 onEdit={rowActions.quickActions.edit.onEdit}
                 canEdit={rowActions.quickActions.edit.canEdit}
                 showLabel={rowActions.quickActions.edit.showLabel}
-                size={size === "sm" ? "xs" : "xs"}
+                size={size === 'sm' ? 'xs' : 'xs'}
               />
             )}
             {rowActions.quickActions?.delete?.enabled && (
@@ -340,18 +338,18 @@ function Table<T>({
                 requireConfirmation={rowActions.quickActions.delete.requireConfirmation}
                 getItemName={rowActions.quickActions.delete.getItemName}
                 showLabel={rowActions.quickActions.delete.showLabel}
-                size={size === "sm" ? "xs" : "xs"}
+                size={size === 'sm' ? 'xs' : 'xs'}
               />
             )}
           </div>
         );
 
-      case "mixed": {
+      case 'mixed': {
         // Show primary actions as buttons, others in menu
-        const secondaryActions = actions.filter((a) => !["edit", "delete"].includes(a.id));
+        const secondaryActions = actions.filter(a => !['edit', 'delete'].includes(a.id));
 
         return (
-          <div className="flex items-center space-x-1">
+          <div className='flex items-center space-x-1'>
             {/* Render primary actions as individual buttons */}
             {rowActions.quickActions?.edit?.enabled && (
               <EditAction
@@ -359,7 +357,7 @@ function Table<T>({
                 onEdit={rowActions.quickActions.edit.onEdit}
                 canEdit={rowActions.quickActions.edit.canEdit}
                 showLabel={rowActions.quickActions.edit.showLabel}
-                size={size === "sm" ? "xs" : "xs"}
+                size={size === 'sm' ? 'xs' : 'xs'}
               />
             )}
             {rowActions.quickActions?.delete?.enabled && (
@@ -370,28 +368,28 @@ function Table<T>({
                 requireConfirmation={rowActions.quickActions.delete.requireConfirmation}
                 getItemName={rowActions.quickActions.delete.getItemName}
                 showLabel={rowActions.quickActions.delete.showLabel}
-                size={size === "sm" ? "xs" : "xs"}
+                size={size === 'sm' ? 'xs' : 'xs'}
               />
             )}
             {/* Render secondary actions in menu */}
             {secondaryActions.length > 0 && (
-              <ActionMenu actions={secondaryActions} size={size === "sm" ? "sm" : "md"} align="end" />
+              <ActionMenu actions={secondaryActions} size={size === 'sm' ? 'sm' : 'md'} align='end' />
             )}
           </div>
         );
       }
 
-      case "menu":
+      case 'menu':
       default:
-        return <ActionMenu actions={actions} size={size === "sm" ? "sm" : "md"} align="end" />;
+        return <ActionMenu actions={actions} size={size === 'sm' ? 'sm' : 'md'} align='end' />;
     }
   };
 
   return (
-    <div className={cn("overflow-x-auto", className)}>
-      <table className={cn("min-w-full divide-y divide-border-default", sizeClasses[size])}>
+    <div className={cn('overflow-x-auto', className)}>
+      <table className={cn('min-w-full divide-y divide-border-default', sizeClasses[size])}>
         {/* 📊 Table Header */}
-        <thead className="bg-bg-secondary">
+        <thead className='bg-bg-secondary'>
           <tr>
             {preparedColumns.map((column, index) => (
               <th
@@ -399,14 +397,14 @@ function Table<T>({
                 onClick={() => handleSort(column)}
                 className={cn(
                   headerPaddingClasses[size],
-                  "text-xs font-medium text-text-secondary uppercase tracking-wider",
-                  column.className?.includes("text-right") ? "text-right" : "text-left",
-                  column.sortable && "cursor-pointer hover:bg-bg-hover transition-colors",
+                  'text-xs font-medium text-text-secondary uppercase tracking-wider',
+                  column.className?.includes('text-right') ? 'text-right' : 'text-left',
+                  column.sortable && 'cursor-pointer hover:bg-bg-hover transition-colors',
                   column.className
                 )}
               >
-                <div className="flex items-center space-x-1">
-                  <span>{typeof column.header === "function" ? column.header() : column.header}</span>
+                <div className='flex items-center space-x-1'>
+                  <span>{typeof column.header === 'function' ? column.header() : column.header}</span>
                   {column.sortable && getSortIcon(column)}
                 </div>
               </th>
@@ -415,31 +413,31 @@ function Table<T>({
         </thead>
 
         {/* 📋 Table Body */}
-        <tbody className="bg-bg-primary divide-y divide-border-default">
+        <tbody className='bg-bg-primary divide-y divide-border-default'>
           {sortedData.map((item, rowIndex) => (
             <tr
               key={keyExtractor(item)}
               onClick={() => handleRowClick(item)}
               className={cn(
-                "transition-colors duration-200",
-                hoverable && "hover:bg-bg-hover",
-                striped && rowIndex % 2 === 1 && "bg-bg-secondary/30",
-                onRowClick && "cursor-pointer"
+                'transition-colors duration-200',
+                hoverable && 'hover:bg-bg-hover',
+                striped && rowIndex % 2 === 1 && 'bg-bg-secondary/30',
+                onRowClick && 'cursor-pointer'
               )}
             >
               {preparedColumns.map((column, colIndex) => {
                 // Handle actions column
                 const isActionsColumn =
                   rowActions?.enabled &&
-                  ((rowActions.position === "start" && colIndex === 0) ||
-                    (rowActions.position !== "start" && colIndex === preparedColumns.length - 1));
+                  ((rowActions.position === 'start' && colIndex === 0) ||
+                    (rowActions.position !== 'start' && colIndex === preparedColumns.length - 1));
 
                 if (isActionsColumn) {
                   return (
                     <td
                       key={colIndex}
-                      className={cn(cellPaddingClasses[size], "whitespace-nowrap", column.className)}
-                      onClick={(e) => e.stopPropagation()} // Prevent row click
+                      className={cn(cellPaddingClasses[size], 'whitespace-nowrap', column.className)}
+                      onClick={e => e.stopPropagation()} // Prevent row click
                     >
                       {renderActionsCell(item)}
                     </td>
@@ -447,7 +445,7 @@ function Table<T>({
                 }
 
                 // Handle regular columns
-                const cellContent = typeof column.accessor === "function" ? column.accessor(item) : item[column.accessor];
+                const cellContent = typeof column.accessor === 'function' ? column.accessor(item) : item[column.accessor];
 
                 const isClickableCell = column.clickable;
 
@@ -456,7 +454,7 @@ function Table<T>({
                     key={colIndex}
                     onClick={
                       isClickableCell
-                        ? (e) => {
+                        ? e => {
                             e.stopPropagation(); // Prevent row click
                             if (column.onCellClick) {
                               column.onCellClick(item);
@@ -466,7 +464,7 @@ function Table<T>({
                     }
                     className={cn(
                       cellPaddingClasses[size],
-                      "whitespace-nowrap text-text-primary",
+                      'whitespace-nowrap text-text-primary',
                       getClickableCellClasses(column),
                       column.className
                     )}

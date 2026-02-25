@@ -20,6 +20,10 @@ const THEMED_IMAGES = {
     light: '/src/assets/edg.png',
     dark: '/src/assets/edgdark.png',
   },
+  home: {
+    light: '/src/assets/home.jpg',
+    dark: '/src/assets/edgdark.png',
+  },
 } as const;
 
 // Tipi per le immagini disponibili
@@ -53,6 +57,11 @@ export const useThemedBg = (): string => {
 // Hook specifico per il logo grande edg (convenience)
 export const useThemedEdg = (): string => {
   return useThemedImage('edg');
+};
+
+// Hook specifico per la dashboard (convenience)
+export const useThemedHome = (): string => {
+  return useThemedImage('home');
 };
 
 export default useThemedImage;

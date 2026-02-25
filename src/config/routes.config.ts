@@ -10,6 +10,8 @@ export const ROUTES = {
   ANAGRAFICHE_CLIENTI: '/anagrafiche/clienti',
   ANAGRAFICHE_DESTINATARI: '/anagrafiche/destinatari',
   ANAGRAFICHE_MEZZI: '/anagrafiche/mezzi',
+  ANAGRAFICHE_OPERATORI: '/anagrafiche/operatori',
+  ANAGRAFICHE_PARTNER: '/anagrafiche/partner',
 
   // Modulo Spedizioni
   SPEDIZIONI: '/spedizioni',
@@ -20,11 +22,11 @@ export const ROUTES = {
   // Modulo Sistema
   SISTEMA: '/sistema',
   SISTEMA_ACCOUNT: '/sistema/account',
-  SISTEMA_OPERATORI: '/sistema/operatori',
-  SISTEMA_PARTNER: '/sistema/partner',
+  SISTEMA_SESSIONS: '/sistema/sessions',
   SISTEMA_LOGS: '/sistema/logs',
   SISTEMA_ALERTS: '/sistema/alerts',
-  SYSTEM_HEALTH: '/sistema/health',
+  SISTEMA_HEALTH: '/sistema/health',
+  SISTEMA_EXPLORER: '/sistema/explorer',
 
   // Auth
   LOGIN: '/login',
@@ -33,7 +35,6 @@ export const ROUTES = {
   CHANGE_PASSWORD: '/change-password',
 
   // User menu
-  EXPLORER: '/explorer',
   SETTINGS: '/settings',
   NOT_FOUND: '/404',
 } as const;

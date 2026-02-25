@@ -7,7 +7,7 @@
 }
 
 .text-page-subtitle {
-  @apply text-lg/snug text-text-secondary;
+  @apply text-sm text-text-secondary;
 }
 
 /* Section Level Typography */

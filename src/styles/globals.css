@@ -3,13 +3,13 @@
 /* Definizioni per la modalità Light (default) */
 :root {
   /* Sfondi */
-  --bg-base: #f6f8fa; /* Lo sfondo principale dell'applicazione */
+  --bg-base: #f8f4ef; /* Lo sfondo principale dell'applicazione */
   --bg-primary: #ffffff; /* sfondo delle aree per contenuti */
-  --bg-secondary: #ecedef; /* sfondo delle aree secondarie */
+  --bg-secondary: #e8e4de; /* sfondo delle aree secondarie */
   --bg-modal: #fafbfc; /* sfondo delle finestre modali */
   --bg-info: #e7f4ff; /* sfondo per gli elementi informativi es. alert */
   --bg-contrast: #1e1f24; /* sfondo per gli elementi a contrasto es. tooltip */
-  --bg-hover: #edecef; /* sfondo al passaggio del mouse */
+  --bg-hover: #e2f6ff; /* sfondo al passaggio del mouse */
   --bg-selected: #d6eeff; /* sfondo per elementi selezionati o attivi */
 
   /* Testo */
@@ -23,6 +23,8 @@
   --text-link-hover: #8e4ec6; /* Tomato medio */
   --text-info: #0284c7; /* Sky-600 in Tailwind */
   --text-error: #ef4444; /* red-500 in Tailwind */
+  --text-menu: #7e6e63; /* testo menu base */
+  --text-menu-active: #7c3aed; /* violet-600 in Tailwind */
 
   /* Bordi e linee */
   --border-default: #e5e7eb; /* Grigio chiaro */
@@ -65,7 +67,7 @@
 /* Definizioni per la modalità Dark (sovrascrivono quelle light) */
 .dark {
   /* Sfondi */
-  --bg-base: #0f1419; /* Nero-blu molto scuro per lo sfondo principale */
+  --bg-base: #312f2c; /* Colore scuro per lo sfondo principale */
   --bg-primary: #1a1f2e; /* Grigio scuro per contenuti principali */
   --bg-secondary: #232936; /* Grigio leggermente più chiaro per aree secondarie */
   --bg-modal: #1e2330; /* Sfondo modale leggermente diverso per distinguere */
@@ -85,6 +87,8 @@
   --text-link-hover: #be93e4; /* purple più chiaro per hover sui link */
   --text-info: #38bdf8; /* Sky-400 in Tailwind */
   --text-error: #ef4444; /* red-500 in Tailwind */
+  --text-menu: #ae9e93; /* testo menu base */
+  --text-menu-active: #a855f7; /* purple-500 in Tailwind */
 
   /* Bordi e linee */
   --border-default: #374151; /* Grigio medio-scuro */
@@ -134,13 +138,21 @@ input:-webkit-autofill:focus {
 
 /* Autofill detection animations */
 @keyframes onAutoFillStart {
-  from { /* empty */ }
-  to { /* empty */ }
+  from {
+    /* empty */
+  }
+  to {
+    /* empty */
+  }
 }
 
 @keyframes onAutoFillCancel {
-  from { /* empty */ }
-  to { /* empty */ }
+  from {
+    /* empty */
+  }
+  to {
+    /* empty */
+  }
 }
 
 /* Spinner dots animation */

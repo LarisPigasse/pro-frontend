@@ -1,7 +1,7 @@
 // src/core/components/layout/custom/Header.tsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Settings, Bell, ArrowLeft } from 'lucide-react';
+import { Menu, Settings, Bell, ArrowLeft, ChevronRight } from 'lucide-react';
 
 import { UserAvatar, Logo } from '../../info';
 import { useUISettings } from '../../../../app/hooks';
@@ -64,15 +64,17 @@ const Header: React.FC<HeaderProps> = ({ userInitials = 'AD', userName = 'Admin 
 
           return (
             <React.Fragment key={module.id}>
-              {index > 0 && <span className='mx-3 text-border-default'>|</span>}
+              {index > 0 && <span className='mx-3 text-text-secondary'>|</span>}
 
               {showChildren ? (
                 <>
-                  <Link to={module.href} className='text-sm font-bold text-violet-600 whitespace-nowrap'>
+                  <Link to={module.href} className='text-sm font-bold text-text-menu-active whitespace-nowrap'>
                     {module.label}
                   </Link>
 
-                  <span className='text-text-tertiary mx-2'>:</span>
+                  <span className='text-text-secondary mx-2'>
+                    <ChevronRight className='w-4 h-4' />
+                  </span>
 
                   <div className='flex items-center space-x-4'>
                     {module.children!.map((child: SubMenuItem) => (
@@ -92,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ userInitials = 'AD', userName = 'Admin 
                 <Link
                   to={module.href}
                   className={`text-sm font-medium transition-colors whitespace-nowrap ${
-                    isActive ? 'text-violet-600' : 'text-text-primary hover:text-violet-500'
+                    isActive ? 'text-violet-600' : 'text-text-menu hover:text-violet-500'
                   }`}
                 >
                   {module.label}

@@ -19,10 +19,10 @@ export enum EventCategory {
 }
 
 export enum EventSeverity {
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  ERROR = 'ERROR',
-  CRITICAL = 'CRITICAL',
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error',
+  CRITICAL = 'critical',
 }
 
 // ============================================================================
@@ -143,7 +143,7 @@ export interface LogTableRow {
   id: string;
   timestamp: string;
   category: EventCategory | 'LEGACY';
-  severity: EventSeverity | 'INFO';
+  severity: EventSeverity | 'info';
   user: string;
   action: string;
   outcome: 'successo' | 'fallito' | 'parziale';

@@ -26,6 +26,9 @@ import { Dashboard } from './pages';
 const Explorer = lazy(() => import('./pages/Explorer'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
+// ✅ SESSIONS - Sessioni attive (solo root)
+const SessionsPage = lazy(() => import('./features/sessions/pages/SessionsPage'));
+
 // ✅ LOGS - Sistema logs (solo root)
 const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
 
@@ -126,16 +129,6 @@ const App: React.FC = () => {
                               }
                             />
 
-                            {/* ✅ Explorer: Route protetta (lazy loading) */}
-                            <Route
-                              path={ROUTES.EXPLORER}
-                              element={
-                                <PrivateRoute>
-                                  <Explorer />
-                                </PrivateRoute>
-                              }
-                            />
-
                             {/* ✅ Settings: Route protetta (placeholder) */}
                             <Route
                               path={ROUTES.SETTINGS}
@@ -146,11 +139,21 @@ const App: React.FC = () => {
                               }
                             />
 
+                            {/* ✅ Sessioni Attive: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SISTEMA_SESSIONS}
+                              element={
+                                <PrivateRoute requiredPermission='sistema.sessions'>
+                                  <SessionsPage />
+                                </PrivateRoute>
+                              }
+                            />
+
                             {/* ✅ Logs Sistema: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_LOGS}
                               element={
-                                <PrivateRoute requiredPermission="sistema.logs">
+                                <PrivateRoute requiredPermission='sistema.logs'>
                                   <LogsListPage />
                                 </PrivateRoute>
                               }
@@ -160,7 +163,7 @@ const App: React.FC = () => {
                             <Route
                               path={ROUTES.SISTEMA_ALERTS}
                               element={
-                                <PrivateRoute requiredPermission="sistema.alerts">
+                                <PrivateRoute requiredPermission='sistema.alerts'>
                                   <AlertsPage />
                                 </PrivateRoute>
                               }
@@ -168,10 +171,19 @@ const App: React.FC = () => {
 
                             {/* ✅ System Health: Route protetta (solo root) */}
                             <Route
-                              path={ROUTES.SYSTEM_HEALTH}
+                              path={ROUTES.SISTEMA_HEALTH}
                               element={
-                                <PrivateRoute requiredPermission="system.health">
+                                <PrivateRoute requiredPermission='system.health'>
                                   <SystemPage />
+                                </PrivateRoute>
+                              }
+                            />
+                            {/* ✅ Explorer: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SISTEMA_EXPLORER}
+                              element={
+                                <PrivateRoute requiredPermission='system.explorer'>
+                                  <Explorer />
                                 </PrivateRoute>
                               }
                             />

@@ -94,10 +94,10 @@ export const getCategoryColor = (category: EventCategory | 'LEGACY'): string => 
  */
 export const getSeverityLabel = (severity: EventSeverity): string => {
   const labels: Record<EventSeverity, string> = {
-    INFO: 'Info',
-    WARNING: 'Avviso',
-    ERROR: 'Errore',
-    CRITICAL: 'Critico',
+    info: 'Info',
+    warning: 'Avviso',
+    error: 'Errore',
+    critical: 'Critico',
   };
   
   return labels[severity] || severity;
@@ -108,10 +108,10 @@ export const getSeverityLabel = (severity: EventSeverity): string => {
  */
 export const getSeverityColor = (severity: EventSeverity): string => {
   const colors: Record<EventSeverity, string> = {
-    INFO: 'bg-blue-100 text-blue-800',
-    WARNING: 'bg-amber-100 text-amber-800',
-    ERROR: 'bg-red-100 text-red-800',
-    CRITICAL: 'bg-red-600 text-white',
+    info: 'bg-blue-100 text-blue-800',
+    warning: 'bg-amber-100 text-amber-800',
+    error: 'bg-red-100 text-red-800',
+    critical: 'bg-red-600 text-white',
   };
   
   return colors[severity] || 'bg-gray-100 text-gray-600';
@@ -122,10 +122,10 @@ export const getSeverityColor = (severity: EventSeverity): string => {
  */
 export const getSeverityIcon = (severity: EventSeverity): string => {
   const icons: Record<EventSeverity, string> = {
-    INFO: 'ℹ️',
-    WARNING: '⚠️',
-    ERROR: '❌',
-    CRITICAL: '🚨',
+    info: 'ℹ️',
+    warning: '⚠️',
+    error: '❌',
+    critical: '🚨',
   };
   
   return icons[severity] || 'ℹ️';
