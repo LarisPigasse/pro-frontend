@@ -70,7 +70,7 @@ export const MODULES: ModuleConfig[] = [
     href: ROUTES.SISTEMA,
     icon: Settings,
     children: [
-      { id: 'account', label: 'Account', href: ROUTES.SISTEMA_ACCOUNT },
+      { id: 'accounts', label: 'Accounts', href: ROUTES.SISTEMA_ACCOUNT },
       { id: 'sessions', label: 'Sessioni', href: ROUTES.SISTEMA_SESSIONS },
       { id: 'logs', label: 'Logs', href: ROUTES.SISTEMA_LOGS },
       { id: 'alerts', label: 'Alerts', href: ROUTES.SISTEMA_ALERTS },

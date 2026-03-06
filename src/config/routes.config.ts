@@ -21,7 +21,7 @@ export const ROUTES = {
 
   // Modulo Sistema
   SISTEMA: '/sistema',
-  SISTEMA_ACCOUNT: '/sistema/account',
+  SISTEMA_ACCOUNT: '/sistema/accounts',
   SISTEMA_SESSIONS: '/sistema/sessions',
   SISTEMA_LOGS: '/sistema/logs',
   SISTEMA_ALERTS: '/sistema/alerts',

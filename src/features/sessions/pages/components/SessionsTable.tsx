@@ -118,32 +118,32 @@ const SessionsTable: React.FC<SessionsTableProps> = ({
   }
 
   return (
-    <div className='bg-white rounded-lg shadow overflow-hidden'>
+    <div className='bg-bg-base rounded-md shadow overflow-hidden'>
       <div className='overflow-x-auto'>
         <table className='min-w-full divide-y divide-gray-200'>
-          <thead className='bg-gray-50'>
+          <thead className='bg-bg-info'>
             <tr>
-              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Utente
               </th>
-              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Dispositivo
               </th>
-              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Posizione
               </th>
-              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Ultima Attività
               </th>
-              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Scadenza
               </th>
-              <th scope='col' className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
+              <th scope='col' className='px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider'>
                 Azioni
               </th>
             </tr>
           </thead>
-          <tbody className='bg-white divide-y divide-gray-200'>
+          <tbody className='bg-bg-base divide-y divide-gray-200'>
             {sessions.map(session => {
               const isCurrent = session.id === currentSessionId;
 

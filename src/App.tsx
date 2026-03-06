@@ -29,6 +29,9 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // ✅ SESSIONS - Sessioni attive (solo root)
 const SessionsPage = lazy(() => import('./features/sessions/pages/SessionsPage'));
 
+// ✅ ACCOUNTS - Gestione account (solo root)
+const AccountsPage = lazy(() => import('./features/accounts/pages/AccountsPage'));
+
 // ✅ LOGS - Sistema logs (solo root)
 const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
 
@@ -178,6 +181,17 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
+
+                            {/* ✅ Accounts: Route protetta (solo root) */}
+                            <Route
+                              path={ROUTES.SISTEMA_ACCOUNT}
+                              element={
+                                <PrivateRoute requiredPermission='sistema.accounts'>
+                                  <AccountsPage />
+                                </PrivateRoute>
+                              }
+                            />
+
                             {/* ✅ Explorer: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_EXPLORER}

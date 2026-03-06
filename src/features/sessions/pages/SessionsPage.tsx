@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { useSessions } from '../hooks/useSessions';
 import { Button } from '@/core/components/ui';
+import { Tabs } from '@/core/components/navigation/';
+import type { TabItem } from '@/core/components/navigation/tabs/Tabs';
 import { Alert, Spinner } from '@/core/components/feedback';
 import SessionsTable from './components/SessionsTable';
 import BlockedUsersTable from './components/BlockedUsersTable';
@@ -105,10 +107,48 @@ const SessionsPage: React.FC = () => {
     }
   };
 
+  const showcaseItems: TabItem[] = [
+    {
+      id: 'active-users',
+      label: (
+        <>
+          <span>Sessioni attive</span>
+        </>
+      ),
+      content: (
+        <div>
+          <h2 className='text-md font-semibold mb-4'>Tabella delle sessioni attive</h2>
+          <SessionsTable
+            sessions={sessions}
+            currentSessionId={currentSessionId}
+            onRevokeSession={onRevokeSession}
+            onBlockUser={openBlockModal}
+            onUnblockUser={openUnblockModal}
+            actionLoading={actionLoading}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'blocked-users',
+      label: (
+        <>
+          <span>Utenti bloccati</span>
+        </>
+      ),
+      content: (
+        <div>
+          <h2 className='text-md font-semibold mb-4'>Tabella degli utenti bloccati</h2>
+          <BlockedUsersTable blockedUsers={blockedUsers} onUnblockUser={openUnblockModal} actionLoading={actionLoading} />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className='min-h-full'>
       {/* Header */}
-      <div className='max-w-7xl mx-auto mb-6'>
+      <div className='max-w-screen mb-6'>
         <div className='flex items-center justify-between'>
           <div>
             <h1 className='text-3xl font-bold text-gray-900'>Sessioni Attive</h1>
@@ -132,7 +172,7 @@ const SessionsPage: React.FC = () => {
 
       {/* Error Alert */}
       {(error || actionError) && (
-        <div className='max-w-7xl mx-auto mb-6'>
+        <div className='max-w-screen mb-6'>
           <Alert variant='danger' title='Errore'>
             {error || actionError}
           </Alert>
@@ -141,29 +181,14 @@ const SessionsPage: React.FC = () => {
 
       {/* Loading State */}
       {loading && sessions.length === 0 && blockedUsers.length === 0 ? (
-        <div className='max-w-7xl mx-auto text-center py-12'>
+        <div className='max-w-screen text-center py-12'>
           <Spinner size='md' className='mx-auto mb-4' />
           <p className='text-gray-600'>Caricamento sessioni...</p>
         </div>
       ) : (
-        <div className='max-w-7xl mx-auto space-y-8'>
-          {/* Sessions Table */}
-          <div>
-            <h2 className='text-xl font-semibold text-gray-900 mb-4'>Sessioni Attive</h2>
-            <SessionsTable
-              sessions={sessions}
-              currentSessionId={currentSessionId}
-              onRevokeSession={onRevokeSession}
-              onBlockUser={openBlockModal}
-              onUnblockUser={openUnblockModal}
-              actionLoading={actionLoading}
-            />
-          </div>
-
-          {/* Blocked Users Table */}
-          <div>
-            <h2 className='text-xl font-semibold text-gray-900 mb-4'>Utenti Bloccati</h2>
-            <BlockedUsersTable blockedUsers={blockedUsers} onUnblockUser={openUnblockModal} actionLoading={actionLoading} />
+        <div className='max-w-screen'>
+          <div className='bg-bg-secondary p-4 rounded-md'>
+            <Tabs items={showcaseItems} defaultTab='active-users' variant='pills' size='md' />
           </div>
         </div>
       )}

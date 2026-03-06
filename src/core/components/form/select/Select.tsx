@@ -98,6 +98,7 @@ export const Select = React.forwardRef<any, SelectProps>(
             <SelectPrimitive.Content
               position='popper'
               sideOffset={4}
+              onCloseAutoFocus={e => e.preventDefault()}
               className='z-50 w-[var(--radix-select-trigger-width)] bg-bg-primary rounded-lg border border-border-default shadow-lg'
             >
               <SelectPrimitive.Viewport className='p-1'>
