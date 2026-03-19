@@ -1,6 +1,6 @@
 /**
  * API Service - Base service for API requests
- * 
+ *
  * Features:
  * - HTTP methods (GET, POST, PUT, DELETE)
  * - Request/Response interceptors
@@ -67,11 +67,12 @@ class ApiService {
   }
 
   /**
-   * Handle fetch request
+   * Handle fetch request with automatic 401 retry
    */
   private async request<T>(
     endpoint: string,
-    options: RequestInit & RequestConfig = {}
+    options: RequestInit & RequestConfig = {},
+    isRetry = false
   ): Promise<ApiResponse<T>> {
     const { headers = {}, timeout = this.timeout, signal, ...fetchOptions } = options;
 
@@ -90,6 +91,15 @@ class ApiService {
 
       clearTimeout(timeoutId);
 
+      // Gestione 401 con refresh automatico (solo al primo tentativo)
+      if (response.status === 401 && !isRetry) {
+        const newToken = await this.tryRefreshToken();
+        if (newToken) {
+          this.setAuthToken(newToken);
+          return this.request<T>(endpoint, options, true);
+        }
+      }
+
       // Extract response headers
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((value, key) => {
@@ -99,11 +109,11 @@ class ApiService {
       // Parse response body
       let data: T;
       const contentType = response.headers.get('content-type');
-      
+
       if (contentType && contentType.includes('application/json')) {
         data = await response.json();
       } else {
-        data = await response.text() as unknown as T;
+        data = (await response.text()) as unknown as T;
       }
 
       // Handle non-2xx responses
@@ -150,6 +160,45 @@ class ApiService {
   }
 
   /**
+   * Tenta il refresh del token silenziosamente.
+   * Aggiorna storage e defaultHeaders se il refresh ha successo.
+   */
+  private async tryRefreshToken(): Promise<string | null> {
+    const STORAGE_KEYS = {
+      ACCESS_TOKEN: 'edg_access_token',
+      REFRESH_TOKEN: 'edg_refresh_token',
+      REMEMBER_ME: 'edg_remember_me',
+    };
+
+    const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN) || sessionStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+
+    if (!refreshToken) return null;
+
+    try {
+      const response = await fetch(`${this.baseURL.replace('/api', '')}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+        cache: 'no-store',
+      });
+
+      if (!response.ok) return null;
+
+      const data = await response.json();
+      if (!data.success || !data.data?.accessToken) return null;
+
+      const storage = localStorage.getItem(STORAGE_KEYS.REMEMBER_ME) === 'true' ? localStorage : sessionStorage;
+
+      storage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.data.accessToken);
+      storage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.data.refreshToken);
+
+      return data.data.accessToken;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * GET request
    */
   async get<T>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> {
@@ -162,11 +211,7 @@ class ApiService {
   /**
    * POST request
    */
-  async post<T>(
-    endpoint: string,
-    data?: unknown,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -177,11 +222,7 @@ class ApiService {
   /**
    * PUT request
    */
-  async put<T>(
-    endpoint: string,
-    data?: unknown,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
@@ -192,11 +233,7 @@ class ApiService {
   /**
    * PATCH request
    */
-  async patch<T>(
-    endpoint: string,
-    data?: unknown,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
@@ -225,7 +262,7 @@ class ApiService {
     }
   ): Promise<ApiResponse<T>> {
     const { headers = {}, ...restConfig } = config || {};
-    
+
     // Don't set Content-Type for FormData - browser will set it with boundary
     const uploadHeaders = {
       ...this.defaultHeaders,
@@ -255,10 +292,5 @@ export const createMockResponse = <T>(data: T, status = 200): ApiResponse<T> => 
 });
 
 export const isApiError = (error: unknown): error is ApiError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    typeof (error as ApiError).message === 'string'
-  );
+  return typeof error === 'object' && error !== null && 'message' in error && typeof (error as ApiError).message === 'string';
 };

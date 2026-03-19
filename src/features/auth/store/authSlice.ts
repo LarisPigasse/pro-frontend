@@ -6,7 +6,7 @@
  * Redux slice per la gestione dello stato globale di autenticazione.
  * L'auth usa Redux (invece di stato locale) perché isAuthenticated
  * deve essere accessibile da tutta l'app (Header, PrivateRoute, ecc.)
- * 
+ *
  * Supporta due modalità di persistenza:
  * - rememberMe = true: localStorage (persiste tra sessioni browser)
  * - rememberMe = false: sessionStorage (si cancella alla chiusura del browser)
@@ -16,6 +16,7 @@ import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@r
 import type { RootState } from '../../../app/store';
 import { authApi } from '../api';
 import type { AuthState, AuthAccount, LoginRequest, LoginResponse } from '../types';
+import apiService from '../../../core/services/apiService';
 
 // ============================================================================
 // STORAGE HELPERS
@@ -53,14 +54,14 @@ function getActiveStorage(): Storage {
  */
 function saveAuthToStorage(data: LoginResponse, rememberMe: boolean): void {
   const storage = rememberMe ? localStorage : sessionStorage;
-  
+
   // Pulisce l'altro storage per evitare conflitti
   const otherStorage = rememberMe ? sessionStorage : localStorage;
   otherStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   otherStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   otherStorage.removeItem(STORAGE_KEYS.ACCOUNT);
   otherStorage.removeItem(STORAGE_KEYS.REMEMBER_ME);
-  
+
   // Salva nello storage scelto
   storage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.accessToken);
   storage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refreshToken);
@@ -77,7 +78,7 @@ function clearAuthFromStorage(): void {
   localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.ACCOUNT);
   localStorage.removeItem(STORAGE_KEYS.REMEMBER_ME);
-  
+
   // Pulisce sessionStorage
   sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
@@ -98,17 +99,17 @@ function loadAuthFromStorage(): {
   // Prova prima localStorage
   let storage: Storage = localStorage;
   let accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-  
+
   // Se non c'è in localStorage, prova sessionStorage
   if (!accessToken) {
     storage = sessionStorage;
     accessToken = sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   }
-  
+
   if (!accessToken) {
     return null;
   }
-  
+
   try {
     const refreshToken = storage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
     const accountStr = storage.getItem(STORAGE_KEYS.ACCOUNT);
@@ -182,11 +183,7 @@ export const initializeAuth = createAsyncThunk('auth/initialize', async (_, { re
 
   if (refreshResponse.success && refreshResponse.data) {
     // Aggiorna token nello storage (mantiene rememberMe)
-    updateTokensInStorage(
-      refreshResponse.data.accessToken,
-      refreshResponse.data.refreshToken,
-      stored.account
-    );
+    updateTokensInStorage(refreshResponse.data.accessToken, refreshResponse.data.refreshToken, stored.account);
 
     return {
       isAuthenticated: true,
@@ -212,21 +209,18 @@ interface LoginPayload {
 /**
  * Esegue il login con le credenziali fornite.
  */
-export const login = createAsyncThunk(
-  'auth/login',
-  async ({ credentials, rememberMe }: LoginPayload, { rejectWithValue }) => {
-    const response = await authApi.login(credentials);
+export const login = createAsyncThunk('auth/login', async ({ credentials, rememberMe }: LoginPayload, { rejectWithValue }) => {
+  const response = await authApi.login(credentials);
 
-    if (!response.success || !response.data) {
-      return rejectWithValue(response.error || 'Login fallito');
-    }
-
-    // Salva nello storage appropriato in base a rememberMe
-    saveAuthToStorage(response.data, rememberMe);
-
-    return response.data;
+  if (!response.success || !response.data) {
+    return rejectWithValue(response.error || 'Login fallito');
   }
-);
+
+  // Salva nello storage appropriato in base a rememberMe
+  saveAuthToStorage(response.data, rememberMe);
+
+  return response.data;
+});
 
 /**
  * Esegue il logout.
@@ -245,35 +239,28 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 /**
  * Rinnova l'access token.
  */
-export const refreshAccessToken = createAsyncThunk(
-  'auth/refreshToken',
-  async (_, { getState, rejectWithValue }) => {
-    const state = getState() as { auth: AuthState };
-    const { refreshToken, account } = state.auth;
+export const refreshAccessToken = createAsyncThunk('auth/refreshToken', async (_, { getState, rejectWithValue }) => {
+  const state = getState() as { auth: AuthState };
+  const { refreshToken, account } = state.auth;
 
-    if (!refreshToken) {
-      return rejectWithValue('Nessun refresh token disponibile');
-    }
-
-    const response = await authApi.refreshToken(refreshToken);
-
-    if (!response.success || !response.data) {
-      clearAuthFromStorage();
-      return rejectWithValue(response.error || 'Refresh token fallito');
-    }
-
-    // Aggiorna storage
-    if (account) {
-      updateTokensInStorage(
-        response.data.accessToken,
-        response.data.refreshToken,
-        account
-      );
-    }
-
-    return response.data;
+  if (!refreshToken) {
+    return rejectWithValue('Nessun refresh token disponibile');
   }
-);
+
+  const response = await authApi.refreshToken(refreshToken);
+
+  if (!response.success || !response.data) {
+    clearAuthFromStorage();
+    return rejectWithValue(response.error || 'Refresh token fallito');
+  }
+
+  // Aggiorna storage
+  if (account) {
+    updateTokensInStorage(response.data.accessToken, response.data.refreshToken, account);
+  }
+
+  return response.data;
+});
 
 // ============================================================================
 // SLICE
@@ -313,6 +300,9 @@ const authSlice = createSlice({
         state.account = action.payload.account || null;
         state.accessToken = action.payload.accessToken || null;
         state.refreshToken = action.payload.refreshToken || null;
+        if (action.payload.accessToken) {
+          apiService.setAuthToken(action.payload.accessToken);
+        }
       })
       .addCase(initializeAuth.rejected, state => {
         state.initializing = false;
@@ -335,6 +325,7 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.error = null;
+        apiService.setAuthToken(action.payload.accessToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -354,6 +345,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.refreshToken = null;
         state.error = null;
+        apiService.removeAuthToken();
       })
       .addCase(logout.rejected, state => {
         state.loading = false;
@@ -368,6 +360,7 @@ const authSlice = createSlice({
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
+        apiService.setAuthToken(action.payload.accessToken);
       })
       .addCase(refreshAccessToken.rejected, state => {
         state.isAuthenticated = false;
@@ -394,10 +387,7 @@ export const selectAuthError = (state: RootState) => state.auth.error;
 
 // Selettore memoizzato per evitare re-render inutili
 // Ritorna sempre lo stesso array reference se permissions non cambia
-export const selectPermissions = createSelector(
-  [selectAccount],
-  (account) => account?.permissions || []
-);
+export const selectPermissions = createSelector([selectAccount], account => account?.permissions || []);
 
 export const authReducer = authSlice.reducer;
 export default authSlice.reducer;

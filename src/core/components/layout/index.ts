@@ -21,3 +21,7 @@ export type { SeparatorOrientation, SeparatorVariant } from './separator/Separat
 export { default as Sheet } from './sheet/Sheet';
 export { sheetData } from './sheet/Sheet.data';
 export type { SheetSide } from './sheet/Sheet';
+
+// PageHeader
+export { PageHeader } from './page-header/PageHeader';
+export type {} from './page-header/PageHeader';

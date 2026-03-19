@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Button, Badge, ConfirmModal } from '@/core/components/ui';
 import { Alert, Spinner } from '@/core/components/feedback';
+import { PageHeader, Card } from '@/core/components/layout';
 import Table from '@/core/components/data/table/Table';
 import type { TableColumn } from '@/core/components/data/table/Table';
-import { Plus, RefreshCw, Eye, Pencil, UserX, UserCheck } from 'lucide-react';
+import { Plus, Eye, UserX, UserCheck, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccounts';
 import { AccountFilters, CreateAccountModal, EditAccountModal, ViewAccountModal } from './components';
 import type { Account } from '../types';
@@ -26,6 +27,7 @@ const AccountsPage: React.FC = () => {
     updateAccount,
     deleteAccount,
     activateAccount,
+    hardDeleteAccount,
   } = useAccounts();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -33,6 +35,7 @@ const AccountsPage: React.FC = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [activateModalOpen, setActivateModalOpen] = useState(false);
+  const [hardDeleteModalOpen, setHardDeleteModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -116,7 +119,7 @@ const AccountsPage: React.FC = () => {
     try {
       await activateAccount(selectedAccount.id);
       setActivateModalOpen(false);
-      setSelectedAccount(null);
+      setTimeout(() => setSelectedAccount(null), 0);
     } catch (err) {
       console.error('Error activating account:', err);
     } finally {
@@ -124,73 +127,18 @@ const AccountsPage: React.FC = () => {
     }
   };
 
-  const handleResetFilters = () => setFilters({});
-
-  // ─── colonna azioni contestuali ─────────────────────────────────────────────
-
-  const renderActions = (account: Account): React.ReactNode => {
-    const blocked = isAccountBlocked(account);
-    const inactive = !account.isActive;
-
-    return (
-      <div className='flex items-center gap-1'>
-        {/* Visualizza — sempre visibile */}
-        <Button
-          variant='ghost'
-          size='sm'
-          title='Visualizza dettagli'
-          onClick={() => {
-            setSelectedAccount(account);
-            setViewModalOpen(true);
-          }}
-        >
-          <Eye className='w-4 h-4 text-gray-500' />
-        </Button>
-
-        {/* Modifica — sempre visibile */}
-        <Button
-          variant='ghost'
-          size='sm'
-          title='Modifica account'
-          onClick={() => {
-            setSelectedAccount(account);
-            setEditModalOpen(true);
-          }}
-        >
-          <Pencil className='w-4 h-4 text-blue-500' />
-        </Button>
-
-        {/* Disattiva — solo se attivo e non bloccato */}
-        {!inactive && !blocked && (
-          <Button
-            variant='ghost'
-            size='sm'
-            title='Disattiva account'
-            onClick={() => {
-              setSelectedAccount(account);
-              setDeleteModalOpen(true);
-            }}
-          >
-            <UserX className='w-4 h-4 text-red-500' />
-          </Button>
-        )}
-
-        {/* Riattiva — solo se disattivato (non bloccato) */}
-        {inactive && !blocked && (
-          <Button
-            variant='ghost'
-            size='sm'
-            title='Riattiva account'
-            onClick={() => {
-              setSelectedAccount(account);
-              setActivateModalOpen(true);
-            }}
-          >
-            <UserCheck className='w-4 h-4 text-green-500' />
-          </Button>
-        )}
-      </div>
-    );
+  const handleHardDeleteAccount = async () => {
+    if (!selectedAccount) return;
+    setActionLoading(true);
+    try {
+      await hardDeleteAccount(selectedAccount.id);
+      setHardDeleteModalOpen(false);
+      setTimeout(() => setSelectedAccount(null), 0);
+    } catch (err) {
+      console.error('Error hard deleting account:', err);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   // ─── colonne tabella ─────────────────────────────────────────────────────────
@@ -222,88 +170,159 @@ const AccountsPage: React.FC = () => {
     },
     {
       header: 'Creato il',
-      accessor: account => formatDate(account.createdAt),
+      accessor: account => <span className='text-body-sm'>{formatDate(account.createdAt)}</span>,
       sortable: true,
-      className: 'text-gray-600',
-    },
-    {
-      header: 'Azioni',
-      accessor: account => renderActions(account),
-      sortable: false,
-      className: 'text-right',
     },
   ];
 
   // ─── render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className='max-w-7xl mx-auto p-6'>
-      {/* Header */}
-      <div className='mb-6 flex items-center justify-between'>
-        <div>
-          <h1 className='text-3xl font-bold text-gray-900'>Gestione Account</h1>
-          <p className='text-gray-600 mt-1'>Visualizza e gestisci tutti gli account della piattaforma</p>
-        </div>
-        <div className='flex items-center space-x-3'>
-          <Button variant='ghost' size='sm' onClick={refetch} disabled={loading} title='Aggiorna'>
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
-          <Button variant='primary' onClick={() => setCreateModalOpen(true)}>
-            <Plus className='w-4 h-4 mr-2' />
+    <>
+      <PageHeader
+        title='Gestione Account'
+        subtitle='Visualizza e gestisci tutti gli account della piattaforma'
+        onRefresh={refetch}
+        isLoading={loading}
+        actions={
+          <Button variant='primary' leftIcon={<Plus className='w-4 h-4' />} onClick={() => setCreateModalOpen(true)}>
             Crea Account
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      {/* Errore */}
       {error && (
         <Alert variant='danger' className='mb-6'>
           {error}
         </Alert>
       )}
 
-      {/* Filtri */}
-      <AccountFilters filters={filters} roles={roles} onChange={setFilters} onReset={handleResetFilters} />
+      <AccountFilters currentFilters={filters} roles={roles} onApply={setFilters} />
 
-      {/* Tabella */}
       {loading && !accounts.length ? (
         <div className='flex items-center justify-center py-12'>
           <Spinner size='md' />
         </div>
       ) : (
         <>
-          <Table
-            data={accounts}
-            columns={columns}
-            keyExtractor={account => account.id.toString()}
-            isLoading={false}
-            emptyMessage='Nessun account trovato'
-            size='md'
-            striped
-            hoverable
-          />
+          <Card variant='default' padding='none'>
+            <Table
+              data={accounts}
+              columns={columns}
+              keyExtractor={account => account.id.toString()}
+              isLoading={false}
+              emptyMessage='Nessun account trovato'
+              size='md'
+              striped
+              hoverable
+              rowActions={{
+                enabled: true,
+                mode: 'menu',
+                quickActions: {
+                  edit: {
+                    enabled: true,
+                    onEdit: account => {
+                      setSelectedAccount(account);
+                      setEditModalOpen(true);
+                    },
+                  },
+                },
+                actions: account => {
+                  const blocked = isAccountBlocked(account);
+                  const inactive = !account.isActive;
+                  const neverLoggedIn = account.lastLogin === null;
+                  return [
+                    {
+                      id: 'view',
+                      label: 'Visualizza dettagli',
+                      icon: <Eye className='w-4 h-4' />,
+                      onClick: () => {
+                        setSelectedAccount(account);
+                        setViewModalOpen(true);
+                      },
+                    },
+                    ...(!inactive && !blocked
+                      ? [
+                          {
+                            id: 'deactivate',
+                            label: 'Disattiva account',
+                            icon: <UserX className='w-4 h-4' />,
+                            onClick: () => {
+                              setSelectedAccount(account);
+                              setDeleteModalOpen(true);
+                            },
+                            divider: true,
+                          },
+                        ]
+                      : []),
+                    ...(inactive && !blocked
+                      ? [
+                          {
+                            id: 'activate',
+                            label: 'Riattiva account',
+                            icon: <UserCheck className='w-4 h-4' />,
+                            onClick: () => {
+                              setSelectedAccount(account);
+                              setActivateModalOpen(true);
+                            },
+                            divider: true,
+                          },
+                        ]
+                      : []),
+                    ...(neverLoggedIn
+                      ? [
+                          {
+                            id: 'hard-delete',
+                            label: 'Elimina definitivamente',
+                            icon: <Trash2 className='w-4 h-4' />,
+                            onClick: () => {
+                              setSelectedAccount(account);
+                              setHardDeleteModalOpen(true);
+                            },
+                            variant: 'danger' as const,
+                            divider: true,
+                          },
+                        ]
+                      : []),
+                  ];
+                },
+              }}
+            />
 
-          {/* Paginazione */}
-          <div className='mt-6 flex items-center justify-between'>
-            <div className='text-sm text-gray-600'>
-              Mostrando {accounts.length} di {pagination.total} account
+            {/* Paginazione */}
+            <div className='bg-bg-secondary px-4 py-2 flex items-center justify-between border-t border-border-default'>
+              <div className='text-body-sm'>
+                Pagina <span className='font-medium text-text-primary'>{pagination.page + 1}</span>
+                {' · '}
+                <span className='font-medium text-text-primary'>{accounts.length}</span> di{' '}
+                <span className='font-medium text-text-primary'>{pagination.total}</span> account
+              </div>
+              <div className='flex items-center gap-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  leftIcon={<ChevronLeft className='w-4 h-4' />}
+                  onClick={prevPage}
+                  disabled={pagination.page === 0 || loading}
+                >
+                  Indietro
+                </Button>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  rightIcon={<ChevronRight className='w-4 h-4' />}
+                  onClick={nextPage}
+                  disabled={!pagination.hasMore || loading}
+                >
+                  Avanti
+                </Button>
+              </div>
             </div>
-            <div className='flex items-center space-x-2'>
-              <Button variant='ghost' size='sm' onClick={prevPage} disabled={pagination.page === 0 || loading}>
-                Indietro
-              </Button>
-              <span className='text-sm text-gray-600'>
-                Pagina {pagination.page + 1} di {pagination.totalPages || 1}
-              </span>
-              <Button variant='ghost' size='sm' onClick={nextPage} disabled={!pagination.hasMore || loading}>
-                Avanti
-              </Button>
-            </div>
-          </div>
+          </Card>
         </>
       )}
 
-      {/* ── Modali ─────────────────────────────────────────────────────────── */}
+      {/* ── Modali ──────────────────────────────────────────────────────────── */}
 
       <CreateAccountModal
         isOpen={createModalOpen}
@@ -317,7 +336,7 @@ const AccountsPage: React.FC = () => {
         isOpen={viewModalOpen}
         onClose={() => {
           setViewModalOpen(false);
-          setSelectedAccount(null);
+          setTimeout(() => setSelectedAccount(null), 0);
         }}
         account={selectedAccount}
       />
@@ -326,7 +345,7 @@ const AccountsPage: React.FC = () => {
         isOpen={editModalOpen}
         onClose={() => {
           setEditModalOpen(false);
-          setSelectedAccount(null);
+          setTimeout(() => setSelectedAccount(null), 0);
         }}
         onConfirm={handleEditAccount}
         loading={actionLoading}
@@ -334,12 +353,11 @@ const AccountsPage: React.FC = () => {
         roles={roles}
       />
 
-      {/* Disattiva account */}
       <ConfirmModal
         isOpen={deleteModalOpen}
         onClose={() => {
           setDeleteModalOpen(false);
-          setSelectedAccount(null);
+          setTimeout(() => setSelectedAccount(null), 0);
         }}
         onConfirm={handleDeleteAccount}
         title='Disattiva Account'
@@ -350,12 +368,11 @@ const AccountsPage: React.FC = () => {
         isLoading={actionLoading}
       />
 
-      {/* Riattiva account */}
       <ConfirmModal
         isOpen={activateModalOpen}
         onClose={() => {
           setActivateModalOpen(false);
-          setSelectedAccount(null);
+          setTimeout(() => setSelectedAccount(null), 0);
         }}
         onConfirm={handleActivateAccount}
         title='Riattiva Account'
@@ -365,7 +382,22 @@ const AccountsPage: React.FC = () => {
         variant='default'
         isLoading={actionLoading}
       />
-    </div>
+
+      <ConfirmModal
+        isOpen={hardDeleteModalOpen}
+        onClose={() => {
+          setHardDeleteModalOpen(false);
+          setTimeout(() => setSelectedAccount(null), 0);
+        }}
+        onConfirm={handleHardDeleteAccount}
+        title='Elimina Account Definitivamente'
+        message={`Stai per eliminare in modo permanente l'account di ${selectedAccount?.email}. Questa operazione è irreversibile.`}
+        confirmText='Elimina definitivamente'
+        cancelText='Annulla'
+        variant='danger'
+        isLoading={actionLoading}
+      />
+    </>
   );
 };
 

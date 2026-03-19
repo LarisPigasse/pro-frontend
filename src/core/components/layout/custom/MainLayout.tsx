@@ -40,7 +40,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <Header />
         </header>
 
-        <main className='flex-1 min-w-0 overflow-y-auto flex flex-col px-4 py-6 bg-bg-base'>
+        <main className='flex-1 min-w-0 overflow-y-auto flex flex-col px-6 py-6 bg-bg-base'>
           <div className='w-full px-0 py-0 flex-1'>{children}</div>
         </main>
 

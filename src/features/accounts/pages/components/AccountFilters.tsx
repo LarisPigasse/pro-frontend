@@ -1,88 +1,172 @@
 // src/features/accounts/pages/components/AccountFilters.tsx
 
-import React from 'react';
-import { Select, Input } from '@/core/components/form';
-import { Button } from '@/core/components/ui';
-import { X } from 'lucide-react';
-import type { AccountFilters as Filters, AccountType, AccountStatus, Role } from '../../types';
+import React, { useState } from 'react';
+import { Filter, X } from 'lucide-react';
+import { Button, Badge } from '@/core/components/ui';
+import type { AccountFilters as AccountFiltersType, AccountType, AccountStatus, Role } from '../../types';
 
 interface AccountFiltersProps {
-  filters: Filters;
-  roles: Role[]; // ← dinamici dall'hook
-  onChange: (filters: Filters) => void;
-  onReset: () => void;
+  currentFilters: AccountFiltersType;
+  roles: Role[];
+  onApply: (filters: AccountFiltersType) => void;
 }
 
-const AccountFilters: React.FC<AccountFiltersProps> = ({ filters, roles, onChange, onReset }) => {
-  const roleOptions = [
-    { value: 'all', label: 'Tutti i ruoli' },
-    ...roles.map(r => ({ value: r.id.toString(), label: r.name })),
-  ];
+const ACCOUNT_TYPES = [
+  { value: 'operatore', label: 'Operatore' },
+  { value: 'partner', label: 'Partner' },
+  { value: 'cliente', label: 'Cliente' },
+  { value: 'agente', label: 'Agente' },
+];
 
-  const accountTypeOptions: Array<{ value: AccountType | 'all'; label: string }> = [
-    { value: 'all', label: 'Tutti i tipi' },
-    { value: 'operatore', label: 'Operatore' },
-    { value: 'partner', label: 'Partner' },
-    { value: 'cliente', label: 'Cliente' },
-    { value: 'agente', label: 'Agente' },
-  ];
+const STATUS_OPTIONS: { value: AccountStatus; label: string }[] = [
+  { value: 'active', label: 'Attivo' },
+  { value: 'inactive', label: 'Disattivato' },
+  { value: 'blocked', label: 'Bloccato' },
+];
 
-  const statusOptions: Array<{ value: AccountStatus; label: string }> = [
-    { value: 'all', label: 'Tutti gli stati' },
-    { value: 'active', label: 'Attivi' },
-    { value: 'inactive', label: 'Disattivati' },
-    { value: 'blocked', label: 'Bloccati' },
-  ];
+export const AccountFilters: React.FC<AccountFiltersProps> = ({ currentFilters, roles, onApply }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [draft, setDraft] = useState<AccountFiltersType>(currentFilters);
 
-  const hasActiveFilters =
-    filters.search ||
-    filters.roleId ||
-    (filters.accountType && filters.accountType !== 'all') ||
-    (filters.status && filters.status !== 'all');
+  const activeCount = Object.values(currentFilters).filter(v => v !== undefined && v !== '').length;
+
+  const handleApply = () => {
+    // Rimuove le chiavi con stringa vuota prima di applicare
+    const cleaned = Object.fromEntries(
+      Object.entries(draft).filter(([, v]) => v !== undefined && v !== '')
+    ) as AccountFiltersType;
+    onApply(cleaned);
+    setIsOpen(false);
+  };
+
+  const handleReset = () => {
+    const empty: AccountFiltersType = {};
+    setDraft(empty);
+    onApply(empty);
+  };
+
+  const handleOpen = () => {
+    setDraft(currentFilters); // sincronizza il draft con i filtri correnti all'apertura
+    setIsOpen(true);
+  };
+
+  const selectClass =
+    'w-full px-3 py-2 bg-bg-primary text-text-primary border border-border-default ' +
+    'rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors text-sm';
+
+  const inputClass =
+    'w-full px-3 py-2 bg-bg-primary text-text-primary border border-border-default ' +
+    'rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors text-sm ' +
+    'placeholder:text-text-placeholder';
 
   return (
-    <div className='bg-white rounded-lg shadow p-6 mb-6'>
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-        <Input
-          label='Cerca email'
-          value={filters.search || ''}
-          onChange={e => onChange({ ...filters, search: e.target.value })}
-          fullWidth
-        />
-        <Select
-          label='Ruolo'
-          value={filters.roleId ? filters.roleId.toString() : 'all'}
-          onValueChange={value =>
-            onChange({
-              ...filters,
-              roleId: value === 'all' ? undefined : parseInt(value, 10),
-            })
-          }
-          options={roleOptions}
-          fullWidth
-        />
-        <Select
-          label='Tipo Account'
-          value={filters.accountType || 'all'}
-          onValueChange={value => onChange({ ...filters, accountType: value as AccountType | 'all' })}
-          options={accountTypeOptions}
-          fullWidth
-        />
-        <Select
-          label='Stato'
-          value={filters.status || 'all'}
-          onValueChange={value => onChange({ ...filters, status: value as AccountStatus })}
-          options={statusOptions}
-          fullWidth
-        />
-      </div>
-      {hasActiveFilters && (
-        <div className='mt-4 flex justify-end'>
-          <Button variant='ghost' size='sm' onClick={onReset}>
-            <X className='w-4 h-4 mr-2' />
-            Reset Filtri
-          </Button>
-        </div>
+    <div className='relative mb-6'>
+      {/* ── Trigger button ── */}
+      <Button variant='outline' size='md' leftIcon={<Filter className='w-4 h-4' />} onClick={handleOpen}>
+        Filtri
+        {activeCount > 0 && (
+          <Badge variant='info' size='xs' className='ml-2'>
+            {activeCount}
+          </Badge>
+        )}
+      </Button>
+
+      {/* ── Dropdown panel ── */}
+      {isOpen && (
+        <>
+          {/* Overlay per chiudere cliccando fuori */}
+          <div className='fixed inset-0 z-40' onClick={() => setIsOpen(false)} />
+
+          <div className='absolute top-full left-0 mt-2 w-80 bg-bg-primary rounded-lg shadow-themed-lg border border-border-default z-50'>
+            {/* Header */}
+            <div className='flex items-center justify-between p-4 border-b border-border-default'>
+              <h3 className='text-section-title text-base'>Filtri</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className='p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors'
+                aria-label='Chiudi filtri'
+              >
+                <X className='w-5 h-5' />
+              </button>
+            </div>
+
+            {/* Campi filtro */}
+            <div className='p-4 space-y-4 max-h-96 overflow-y-auto'>
+              {/* Ricerca email */}
+              <div>
+                <label className='text-label block mb-1.5'>Email</label>
+                <input
+                  type='text'
+                  placeholder='Cerca per email…'
+                  value={draft.search || ''}
+                  onChange={e => setDraft({ ...draft, search: e.target.value || undefined })}
+                  className={inputClass}
+                />
+              </div>
+
+              {/* Ruolo */}
+              <div>
+                <label className='text-label block mb-1.5'>Ruolo</label>
+                <select
+                  value={draft.roleId ?? ''}
+                  onChange={e => setDraft({ ...draft, roleId: e.target.value ? Number(e.target.value) : undefined })}
+                  className={selectClass}
+                >
+                  <option value=''>Tutti i ruoli</option>
+                  {roles.map(role => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Tipo account */}
+              <div>
+                <label className='text-label block mb-1.5'>Tipo account</label>
+                <select
+                  value={draft.accountType || ''}
+                  onChange={e => setDraft({ ...draft, accountType: (e.target.value as AccountType) || undefined })}
+                  className={selectClass}
+                >
+                  <option value=''>Tutti i tipi</option>
+                  {ACCOUNT_TYPES.map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Stato */}
+              <div>
+                <label className='text-label block mb-1.5'>Stato</label>
+                <select
+                  value={draft.status || ''}
+                  onChange={e => setDraft({ ...draft, status: (e.target.value as AccountStatus) || undefined })}
+                  className={selectClass}
+                >
+                  <option value=''>Tutti gli stati</option>
+                  {STATUS_OPTIONS.map(s => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className='flex items-center justify-end gap-2 p-4 border-t border-border-default'>
+              <Button variant='ghost' size='sm' onClick={handleReset}>
+                Reset
+              </Button>
+              <Button variant='primary' size='sm' onClick={handleApply}>
+                Applica
+              </Button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

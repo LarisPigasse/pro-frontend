@@ -19,6 +19,14 @@ export const ROUTES = {
   SPEDIZIONI_INCORSO: '/spedizioni/in-corso',
   SPEDIZIONI_STORICO: '/spedizioni/storico',
 
+  // Modulo Asset Aziendali (route interne su /veicoli per compatibilità backend)
+  VEICOLI: '/veicoli',
+  VEICOLI_DOTAZIONE: '/veicoli/dotazione',
+  VEICOLI_AUTISTI: '/veicoli/autisti',
+  VEICOLI_SCADENZE: '/veicoli/scadenze',
+  VEICOLI_STORICO: '/veicoli/storico',
+  VEICOLI_CONFIGURAZIONE: '/veicoli/configurazione',
+
   // Modulo Sistema
   SISTEMA: '/sistema',
   SISTEMA_ACCOUNT: '/sistema/accounts',

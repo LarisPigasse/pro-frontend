@@ -12,6 +12,7 @@ export interface Account {
   isActive: boolean;
   blockedUntil: string | null; // ISO 8601
   blockReason: string | null;
+  lastLogin: string | null; // ISO 8601 — null se mai loggato
   createdAt: string; // ISO 8601
   updatedAt: string; // ISO 8601
   role: {

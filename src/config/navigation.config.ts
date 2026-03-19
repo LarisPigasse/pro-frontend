@@ -1,6 +1,6 @@
 // src/config/navigation.config.ts
 import type { LucideIcon } from 'lucide-react';
-import { Home, Users, Truck, Settings } from 'lucide-react';
+import { Home, Users, Truck, Settings, Package } from 'lucide-react';
 import { ROUTES } from './routes.config';
 
 /**
@@ -62,6 +62,19 @@ export const MODULES: ModuleConfig[] = [
       { id: 'nuova', label: 'Nuova', href: ROUTES.SPEDIZIONI_NUOVA },
       { id: 'incorso', label: 'In corso', href: ROUTES.SPEDIZIONI_INCORSO },
       { id: 'storico', label: 'Storico', href: ROUTES.SPEDIZIONI_STORICO },
+    ],
+  },
+  {
+    id: 'veicoli',
+    label: 'ASSET',
+    href: ROUTES.VEICOLI,
+    icon: Package,
+    children: [
+      { id: 'dotazione', label: 'Dotazione', href: ROUTES.VEICOLI_DOTAZIONE },
+      { id: 'autisti', label: 'Autisti', href: ROUTES.VEICOLI_AUTISTI },
+      { id: 'scadenze', label: 'Scadenze', href: ROUTES.VEICOLI_SCADENZE },
+      { id: 'storico', label: 'Storico', href: ROUTES.VEICOLI_STORICO },
+      { id: 'configurazione', label: 'Configurazione', href: ROUTES.VEICOLI_CONFIGURAZIONE },
     ],
   },
   {

@@ -21,74 +21,58 @@ import {
 import { Dashboard } from './pages';
 
 // ✅ LAZY LOADING - Pagine secondarie, caricate on-demand
-// Explorer: caricato solo quando l'utente naviga su /explorer
-// NotFound: caricato solo quando serve (404)
 const Explorer = lazy(() => import('./pages/Explorer'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// ✅ SESSIONS - Sessioni attive (solo root)
+// ✅ SESSIONS
 const SessionsPage = lazy(() => import('./features/sessions/pages/SessionsPage'));
 
-// ✅ ACCOUNTS - Gestione account (solo root)
+// ✅ ACCOUNTS
 const AccountsPage = lazy(() => import('./features/accounts/pages/AccountsPage'));
 
-// ✅ LOGS - Sistema logs (solo root)
+// ✅ LOGS
 const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
 
-// ✅ ALERTS - Alert manager (solo root)
+// ✅ ALERTS
 const AlertsPage = lazy(() => import('./features/alerts/pages/AlertsPage'));
 
-// ✅ SYSTEM - Health dashboard (solo root)
+// ✅ SYSTEM
 const SystemPage = lazy(() => import('./features/system/pages/SystemPage'));
+
+// ✅ ASSET AZIENDALI — lazy loading per ogni sottosezione
+const VehiclesDashboard = lazy(() => import('./features/vehicles/pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const VehiclesVehicles  = lazy(() => import('./features/vehicles/pages/Vehicles').then(m => ({ default: m.Vehicles })));
+const VehiclesAutisti   = lazy(() => import('./features/vehicles/pages/Autisti').then(m => ({ default: m.Autisti })));
+const VehiclesScadenze  = lazy(() => import('./features/vehicles/pages/Scadenze').then(m => ({ default: m.Scadenze })));
+const VehiclesStorico   = lazy(() => import('./features/vehicles/pages/Storico').then(m => ({ default: m.Storico })));
+const VehiclesConfig    = lazy(() => import('./features/vehicles/pages/Config').then(m => ({ default: m.Config })));
 
 // Componente per inizializzazione completa del tema e settings
 const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
-    // Inizializza l'app con le impostazioni salvate
-    // Lo store è già caricato con i dati del localStorage tramite createInitialState
-    // Dobbiamo solo applicare il tema al DOM
     store.dispatch(initializeFromStorage());
-
-    // Inizializza autenticazione (verifica sessione esistente)
     store.dispatch(initializeAuth());
   }, []);
 
   return <>{children}</>;
 };
 
-/**
- * Loading Fallback Component
- * Mostrato durante il caricamento lazy delle pagine
- */
 const PageLoadingFallback: React.FC = () => (
   <div className='flex items-center justify-center min-h-[60vh]'>
     <div className='text-center space-y-4'>
-      {/* Spinner */}
       <div className='inline-flex items-center justify-center'>
         <div className='w-12 h-12 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin' />
       </div>
-      {/* Loading text */}
       <p className='text-text-secondary text-sm'>Caricamento pagina...</p>
     </div>
   </div>
 );
 
-/**
- * Callback per logging errori (opzionale)
- * Può essere esteso per inviare errori a servizi di monitoring
- */
 const handleError = (error: Error, _errorInfo: React.ErrorInfo) => {
-  // In produzione, qui potresti inviare l'errore a un servizio di monitoring
-  // es: Sentry, LogRocket, DataDog, ecc.
   console.error('Application error:', error.message);
   if (import.meta.env.DEV && _errorInfo.componentStack) {
     console.error('Component Stack:', _errorInfo.componentStack);
   }
-
-  // Esempio di integrazione con servizio esterno:
-  // if (process.env.NODE_ENV === 'production') {
-  //   errorTrackingService.captureException(error, { extra: errorInfo });
-  // }
 };
 
 const App: React.FC = () => {
@@ -101,9 +85,9 @@ const App: React.FC = () => {
               <Suspense fallback={<PageLoadingFallback />}>
                 <Routes>
                   {/* ✅ Auth Pages: Pagine pubbliche FUORI da MainLayout */}
-                  <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+                  <Route path={ROUTES.LOGIN}           element={<LoginPage />} />
                   <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-                  <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
+                  <Route path={ROUTES.RESET_PASSWORD}  element={<ResetPasswordPage />} />
 
                   {/* ✅ Tutte le altre route: DENTRO MainLayout */}
                   <Route
@@ -112,7 +96,8 @@ const App: React.FC = () => {
                       <div className='App'>
                         <MainLayout>
                           <Routes>
-                            {/* ✅ Dashboard: Route protetta */}
+
+                            {/* ── Dashboard ───────────────────────────── */}
                             <Route
                               path={ROUTES.HOME}
                               element={
@@ -122,7 +107,7 @@ const App: React.FC = () => {
                               }
                             />
 
-                            {/* ✅ Change Password: Route protetta */}
+                            {/* ── Auth ────────────────────────────────── */}
                             <Route
                               path={ROUTES.CHANGE_PASSWORD}
                               element={
@@ -131,8 +116,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ Settings: Route protetta (placeholder) */}
                             <Route
                               path={ROUTES.SETTINGS}
                               element={
@@ -142,7 +125,7 @@ const App: React.FC = () => {
                               }
                             />
 
-                            {/* ✅ Sessioni Attive: Route protetta (solo root) */}
+                            {/* ── Sistema ─────────────────────────────── */}
                             <Route
                               path={ROUTES.SISTEMA_SESSIONS}
                               element={
@@ -151,8 +134,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ Logs Sistema: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_LOGS}
                               element={
@@ -161,8 +142,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ Alert Manager: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_ALERTS}
                               element={
@@ -171,8 +150,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ System Health: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_HEALTH}
                               element={
@@ -181,8 +158,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ Accounts: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_ACCOUNT}
                               element={
@@ -191,8 +166,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
-                            {/* ✅ Explorer: Route protetta (solo root) */}
                             <Route
                               path={ROUTES.SISTEMA_EXPLORER}
                               element={
@@ -202,13 +175,63 @@ const App: React.FC = () => {
                               }
                             />
 
-                            {/* ✅ 404: Lazy loading */}
+                            {/* ── Asset Aziendali ─────────────────────── */}
+                            <Route
+                              path={ROUTES.VEICOLI}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesDashboard />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_DOTAZIONE}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesVehicles />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_AUTISTI}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesAutisti />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_SCADENZE}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesScadenze />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_STORICO}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesStorico />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_CONFIGURAZIONE}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.write'>
+                                  <VehiclesConfig />
+                                </PrivateRoute>
+                              }
+                            />
+
+                            {/* ── 404 ─────────────────────────────────── */}
                             <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
-                            <Route path='*' element={<NotFound />} />
+                            <Route path='*'                element={<NotFound />} />
+
                           </Routes>
                         </MainLayout>
 
-                        {/* Menu components - renderizzati al root level per z-index corretto */}
                         <UserMenu />
                         <MobileMenu />
                       </div>

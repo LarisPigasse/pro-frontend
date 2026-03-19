@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   fetchAccounts,
   fetchAccountStats,
+  fetchRoles,
   createAccount,
   updateAccount,
   deleteAccount,
   activateAccount,
+  hardDeleteAccount,
 } from '../api/accountsApi';
 import type {
   Account,
@@ -35,37 +37,30 @@ interface UseAccountsReturn {
   updateAccount: (accountId: number, data: UpdateAccountRequest) => Promise<void>;
   deleteAccount: (accountId: number) => Promise<void>;
   activateAccount: (accountId: number) => Promise<void>;
+  hardDeleteAccount: (accountId: number) => Promise<void>;
 }
 
 export const useAccounts = (initialFilters: AccountFilters = {}): UseAccountsReturn => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [stats, setStats] = useState<AccountStats | null>(null);
-  const [knownRoles, setKnownRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<AccountFilters>(initialFilters);
   const [pagination, setPagination] = useState<AccountPagination>({
     total: 0,
     page: 0,
-    limit: 50,
+    limit: 10,
     totalPages: 0,
     hasMore: false,
   });
 
-  // Accumula ruoli ad ogni fetch senza azzerarli quando si filtra.
-  // TODO: sostituire con fetch GET /auth/roles quando disponibile sul backend.
+  // Carica ruoli una volta sola al mount
   useEffect(() => {
-    if (!accounts.length) return;
-    setKnownRoles(prev => {
-      const roleMap = new Map<number, Role>(prev.map(r => [r.id, r]));
-      for (const account of accounts) {
-        if (!roleMap.has(account.role.id)) {
-          roleMap.set(account.role.id, { id: account.role.id, name: account.role.name });
-        }
-      }
-      return Array.from(roleMap.values()).sort((a, b) => a.id - b.id);
-    });
-  }, [accounts]);
+    fetchRoles()
+      .then(res => setRoles(res.data))
+      .catch(err => console.error('Errore caricamento ruoli:', err));
+  }, []);
 
   const loadAccounts = useCallback(async () => {
     try {
@@ -139,10 +134,18 @@ export const useAccounts = (initialFilters: AccountFilters = {}): UseAccountsRet
     [refetch]
   );
 
+  const handleHardDeleteAccount = useCallback(
+    async (accountId: number) => {
+      await hardDeleteAccount(accountId);
+      await refetch();
+    },
+    [refetch]
+  );
+
   return {
     accounts,
     stats,
-    roles: knownRoles,
+    roles,
     loading,
     error,
     filters,
@@ -155,5 +158,6 @@ export const useAccounts = (initialFilters: AccountFilters = {}): UseAccountsRet
     updateAccount: handleUpdateAccount,
     deleteAccount: handleDeleteAccount,
     activateAccount: handleActivateAccount,
+    hardDeleteAccount: handleHardDeleteAccount,
   };
 };
