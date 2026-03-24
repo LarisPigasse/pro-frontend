@@ -1,10 +1,12 @@
+// src/features/sessions/pages/SessionsPage.tsx
+
 import React, { useState } from 'react';
-import { RefreshCw } from 'lucide-react';
 import { useSessions } from '../hooks/useSessions';
-import { Button } from '@/core/components/ui';
+import { PageHeader } from '@/core/components/layout';
 import { Tabs } from '@/core/components/navigation/';
 import type { TabItem } from '@/core/components/navigation/tabs/Tabs';
 import { Alert, Spinner } from '@/core/components/feedback';
+import { ConfirmModal } from '@/core/components/ui';
 import SessionsTable from './components/SessionsTable';
 import BlockedUsersTable from './components/BlockedUsersTable';
 import BlockUserModal from './components/BlockUserModal';
@@ -24,44 +26,36 @@ const SessionsPage: React.FC = () => {
     currentSessionId,
   } = useSessions();
 
-  // Modal states
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const [unblockModalOpen, setUnblockModalOpen] = useState(false);
+  const [revokeModalOpen, setRevokeModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  /**
-   * Apri modal blocco utente
-   */
+  // ─── handlers ───────────────────────────────────────────────────────────────
+
   const openBlockModal = (userId: number) => {
     setSelectedUserId(userId);
     setBlockModalOpen(true);
     setActionError(null);
   };
 
-  /**
-   * Apri modal sblocco utente
-   */
   const openUnblockModal = (userId: number) => {
     setSelectedUserId(userId);
     setUnblockModalOpen(true);
     setActionError(null);
   };
 
-  /**
-   * Conferma blocco utente
-   */
   const confirmBlockUser = async (blockData: BlockUserRequest) => {
     if (!selectedUserId) return;
-
     setActionLoading(true);
     setActionError(null);
-
     try {
       await handleBlockUser(selectedUserId, blockData);
       setBlockModalOpen(false);
-      setSelectedUserId(null);
+      setTimeout(() => setSelectedUserId(null), 0);
     } catch (err: any) {
       setActionError(err.message);
     } finally {
@@ -69,19 +63,14 @@ const SessionsPage: React.FC = () => {
     }
   };
 
-  /**
-   * Conferma sblocco utente
-   */
   const confirmUnblockUser = async () => {
     if (!selectedUserId) return;
-
     setActionLoading(true);
     setActionError(null);
-
     try {
       await handleUnblockUser(selectedUserId);
       setUnblockModalOpen(false);
-      setSelectedUserId(null);
+      setTimeout(() => setSelectedUserId(null), 0);
     } catch (err: any) {
       setActionError(err.message);
     } finally {
@@ -89,17 +78,20 @@ const SessionsPage: React.FC = () => {
     }
   };
 
-  /**
-   * Revoca sessione con conferma
-   */
-  const onRevokeSession = async (sessionId: number) => {
-    if (!confirm('Sei sicuro di voler revocare questa sessione?')) return;
+  const onRevokeSession = (sessionId: number) => {
+    setSelectedSessionId(sessionId);
+    setRevokeModalOpen(true);
+    setActionError(null);
+  };
 
+  const confirmRevokeSession = async () => {
+    if (!selectedSessionId) return;
     setActionLoading(true);
     setActionError(null);
-
     try {
-      await handleRevokeSession(sessionId);
+      await handleRevokeSession(selectedSessionId);
+      setRevokeModalOpen(false);
+      setTimeout(() => setSelectedSessionId(null), 0);
     } catch (err: any) {
       setActionError(err.message);
     } finally {
@@ -107,17 +99,15 @@ const SessionsPage: React.FC = () => {
     }
   };
 
-  const showcaseItems: TabItem[] = [
+  // ─── tab items ───────────────────────────────────────────────────────────────
+
+  const tabItems: TabItem[] = [
     {
       id: 'active-users',
-      label: (
-        <>
-          <span>Sessioni attive</span>
-        </>
-      ),
+      label: <span>Sessioni attive</span>,
       content: (
         <div>
-          <h2 className='text-md font-semibold mb-4'>Tabella delle sessioni attive</h2>
+          <h2 className='text-section-title mb-4'>Tabella delle sessioni attive</h2>
           <SessionsTable
             sessions={sessions}
             currentSessionId={currentSessionId}
@@ -131,69 +121,52 @@ const SessionsPage: React.FC = () => {
     },
     {
       id: 'blocked-users',
-      label: (
-        <>
-          <span>Utenti bloccati</span>
-        </>
-      ),
+      label: <span>Utenti bloccati</span>,
       content: (
         <div>
-          <h2 className='text-md font-semibold mb-4'>Tabella degli utenti bloccati</h2>
+          <h2 className='text-section-title mb-4'>Tabella degli utenti bloccati</h2>
           <BlockedUsersTable blockedUsers={blockedUsers} onUnblockUser={openUnblockModal} actionLoading={actionLoading} />
         </div>
       ),
     },
   ];
 
+  // ─── render ──────────────────────────────────────────────────────────────────
+
   return (
-    <div className='min-h-full'>
-      {/* Header */}
-      <div className='max-w-screen mb-6'>
-        <div className='flex items-center justify-between'>
-          <div>
-            <h1 className='text-3xl font-bold text-gray-900'>Sessioni Attive</h1>
-            <p className='text-gray-600 mt-1'>Monitora e gestisci le sessioni utente attive</p>
-          </div>
+    <>
+      <PageHeader
+        title='Sessioni Attive'
+        subtitle={
+          <>
+            Monitora e gestisci le sessioni utente attive
+            {' · '}
+            <span className='text-text-info'>Auto-refresh ogni minuto</span>
+          </>
+        }
+        onRefresh={refreshSessions}
+        isLoading={loading}
+      />
 
-          <Button onClick={refreshSessions} disabled={loading} variant='primary' size='md'>
-            <RefreshCw className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Aggiorna
-          </Button>
-        </div>
-
-        {/* Auto-refresh indicator */}
-        <div className='mt-2 text-sm text-gray-500'>
-          <span className='inline-flex items-center gap-1'>
-            <span className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></span>
-            Auto-refresh ogni 30 secondi
-          </span>
-        </div>
-      </div>
-
-      {/* Error Alert */}
+      {/* Errori */}
       {(error || actionError) && (
-        <div className='max-w-screen mb-6'>
-          <Alert variant='danger' title='Errore'>
-            {error || actionError}
-          </Alert>
-        </div>
+        <Alert variant='danger' className='mb-6'>
+          {error || actionError}
+        </Alert>
       )}
 
-      {/* Loading State */}
+      {/* Loading state */}
       {loading && sessions.length === 0 && blockedUsers.length === 0 ? (
-        <div className='max-w-screen text-center py-12'>
-          <Spinner size='md' className='mx-auto mb-4' />
-          <p className='text-gray-600'>Caricamento sessioni...</p>
+        <div className='flex items-center justify-center py-12'>
+          <Spinner size='md' />
         </div>
       ) : (
-        <div className='max-w-screen'>
-          <div className='bg-bg-secondary p-4 rounded-md'>
-            <Tabs items={showcaseItems} defaultTab='active-users' variant='pills' size='md' />
-          </div>
+        <div className='bg-bg-secondary p-3 rounded-md'>
+          <Tabs items={tabItems} defaultTab='active-users' variant='pills' size='md' />
         </div>
       )}
 
-      {/* Block User Modal */}
+      {/* Modali */}
       <BlockUserModal
         isOpen={blockModalOpen}
         onClose={() => setBlockModalOpen(false)}
@@ -202,14 +175,28 @@ const SessionsPage: React.FC = () => {
         error={actionError}
       />
 
-      {/* Unblock User Modal */}
       <UnblockConfirmModal
         isOpen={unblockModalOpen}
         onClose={() => setUnblockModalOpen(false)}
         onConfirm={confirmUnblockUser}
         loading={actionLoading}
       />
-    </div>
+
+      <ConfirmModal
+        isOpen={revokeModalOpen}
+        onClose={() => {
+          setRevokeModalOpen(false);
+          setTimeout(() => setSelectedSessionId(null), 0);
+        }}
+        onConfirm={confirmRevokeSession}
+        title='Revoca Sessione'
+        message="Sei sicuro di voler revocare questa sessione? L'utente verrà disconnesso da questo dispositivo."
+        confirmText='Revoca'
+        cancelText='Annulla'
+        variant='danger'
+        isLoading={actionLoading}
+      />
+    </>
   );
 };
 

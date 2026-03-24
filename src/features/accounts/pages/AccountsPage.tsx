@@ -170,7 +170,8 @@ const AccountsPage: React.FC = () => {
     },
     {
       header: 'Creato il',
-      accessor: account => <span className='text-body-sm'>{formatDate(account.createdAt)}</span>,
+      accessor: 'createdAt',
+      render: account => <span className='text-body-sm'>{formatDate(account.createdAt)}</span>,
       sortable: true,
     },
   ];

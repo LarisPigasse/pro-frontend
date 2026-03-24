@@ -1,13 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { selectAccount } from '@/features/auth/store/authSlice';
-import {
-  fetchActiveSessions,
-  revokeSession,
-  blockUser,
-  unblockUser,
-  fetchBlockedUsers,
-} from '../api/sessionsApi';
+import { fetchActiveSessions, revokeSession, blockUser, unblockUser, fetchBlockedUsers } from '../api/sessionsApi';
 import type { Session, BlockUserRequest, BlockedUser } from '../types';
 
 interface UseSessionsReturn {
@@ -24,7 +18,7 @@ interface UseSessionsReturn {
 
 /**
  * Hook per gestire sessioni attive con auto-refresh
- * 
+ *
  * Features:
  * - Caricamento iniziale sessioni
  * - Auto-refresh ogni 30 secondi
@@ -38,9 +32,9 @@ export const useSessions = (): UseSessionsReturn => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
-  
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   // Ottieni accountId dell'utente loggato da Redux
   const account = useSelector(selectAccount);
   const currentAccountId = account?.id;
@@ -51,31 +45,27 @@ export const useSessions = (): UseSessionsReturn => {
   const loadSessions = useCallback(async () => {
     try {
       setError(null);
-      
+
       // Carica sessioni attive
       const sessionsResponse = await fetchActiveSessions();
       setSessions(sessionsResponse.data);
-      
+
       // Carica utenti bloccati
       const blockedResponse = await fetchBlockedUsers();
       setBlockedUsers(blockedResponse.data);
-      
+
       // Identifica sessione corrente confrontando accountId
       if (sessionsResponse.data.length > 0 && currentAccountId) {
         // Trova la sessione dell'utente corrente più recente
-        const userSessions = sessionsResponse.data.filter(
-          (s) => s.user.id === currentAccountId
-        );
-        
+        const userSessions = sessionsResponse.data.filter(s => s.user.id === currentAccountId);
+
         if (userSessions.length > 0) {
           // Ordina per lastActivityAt DESC e prendi la più recente
-          const sorted = [...userSessions].sort(
-            (a, b) => {
-              const timeA = new Date(a.lastActivityAt || a.createdAt).getTime();
-              const timeB = new Date(b.lastActivityAt || b.createdAt).getTime();
-              return timeB - timeA;
-            }
-          );
+          const sorted = [...userSessions].sort((a, b) => {
+            const timeA = new Date(a.lastActivityAt || a.createdAt).getTime();
+            const timeB = new Date(b.lastActivityAt || b.createdAt).getTime();
+            return timeB - timeA;
+          });
           setCurrentSessionId(sorted[0].id);
         }
       }
@@ -98,44 +88,53 @@ export const useSessions = (): UseSessionsReturn => {
   /**
    * Revoca una sessione
    */
-  const handleRevokeSession = useCallback(async (sessionId: number) => {
-    try {
-      await revokeSession(sessionId);
-      // Refresh immediato
-      await loadSessions();
-    } catch (err: any) {
-      console.error('Errore revoca sessione:', err);
-      throw new Error(err.response?.data?.message || 'Errore nella revoca della sessione');
-    }
-  }, [loadSessions]);
+  const handleRevokeSession = useCallback(
+    async (sessionId: number) => {
+      try {
+        await revokeSession(sessionId);
+        // Refresh immediato
+        await loadSessions();
+      } catch (err: any) {
+        console.error('Errore revoca sessione:', err);
+        throw new Error(err.response?.data?.message || 'Errore nella revoca della sessione');
+      }
+    },
+    [loadSessions]
+  );
 
   /**
    * Blocca un utente
    */
-  const handleBlockUser = useCallback(async (userId: number, blockData: BlockUserRequest) => {
-    try {
-      await blockUser(userId, blockData);
-      // Refresh immediato (le sessioni dell'utente bloccato saranno revocate)
-      await loadSessions();
-    } catch (err: any) {
-      console.error('Errore blocco utente:', err);
-      throw new Error(err.response?.data?.message || "Errore nel blocco dell'utente");
-    }
-  }, [loadSessions]);
+  const handleBlockUser = useCallback(
+    async (userId: number, blockData: BlockUserRequest) => {
+      try {
+        await blockUser(userId, blockData);
+        // Refresh immediato (le sessioni dell'utente bloccato saranno revocate)
+        await loadSessions();
+      } catch (err: any) {
+        console.error('Errore blocco utente:', err);
+        throw new Error(err.response?.data?.message || "Errore nel blocco dell'utente");
+      }
+    },
+    [loadSessions]
+  );
 
   /**
    * Sblocca un utente
    */
-  const handleUnblockUser = useCallback(async (userId: number) => {
-    try {
-      await unblockUser(userId);
-      // Refresh immediato
-      await loadSessions();
-    } catch (err: any) {
-      console.error('Errore sblocco utente:', err);
-      throw new Error(err.response?.data?.message || "Errore nello sblocco dell'utente");
-    }
-  }, [loadSessions]);
+  const handleUnblockUser = useCallback(
+    async (userId: number) => {
+      try {
+        await unblockUser(userId);
+        // Refresh immediato
+        await loadSessions();
+      } catch (err: any) {
+        console.error('Errore sblocco utente:', err);
+        throw new Error(err.response?.data?.message || "Errore nello sblocco dell'utente");
+      }
+    },
+    [loadSessions]
+  );
 
   /**
    * Setup auto-refresh ogni 30 secondi
@@ -147,7 +146,7 @@ export const useSessions = (): UseSessionsReturn => {
     // Setup polling
     intervalRef.current = setInterval(() => {
       loadSessions();
-    }, 30000); // 30 secondi
+    }, 60000); // 60 secondi
 
     // Cleanup
     return () => {

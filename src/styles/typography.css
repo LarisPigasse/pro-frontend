@@ -12,7 +12,7 @@
 
 /* Section Level Typography */
 .text-section-title {
-  @apply text-2xl font-semibold text-text-primary;
+  @apply text-lg font-semibold text-text-primary;
 }
 
 .text-section-subtitle {

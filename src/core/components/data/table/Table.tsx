@@ -9,13 +9,14 @@ import { X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 export interface TableColumn<T> {
   header: string | (() => ReactNode);
   accessor: keyof T | ((item: T) => ReactNode);
+  /** Renderer opzionale per la visualizzazione — usato quando accessor è una chiave stringa
+   *  ma si vuole mostrare un valore formattato/styled diverso dal raw value.
+   *  Il sorting avviene sul valore di accessor, la visualizzazione usa render. */
+  render?: (item: T) => ReactNode;
   className?: string;
   sortable?: boolean;
-  /** Rende la cella cliccabile come link */
   clickable?: boolean;
-  /** Callback per celle cliccabili */
   onCellClick?: (item: T) => void;
-  /** Variante colore per celle cliccabili */
   clickVariant?: 'primary' | 'secondary' | 'danger' | 'success';
 }
 
@@ -445,7 +446,12 @@ function Table<T>({
                 }
 
                 // Handle regular columns
-                const cellContent = typeof column.accessor === 'function' ? column.accessor(item) : item[column.accessor];
+                const cellContent =
+                  typeof column.accessor === 'function'
+                    ? column.accessor(item)
+                    : column.render
+                      ? column.render(item)
+                      : item[column.accessor];
 
                 const isClickableCell = column.clickable;
 

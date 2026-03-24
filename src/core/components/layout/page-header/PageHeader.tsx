@@ -3,13 +3,13 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Tooltip } from '@/core/components/feedback';
-import { Button } from '@/core/components/ui';
+import { Button } from '@/core/components/ui/';
 
 interface PageHeaderProps {
-  /** Titolo principale della pagina */
-  title: string;
-  /** Sottotitolo descrittivo (opzionale) */
-  subtitle?: string;
+  /** Titolo principale della pagina — accetta string o ReactNode per contenuto formattato */
+  title: React.ReactNode;
+  /** Sottotitolo descrittivo (opzionale) — accetta string o ReactNode per contenuto formattato */
+  subtitle?: React.ReactNode;
   /** Callback per il refresh — se assente, il pulsante non viene mostrato */
   onRefresh?: () => void;
   /** True mentre il dato è in caricamento (fa girare l'icona) */
