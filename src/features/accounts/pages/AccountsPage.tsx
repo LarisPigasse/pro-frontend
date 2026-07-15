@@ -8,7 +8,7 @@ import Table from '@/core/components/data/table/Table';
 import type { TableColumn } from '@/core/components/data/table/Table';
 import { Plus, Eye, UserX, UserCheck, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccounts';
-import { AccountFilters, CreateAccountModal, EditAccountModal, ViewAccountModal } from './components';
+import { AccountFilters, CreateAccountModal, EditAccountModal, ViewAccountModal } from '../components';
 import type { Account } from '../types';
 
 const AccountsPage: React.FC = () => {

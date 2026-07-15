@@ -3,115 +3,114 @@
 // features/vehicles/components/DriverFilters.tsx
 // =============================================================================
 
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
+import { Filter, X } from 'lucide-react';
+import { Button, Badge } from '@/core/components/ui';
+import { Input } from '@/core/components/form/input/Input';
+import { Select } from '@/core/components/form/select/Select';
+import type { DriverFilters as DriverFiltersType } from '../types/vehicles.types';
 
-import Input from '@/core/components/form/input/Input';
-import Select from '@/core/components/form/select/Select';
-import { Button } from '@/core/components/ui';
-import type { SelectOption } from '@/core/components/form/select/Select';
-import type { DriverFilters, DriverComplianceStatusValue } from '../types/vehicles.types';
+interface DriverFiltersProps {
+  currentFilters: DriverFiltersType;
+  onApply: (filters: Partial<DriverFiltersType>) => void;
+  onReset: () => void;
+}
 
-// -----------------------------------------------------------------------------
-// OPZIONI
-// -----------------------------------------------------------------------------
-
-const COMPLIANCE_OPTIONS: SelectOption[] = [
-  { value: 'all',      label: 'Tutti gli stati' },
-  { value: 'ok',       label: 'In regola' },
-  { value: 'expiring', label: 'In scadenza' },
-  { value: 'expired',  label: 'Scaduti' },
-  { value: 'none',     label: 'Senza documenti' },
-];
-
-const ACTIVE_OPTIONS: SelectOption[] = [
-  { value: 'all',   label: 'Tutti' },
-  { value: 'true',  label: 'Attivi' },
+const ACTIVE_OPTIONS = [
+  { value: 'true', label: 'Attivi' },
   { value: 'false', label: 'Disattivati' },
 ];
 
-// -----------------------------------------------------------------------------
-// PROPS
-// -----------------------------------------------------------------------------
+export const DriverFilters: React.FC<DriverFiltersProps> = ({ currentFilters, onApply, onReset }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [draft, setDraft] = useState<DriverFiltersType>(currentFilters);
 
-interface DriverFiltersProps {
-  filters:         DriverFilters;
-  onFiltersChange: (filters: Partial<DriverFilters>) => void;
-  onReset:         () => void;
-  totalResults?:   number;
-}
+  // 'active' è sempre valorizzato (default true) — non è un filtro "opzionale" come search/city
+  const activeCount = [currentFilters.search, currentFilters.city].filter(v => !!v).length;
 
-// -----------------------------------------------------------------------------
-// COMPONENT
-// -----------------------------------------------------------------------------
+  const handleOpen = () => {
+    setDraft(currentFilters); // sincronizza il draft con i filtri correnti all'apertura
+    setIsOpen(true);
+  };
 
-export const DriverFilters: React.FC<DriverFiltersProps> = ({
-  filters,
-  onFiltersChange,
-  onReset,
-  totalResults,
-}) => {
-  const hasActiveFilters =
-    filters.search !== '' ||
-    filters.complianceStatus !== 'all' ||
-    filters.isActive !== 'all';
+  const handleApply = () => {
+    onApply({
+      search: draft.search || undefined,
+      city: draft.city || undefined,
+      active: draft.active,
+    });
+    setIsOpen(false);
+  };
 
-  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ search: e.target.value });
-  }, [onFiltersChange]);
-
-  const handleCompliance = useCallback((value: string) => {
-    onFiltersChange({ complianceStatus: value as DriverComplianceStatusValue | 'all' });
-  }, [onFiltersChange]);
-
-  const handleActive = useCallback((value: string) => {
-    onFiltersChange({ isActive: value as 'all' | 'true' | 'false' });
-  }, [onFiltersChange]);
-
+  const handleReset = () => {
+    setDraft({ active: true }); // riflette localmente lo stato di default nel pannello
+    onReset();
+    setIsOpen(false);
+  };
   return (
-    <div className='flex flex-col gap-3 mb-6'>
-      <div className='flex flex-wrap items-end gap-4'>
-
-        {/* Ricerca */}
-        <div className='flex-1 min-w-48'>
-          <Input
-            label='Cerca autista'
-            value={filters.search}
-            onChange={handleSearch}
-          />
-        </div>
-
-        {/* Conformità */}
-        <Select
-          options={COMPLIANCE_OPTIONS}
-          value={filters.complianceStatus}
-          onChange={handleCompliance}
-        />
-
-        {/* Stato */}
-        <Select
-          options={ACTIVE_OPTIONS}
-          value={filters.isActive}
-          onChange={handleActive}
-        />
-
-        {/* Reset */}
-        {hasActiveFilters && (
-          <Button variant='ghost' size='sm' onClick={onReset}>
-            Reset filtri
-          </Button>
+    <div className='relative mb-6'>
+      {/* ── Trigger button ── */}
+      <Button variant='outline' size='md' leftIcon={<Filter className='w-4 h-4' />} onClick={handleOpen}>
+        Filtri
+        {activeCount > 0 && (
+          <Badge variant='info' size='xs' className='ml-2'>
+            {activeCount}
+          </Badge>
         )}
+      </Button>
 
-      </div>
+      {/* ── Dropdown panel ── */}
+      {isOpen && (
+        <>
+          {/* Overlay per chiudere cliccando fuori */}
+          <div className='fixed inset-0 z-40' onClick={() => setIsOpen(false)} />
 
-      {/* Totale risultati */}
-      {totalResults !== undefined && (
-        <p className='text-xs text-text-secondary'>
-          {totalResults === 0
-            ? 'Nessun autista trovato'
-            : `${totalResults} autist${totalResults === 1 ? 'a' : 'i'}`}
-          {hasActiveFilters && ' con i filtri applicati'}
-        </p>
+          <div className='absolute top-full left-0 mt-2 w-80 bg-bg-primary rounded-lg shadow-themed-lg border border-border-default z-50'>
+            {/* Header */}
+            <div className='flex items-center justify-between p-4 border-b border-border-default'>
+              <h3 className='text-section-title text-base'>Filtri</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className='p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors'
+                aria-label='Chiudi filtri'
+              >
+                <X className='w-5 h-5' />
+              </button>
+            </div>
+
+            {/* Campi filtro */}
+            <div className='p-4 space-y-5 max-h-96 overflow-y-auto'>
+              <Input
+                label='Cerca autista'
+                helperText='Nome, cognome o codice fiscale'
+                value={draft.search || ''}
+                onChange={e => setDraft({ ...draft, search: e.target.value })}
+              />
+
+              <Input label='Città' value={draft.city || ''} onChange={e => setDraft({ ...draft, city: e.target.value })} />
+
+              <Select
+                label='Stato'
+                options={ACTIVE_OPTIONS}
+                value={String(draft.active ?? true)}
+                onValueChange={value => setDraft({ ...draft, active: value === 'true' })}
+              />
+            </div>
+
+            {/* Footer */}
+            <div className='flex items-center justify-end gap-2 p-4 border-t border-border-default'>
+              <Button variant='ghost' size='sm' onClick={handleReset}>
+                Reset
+              </Button>
+              <Button variant='primary' size='sm' onClick={handleApply}>
+                Applica
+              </Button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 };
+
+export default DriverFilters;

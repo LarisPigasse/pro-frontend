@@ -24,7 +24,7 @@ export const ROUTES = {
   VEICOLI_DOTAZIONE: '/veicoli/dotazione',
   VEICOLI_AUTISTI: '/veicoli/autisti',
   VEICOLI_SCADENZE: '/veicoli/scadenze',
-  VEICOLI_STORICO: '/veicoli/storico',
+  VEICOLI_INTERVENTI: '/veicoli/interventi',
   VEICOLI_CONFIGURAZIONE: '/veicoli/configurazione',
 
   // Modulo Sistema
@@ -32,8 +32,7 @@ export const ROUTES = {
   SISTEMA_ACCOUNT: '/sistema/accounts',
   SISTEMA_SESSIONS: '/sistema/sessions',
   SISTEMA_LOGS: '/sistema/logs',
-  SISTEMA_ALERTS: '/sistema/alerts',
-  SISTEMA_HEALTH: '/sistema/health',
+  SISTEMA_INFO: '/sistema/info',
   SISTEMA_EXPLORER: '/sistema/explorer',
 
   // Auth

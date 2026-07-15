@@ -3,136 +3,72 @@
 // features/vehicles/components/DriverComplianceBadge.tsx
 // =============================================================================
 //
-// Semaforo visivo dello stato di conformità documentale di un autista.
+// Badge riassuntivo dello stato di conformità documentale di un autista.
+// Presentazionale puro — riceve il riepilogo già calcolato da useDriverCompliances,
+// nessuna logica di business qui dentro.
 //
-// Varianti:
-//   dot    — cerchio colorato (uso in tabella, compatto)
-//   badge  — dot + etichetta testo (uso in header modal)
-//   full   — dot + etichetta + conteggio documenti problematici
-// =============================================================================
 
 import React from 'react';
-import type { DriverComplianceStatusValue } from '../types/vehicles.types';
-
-// -----------------------------------------------------------------------------
-// CONFIGURAZIONE STATUS
-// -----------------------------------------------------------------------------
-
-interface StatusConfig {
-  dot: string; // classe colore del cerchio
-  ring: string; // classe colore del ring (pulse)
-  label: string; // etichetta testuale
-  text: string; // classe colore del testo
-}
-
-const STATUS_CONFIG: Record<DriverComplianceStatusValue, StatusConfig> = {
-  ok: {
-    dot: 'bg-green-500',
-    ring: 'bg-green-500',
-    label: 'In regola',
-    text: 'text-green-600',
-  },
-  expiring: {
-    dot: 'bg-amber-500',
-    ring: 'bg-amber-500',
-    label: 'In scadenza',
-    text: 'text-amber-600',
-  },
-  expired: {
-    dot: 'bg-red-500',
-    ring: 'bg-red-500',
-    label: 'Scaduto',
-    text: 'text-red-600',
-  },
-  none: {
-    dot: 'bg-gray-400',
-    ring: 'bg-gray-400',
-    label: 'Nessun documento',
-    text: 'text-text-secondary',
-  },
-};
-
-// -----------------------------------------------------------------------------
-// PROPS
-// -----------------------------------------------------------------------------
+import type { LucideIcon } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, MinusCircle, HelpCircle } from 'lucide-react';
+import { Badge } from '@/core/components/ui';
+import type { BadgeVariant } from '@/core/components/ui/badge/Badge';
+import { Tooltip } from '@/core/components/feedback';
+import { DRIVER_COMPLIANCE_STATUS_LABELS } from '../types/vehicles.types';
+import type { DriverComplianceSummary } from '../hooks/useDriverCompliances';
 
 interface DriverComplianceBadgeProps {
-  status: DriverComplianceStatusValue;
-  variant?: 'dot' | 'badge' | 'full';
-  /** Numero documenti con problemi — usato solo in variant='full' */
-  issueCount?: number;
-  /** Aggiunge tooltip al passaggio del mouse */
-  tooltip?: boolean;
-  className?: string;
+  /** undefined mentre il batch è in corso di caricamento */
+  summary?: DriverComplianceSummary;
 }
 
-// -----------------------------------------------------------------------------
-// COMPONENT
-// -----------------------------------------------------------------------------
+interface StatusConfigEntry {
+  variant: BadgeVariant;
+  icon: LucideIcon; // riferimento al componente, NON un elemento JSX già istanziato
+}
 
-export const DriverComplianceBadge: React.FC<DriverComplianceBadgeProps> = ({
-  status,
-  variant = 'dot',
-  issueCount,
-  tooltip = true,
-  className = '',
-}) => {
-  const config = STATUS_CONFIG[status];
+const STATUS_CONFIG: Record<DriverComplianceSummary['status'], StatusConfigEntry> = {
+  valid: { variant: 'success', icon: CheckCircle2 },
+  expiring: { variant: 'warning', icon: AlertTriangle },
+  expired: { variant: 'danger', icon: XCircle },
+  not_applicable: { variant: 'default', icon: MinusCircle },
+  none: { variant: 'default', icon: HelpCircle },
+};
 
-  // ── Dot pulsante per stati critici ────────────────────────────────────────
-  const dot = (
-    <span className='relative flex items-center justify-center w-3 h-3 flex-shrink-0'>
-      {/* Pulse animato per expired e expiring */}
-      {(status === 'expired' || status === 'expiring') && (
-        <span
-          className={`absolute inline-flex w-full h-full rounded-full opacity-60
-                      animate-ping ${config.ring}`}
-        />
-      )}
-      <span className={`relative inline-flex w-2.5 h-2.5 rounded-full ${config.dot}`} />
-    </span>
-  );
+/** Costruisce il testo del tooltip in base al dettaglio del riepilogo */
+const buildTooltipText = (summary: DriverComplianceSummary): string => {
+  if (summary.status === 'none') return 'Nessun documento registrato';
+  if (summary.status === 'expired') {
+    const parts = [`${summary.expiredCount} scadut${summary.expiredCount === 1 ? 'o' : 'i'}`];
+    if (summary.expiringCount > 0) parts.push(`${summary.expiringCount} in scadenza`);
+    return parts.join(', ');
+  }
+  if (summary.status === 'expiring')
+    return `${summary.expiringCount} document${summary.expiringCount === 1 ? 'o' : 'i'} in scadenza`;
+  if (summary.status === 'not_applicable') return 'Nessun documento con scadenza';
+  return `${summary.totalCount} document${summary.totalCount === 1 ? 'o' : 'i'} in regola`;
+};
 
-  // ── Variante: solo dot ────────────────────────────────────────────────────
-  if (variant === 'dot') {
+export const DriverComplianceBadge: React.FC<DriverComplianceBadgeProps> = ({ summary }) => {
+  // Stato di caricamento — placeholder discreto, evita layout shift nella colonna
+  if (!summary) {
     return (
-      <span
-        className={`inline-flex items-center justify-center ${className}`}
-        title={tooltip ? config.label : undefined}
-        aria-label={config.label}
-      >
-        {dot}
-      </span>
+      <Badge variant='default' size='sm'>
+        <span className='inline-block w-3 h-3 rounded-full border-2 border-text-placeholder border-t-transparent animate-spin' />
+      </Badge>
     );
   }
 
-  // ── Variante: dot + label ─────────────────────────────────────────────────
-  if (variant === 'badge') {
-    return (
-      <span className={`inline-flex items-center gap-1.5 ${className}`} aria-label={config.label}>
-        {dot}
-        <span className={`text-xs font-medium ${config.text}`}>{config.label}</span>
-      </span>
-    );
-  }
+  const { variant, icon: Icon } = STATUS_CONFIG[summary.status];
 
-  // ── Variante: dot + label + conteggio problemi ────────────────────────────
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`} aria-label={config.label}>
-      {dot}
-      <span className={`text-sm font-medium ${config.text}`}>{config.label}</span>
-      {issueCount !== undefined && issueCount > 0 && (
-        <span
-          className={`
-            inline-flex items-center justify-center min-w-5 h-5 px-1.5
-            rounded-full text-xs font-semibold text-white
-            ${status === 'expired' ? 'bg-red-500' : ''}
-            ${status === 'expiring' ? 'bg-amber-500' : ''}
-          `}
-        >
-          {issueCount}
-        </span>
-      )}
-    </span>
+    <Tooltip content={buildTooltipText(summary)} side='top'>
+      <Badge variant={variant} size='sm' className='inline-flex items-center gap-1 cursor-default'>
+        <Icon className='w-3.5 h-3.5' />
+        {DRIVER_COMPLIANCE_STATUS_LABELS[summary.status]}
+      </Badge>
+    </Tooltip>
   );
 };
+
+export default DriverComplianceBadge;

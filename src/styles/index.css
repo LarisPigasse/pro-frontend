@@ -57,6 +57,12 @@
   --color-category-data: var(--category-data);
   --color-category-layout: var(--category-layout);
 
+  /* Card bg variants */
+  --color-card-base: var(--card-base);
+  --color-card-info: var(--card-info);
+  --color-card-alert: var(--card-alert);
+  --color-card-warning: var(--card-warning);
+
   /* Modal variants - mapping */
   --color-modal-success-bg: var(--modal-success-bg);
   --color-modal-success-text: var(--modal-success-text);

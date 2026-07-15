@@ -1,276 +1,153 @@
 // =============================================================================
-// VEHICLES MODULE — COMPONENT: VehicleFilters
+// ASSET AZIENDALI — COMPONENT: VehicleFilters
 // features/vehicles/components/VehicleFilters.tsx
 // =============================================================================
-//
-// Pannello filtri per la lista veicoli.
-// Gestisce: ricerca testuale, categoria, status, carburante.
-//
-// Utilizzo:
-//   <VehicleFilters
-//     filters={filters}
-//     lookups={lookups}
-//     lookupsLoading={loading}
-//     onFiltersChange={setFilters}
-//     onReset={resetFilters}
-//   />
-// =============================================================================
 
-import React, { useCallback } from 'react';
-
-import type { VehicleFiltersState, VehicleLookups } from '../types/vehicles.types';
-
-// -----------------------------------------------------------------------------
-// PROPS
-// -----------------------------------------------------------------------------
+import React, { useState } from 'react';
+import { Filter, X } from 'lucide-react';
+import { Button, Badge } from '@/core/components/ui';
+import { Input } from '@/core/components/form/input/Input';
+import { Select } from '@/core/components/form/select/Select';
+import { useActiveVehicleCategories } from '../hooks/useActiveVehicleCategories';
+import { VEHICLE_STATUS_LABELS, FUEL_TYPE_LABELS } from '../types/vehicles.types';
+import type { VehicleFilters as VehicleFiltersType, VehicleStatus, FuelType } from '../types/vehicles.types';
 
 interface VehicleFiltersProps {
-  filters: VehicleFiltersState;
-  lookups: VehicleLookups;
-  lookupsLoading: boolean;
-  onFiltersChange: (updates: Partial<VehicleFiltersState>) => void;
+  currentFilters: VehicleFiltersType;
+  onApply: (filters: Partial<VehicleFiltersType>) => void;
   onReset: () => void;
-  /** Numero totale risultati — per mostrare il contatore */
-  totalResults?: number;
 }
 
-// -----------------------------------------------------------------------------
-// HELPERS
-// -----------------------------------------------------------------------------
+const STATUS_OPTIONS = [
+  { value: 'active', label: VEHICLE_STATUS_LABELS.active },
+  { value: 'maintenance', label: VEHICLE_STATUS_LABELS.maintenance },
+  { value: 'inactive', label: VEHICLE_STATUS_LABELS.inactive },
+  { value: 'decommissioned', label: VEHICLE_STATUS_LABELS.decommissioned },
+  { value: 'all', label: 'Tutti gli stati' },
+];
 
-/** Restituisce true se almeno un filtro non-default è attivo */
-const hasActiveFilters = (filters: VehicleFiltersState): boolean =>
-  Boolean(filters.search || filters.categoryId || filters.statusId || filters.fuelTypeId);
+const FUEL_OPTIONS = [
+  { value: 'all', label: 'Tutti i carburanti' },
+  ...(Object.entries(FUEL_TYPE_LABELS) as [FuelType, string][]).map(([value, label]) => ({ value, label })),
+];
 
-// -----------------------------------------------------------------------------
-// COMPONENT
-// -----------------------------------------------------------------------------
+const HAS_PLATE_OPTIONS = [
+  { value: 'all', label: 'Tutti' },
+  { value: 'true', label: 'Con targa' },
+  { value: 'false', label: 'Senza targa' },
+];
 
-export const VehicleFilters: React.FC<VehicleFiltersProps> = ({
-  filters,
-  lookups,
-  lookupsLoading,
-  onFiltersChange,
-  onReset,
-  totalResults,
-}) => {
-  // --- Handlers ---
+export const VehicleFilters: React.FC<VehicleFiltersProps> = ({ currentFilters, onApply, onReset }) => {
+  const { options: categoryOptions } = useActiveVehicleCategories();
+  const [isOpen, setIsOpen] = useState(false);
+  const [draft, setDraft] = useState<VehicleFiltersType>(currentFilters);
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onFiltersChange({ search: e.target.value || undefined });
-    },
-    [onFiltersChange]
-  );
+  const activeCount = [
+    currentFilters.search,
+    currentFilters.categoryId,
+    currentFilters.fuelType,
+    currentFilters.hasPlate,
+  ].filter(v => v !== undefined && v !== '').length;
 
-  const handleCategoryChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      onFiltersChange({ categoryId: value ? Number(value) : undefined });
-    },
-    [onFiltersChange]
-  );
+  const handleOpen = () => {
+    setDraft(currentFilters);
+    setIsOpen(true);
+  };
 
-  const handleStatusChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      onFiltersChange({ statusId: value ? Number(value) : undefined });
-    },
-    [onFiltersChange]
-  );
+  const handleApply = () => {
+    onApply({
+      search: draft.search || undefined,
+      status: draft.status,
+      categoryId: draft.categoryId,
+      fuelType: draft.fuelType,
+      hasPlate: draft.hasPlate,
+    });
+    setIsOpen(false);
+  };
 
-  const handleFuelTypeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      onFiltersChange({ fuelTypeId: value ? Number(value) : undefined });
-    },
-    [onFiltersChange]
-  );
-
-  const active = hasActiveFilters(filters);
+  const handleReset = () => {
+    setDraft({ status: 'active' });
+    onReset();
+    setIsOpen(false);
+  };
 
   return (
-    <div className='flex flex-col gap-3'>
-      {/* --- Riga principale filtri --- */}
-      <div className='flex flex-wrap items-center gap-2'>
-        {/* Ricerca testuale */}
-        <div className='relative flex-1 min-w-48'>
-          <span className='absolute inset-y-0 left-3 flex items-center pointer-events-none text-text-secondary'>
-            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z'
-              />
-            </svg>
-          </span>
-          <input
-            type='text'
-            placeholder='Cerca targa, marca, modello...'
-            value={filters.search ?? ''}
-            onChange={handleSearchChange}
-            className='
-              w-full pl-9 pr-3 py-2 text-sm rounded-lg border
-              bg-surface-secondary border-border-primary
-              text-text-primary placeholder:text-text-secondary
-              focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
-              transition-colors
-            '
-          />
-        </div>
-
-        {/* Select Categoria */}
-        <select
-          value={filters.categoryId ?? ''}
-          onChange={handleCategoryChange}
-          disabled={lookupsLoading}
-          className='
-            px-3 py-2 text-sm rounded-lg border min-w-36
-            bg-surface-secondary border-border-primary
-            text-text-primary
-            focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-colors
-          '
-        >
-          <option value=''>Tutte le categorie</option>
-          {lookups.categories.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Select Status */}
-        <select
-          value={filters.statusId ?? ''}
-          onChange={handleStatusChange}
-          disabled={lookupsLoading}
-          className='
-            px-3 py-2 text-sm rounded-lg border min-w-36
-            bg-surface-secondary border-border-primary
-            text-text-primary
-            focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-colors
-          '
-        >
-          <option value=''>Tutti gli status</option>
-          {lookups.statuses.map(s => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Select Carburante */}
-        <select
-          value={filters.fuelTypeId ?? ''}
-          onChange={handleFuelTypeChange}
-          disabled={lookupsLoading}
-          className='
-            px-3 py-2 text-sm rounded-lg border min-w-36
-            bg-surface-secondary border-border-primary
-            text-text-primary
-            focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-colors
-          '
-        >
-          <option value=''>Tutti i carburanti</option>
-          {lookups.fuelTypes.map(ft => (
-            <option key={ft.id} value={ft.id}>
-              {ft.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Bottone reset — visibile solo se c'è almeno un filtro attivo */}
-        {active && (
-          <button
-            onClick={onReset}
-            className='
-              flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg
-              text-text-secondary hover:text-text-primary
-              border border-border-primary hover:border-border-secondary
-              bg-surface-secondary hover:bg-surface-tertiary
-              transition-colors
-            '
-          >
-            <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-            </svg>
-            Resetta
-          </button>
+    <div className='relative mb-6'>
+      <Button variant='outline' size='md' leftIcon={<Filter className='w-4 h-4' />} onClick={handleOpen}>
+        Filtri
+        {activeCount > 0 && (
+          <Badge variant='info' size='xs' className='ml-2'>
+            {activeCount}
+          </Badge>
         )}
-      </div>
+      </Button>
 
-      {/* --- Riga info risultati + filtri attivi --- */}
-      {(active || totalResults !== undefined) && (
-        <div className='flex items-center gap-3 flex-wrap'>
-          {/* Contatore risultati */}
-          {totalResults !== undefined && (
-            <span className='text-xs text-text-secondary'>
-              {totalResults === 0
-                ? 'Nessun veicolo trovato'
-                : `${totalResults} veicol${totalResults === 1 ? 'o' : 'i'} trovati`}
-            </span>
-          )}
+      {isOpen && (
+        <>
+          <div className='fixed inset-0 z-40' onClick={() => setIsOpen(false)} />
 
-          {/* Chip filtri attivi */}
-          {active && (
-            <div className='flex items-center gap-1.5 flex-wrap'>
-              {filters.search && (
-                <FilterChip label={`"${filters.search}"`} onRemove={() => onFiltersChange({ search: undefined })} />
-              )}
-              {filters.categoryId && (
-                <FilterChip
-                  label={lookups.categories.find(c => c.id === filters.categoryId)?.name ?? 'Categoria'}
-                  onRemove={() => onFiltersChange({ categoryId: undefined })}
-                />
-              )}
-              {filters.statusId && (
-                <FilterChip
-                  label={lookups.statuses.find(s => s.id === filters.statusId)?.label ?? 'Status'}
-                  onRemove={() => onFiltersChange({ statusId: undefined })}
-                />
-              )}
-              {filters.fuelTypeId && (
-                <FilterChip
-                  label={lookups.fuelTypes.find(f => f.id === filters.fuelTypeId)?.name ?? 'Carburante'}
-                  onRemove={() => onFiltersChange({ fuelTypeId: undefined })}
-                />
-              )}
+          <div className='absolute top-full left-0 mt-2 w-96 bg-bg-primary rounded-lg shadow-themed-lg border border-border-default z-50'>
+            <div className='flex items-center justify-between p-4 border-b border-border-default'>
+              <h3 className='text-section-title text-base'>Filtri</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className='p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors'
+                aria-label='Chiudi filtri'
+              >
+                <X className='w-5 h-5' />
+              </button>
             </div>
-          )}
-        </div>
+
+            <div className='p-4 space-y-5 max-h-[28rem] overflow-y-auto'>
+              <Input
+                label='Cerca veicolo'
+                helperText='Marca, modello, targa, VIN o codice interno'
+                value={draft.search || ''}
+                onChange={e => setDraft({ ...draft, search: e.target.value })}
+              />
+
+              <Select
+                label='Stato'
+                options={STATUS_OPTIONS}
+                value={draft.status ?? 'active'}
+                onValueChange={value => setDraft({ ...draft, status: value as VehicleStatus | 'all' })}
+              />
+
+              <Select
+                label='Categoria'
+                options={[{ value: 'all', label: 'Tutte le categorie' }, ...categoryOptions]}
+                value={draft.categoryId != null ? String(draft.categoryId) : 'all'}
+                onValueChange={value => setDraft({ ...draft, categoryId: value === 'all' ? undefined : Number(value) })}
+              />
+
+              <Select
+                label='Carburante'
+                options={FUEL_OPTIONS}
+                value={draft.fuelType ?? 'all'}
+                onValueChange={value => setDraft({ ...draft, fuelType: value === 'all' ? undefined : (value as FuelType) })}
+              />
+
+              <Select
+                label='Targa'
+                options={HAS_PLATE_OPTIONS}
+                value={draft.hasPlate === undefined ? 'all' : String(draft.hasPlate)}
+                onValueChange={value => setDraft({ ...draft, hasPlate: value === 'all' ? undefined : value === 'true' })}
+              />
+            </div>
+
+            <div className='flex items-center justify-end gap-2 p-4 border-t border-border-default'>
+              <Button variant='ghost' size='sm' onClick={handleReset}>
+                Reset
+              </Button>
+              <Button variant='primary' size='sm' onClick={handleApply}>
+                Applica
+              </Button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 };
 
-// -----------------------------------------------------------------------------
-// SUB-COMPONENT: FilterChip
-// -----------------------------------------------------------------------------
-
-interface FilterChipProps {
-  label: string;
-  onRemove: () => void;
-}
-
-const FilterChip: React.FC<FilterChipProps> = ({ label, onRemove }) => (
-  <span
-    className='
-    inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs
-    bg-blue-500/10 text-blue-600 border border-blue-500/20
-  '
-  >
-    {label}
-    <button onClick={onRemove} className='hover:text-blue-800 transition-colors ml-0.5' aria-label={`Rimuovi filtro ${label}`}>
-      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M6 18L18 6M6 6l12 12' />
-      </svg>
-    </button>
-  </span>
-);
+export default VehicleFilters;

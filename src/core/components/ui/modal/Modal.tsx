@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 
 import { cn } from '../../../utils/';
 
-export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
 
 interface ModalProps {
   /** Stato aperto/chiuso del modal */
@@ -55,9 +55,9 @@ const Modal: React.FC<ModalProps> = ({
     md: 'max-w-md',
     lg: 'max-w-lg',
     xl: 'max-w-2xl',
+    '2xl': 'max-w-4xl',
     full: 'max-w-[95vw] max-h-[95vh]',
   };
-
   // 🎨 Classes per overlay/backdrop - USA IL NOSTRO THEME SYSTEM
   const overlayClasses = cn(
     'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm',
@@ -80,7 +80,13 @@ const Modal: React.FC<ModalProps> = ({
   );
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={preventClose ? undefined : onClose}>
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={() => {
+        if (!preventClose) onClose();
+      }}
+      modal={false}
+    >
       {/* Overlay/Backdrop */}
       <Dialog.Portal>
         <Dialog.Overlay className={overlayClasses} />
@@ -90,13 +96,22 @@ const Modal: React.FC<ModalProps> = ({
           className={cn(contentClasses, 'bg-bg-modal border border-border-default rounded-xl shadow-xl flex flex-col')}
           onCloseAutoFocus={e => e.preventDefault()}
           onEscapeKeyDown={preventClose ? e => e.preventDefault() : undefined}
-          onPointerDownOutside={e => {
+          onInteractOutside={e => {
             if (preventClose) {
               e.preventDefault();
               return;
             }
-            const hasOpenRadixPortal = document.querySelector('[data-radix-popper-content-wrapper]') !== null;
-            if (hasOpenRadixPortal) {
+            // Non chiudere se l'interazione (click O spostamento del focus) avviene dentro:
+            // - un dropdown/popover Radix (data-radix-popper-content-wrapper)
+            // - un portale custom del template (data-modal-safe-portal, es. DatePicker/TimePicker)
+            // - un ALTRO dialog aperto (es. un modale figlio come "Aggiungi documento" aperto
+            //   sopra questo) — necessario perché due <Modal> "fratelli" nell'albero React
+            //   non si riconoscono automaticamente a vicenda come annidati
+            const target = e.target as Element | null;
+            const isInsideAnotherDialog = Boolean(target?.closest('[role="dialog"]'));
+            const hasOpenSafePortal =
+              document.querySelector('[data-radix-popper-content-wrapper], [data-modal-safe-portal]') !== null;
+            if (hasOpenSafePortal || isInsideAnotherDialog) {
               e.preventDefault();
             }
           }}

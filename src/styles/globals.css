@@ -53,6 +53,12 @@
   --category-data: #fcd34d; /* Amber-300 - Tables, Lists */
   --category-layout: #d4d4d8; /* Stone-300 - Layout components */
 
+  /* Card bg variants */
+  --card-base: #f5f5f4; /* Stone 100 - UI components */
+  --card-info: #bae6fd; /* sky 100 - Form components */
+  --card-alert: #d9f99d; /* Lime 200 - Navigation */
+  --card-warning: #fde68a; /* Amber-200 - Tables, Lists */
+
   /* Modal variants - Light mode */
   --modal-success-bg: #f0fdf4; /* Green 50 */
   --modal-success-text: #166534; /* Green 800 */
@@ -116,6 +122,12 @@
   --category-feedback: #9a3412; /* Orange 800 */
   --category-data: #92400e; /* Amber 800 */
   --category-layout: #42424a; /* Stone 800 */
+
+  /* Card bg variants */
+  --card-base: #78716c; /* Stone 500 - UI components */
+  --card-info: #0284c7; /* sky 600 - Form components */
+  --card-alert: #15803d; /* Green 700 - Navigation */
+  --card-warning: #b45309; /* Amber-700 - Tables, Lists */
 
   --modal-success-bg: #166534; /* Green 00 */
   --modal-success-text: #cbd5e1; /* Grigio chiaro */

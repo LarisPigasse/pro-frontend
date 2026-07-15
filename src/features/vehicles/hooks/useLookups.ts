@@ -3,89 +3,54 @@
 // features/vehicles/hooks/useLookups.ts
 // =============================================================================
 //
-// Carica in parallelo le lookup tables necessarie ai filtri e ai form:
-//   - VehicleCategory
-//   - VehicleStatus
-//   - FuelType
+// Punto unico di caricamento dei dati di riferimento (lookup) del modulo.
+// Oggi carica solo i tipi di conformità autisti; la struttura con
+// Promise.allSettled è già pronta ad accogliere i lookup dei blocchi futuri
+// (categorie veicoli, provider telematici, officine, ...) senza modifiche
+// alla logica di gestione errori.
 //
-// Utilizzo:
-//   const { lookups, loading, error } = useLookups();
-//
-// I dati vengono caricati al mount e non cambiano durante la sessione
-// (sono dati di configurazione, non operativi).
-// =============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
+import { fetchDriverComplianceTypes } from '../api/vehicles.api';
+import type { DriverComplianceType } from '../types/vehicles.types';
 
-import { vehicleLookupsApi } from '../api/vehicles.api';
-import type { VehicleLookups } from '../types/vehicles.types';
-
-// -----------------------------------------------------------------------------
-// STATO HOOK
-// -----------------------------------------------------------------------------
-
-interface UseLookupsState {
-  lookups: VehicleLookups;
+interface UseLookupsReturn {
+  driverComplianceTypes: DriverComplianceType[];
   loading: boolean;
   error: string | null;
+  reload: () => Promise<void>;
 }
 
-const EMPTY_LOOKUPS: VehicleLookups = {
-  categories: [],
-  statuses: [],
-  fuelTypes: [],
-};
+export const useLookups = (): UseLookupsReturn => {
+  const [driverComplianceTypes, setDriverComplianceTypes] = useState<DriverComplianceType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-// -----------------------------------------------------------------------------
-// HOOK
-// -----------------------------------------------------------------------------
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-export const useLookups = () => {
-  const [state, setState] = useState<UseLookupsState>({
-    lookups: EMPTY_LOOKUPS,
-    loading: true,
-    error: null,
-  });
+    const [complianceTypesResult] = await Promise.allSettled([fetchDriverComplianceTypes()]);
 
-  const fetchLookups = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-
-    try {
-      // Caricamento parallelo — le tre chiamate partono contemporaneamente
-      const [categoriesRes, statusesRes, fuelTypesRes] = await Promise.all([
-        vehicleLookupsApi.getCategories(),
-        vehicleLookupsApi.getStatuses(),
-        vehicleLookupsApi.getFuelTypes(),
-      ]);
-
-      setState({
-        lookups: {
-          categories: categoriesRes.data ?? [],
-          statuses: statusesRes.data ?? [],
-          fuelTypes: fuelTypesRes.data ?? [],
-        },
-        loading: false,
-        error: null,
-      });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Errore nel caricamento dei dati di configurazione';
-
-      setState({
-        lookups: EMPTY_LOOKUPS,
-        loading: false,
-        error: message,
-      });
+    if (complianceTypesResult.status === 'fulfilled') {
+      // Solo i tipi attivi hanno senso da proporre nella UI di assegnazione
+      setDriverComplianceTypes(complianceTypesResult.value.data.filter(t => t.isActive));
+    } else {
+      setError('Errore nel caricamento dei tipi di conformità');
     }
+
+    setLoading(false);
   }, []);
 
-  // Carica al mount
   useEffect(() => {
-    fetchLookups();
-  }, [fetchLookups]);
+    load();
+  }, [load]);
 
-  return {
-    ...state,
-    /** Forza il ricaricamento delle lookup (es. dopo creazione nuova categoria) */
-    reload: fetchLookups,
-  };
+  const reload = useCallback(async () => {
+    await load();
+  }, [load]);
+
+  return { driverComplianceTypes, loading, error, reload };
 };
+
+export default useLookups;

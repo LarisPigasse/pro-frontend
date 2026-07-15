@@ -1,11 +1,5 @@
 // src/features/system/index.ts
-export { SystemPage } from './pages';
-export { useSystem } from './hooks';
+export { InfoPage } from './pages';
+export { LogsListPage } from './pages';
 export { ServiceStatusCard } from './components';
-export type {
-  ServiceStatus,
-  ServiceHealth,
-  SystemStats,
-  LastAlert,
-  SystemHealthData,
-} from './api/systemApi';
+export type { ServiceStatus, ServiceHealth, SystemStats, LastAlert, SystemHealthData } from './api/systemApi';

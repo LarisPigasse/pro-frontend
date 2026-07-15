@@ -3,226 +3,380 @@
 // features/vehicles/api/vehicles.api.ts
 // =============================================================================
 
-import { apiService } from '@/core/services/';
-import type { ApiResponse } from '@/core/services/';
+import { apiFetch, getAuthHeaders } from '@/core/services/apiFetch';
 import type {
-  Vehicle,
-  VehicleCreateData,
-  VehicleEditData,
-  VehicleFilters,
-  VehicleCategory,
-  VehicleStatus,
-  FuelType,
-  DeadlineType,
-  MaintenanceType,
-  DriverComplianceType,
   Driver,
-  VehicleDeadline,
-  VehicleAssignment,
-  KmReading,
-  PaginatedApiResponse,
-  VehicleNotification,
+  CreateDriverData,
+  UpdateDriverData,
+  DriverFilters,
+  DriversListResponse,
+  DriverResponse,
   DriverCompliance,
-  DriverCreateData,
-  DriverEditData,
+  DriverComplianceType,
+  CreateDriverComplianceData,
+  RenewDriverComplianceData,
+  DriverComplianceFilters,
+  DriverComplianceListResponse,
+  DriverComplianceResponse,
+  DriverComplianceTypesResponse,
 } from '../types/vehicles.types';
 
-// Base path — corrisponde alla route montata nel gateway
-const BASE = '/api/vehicles';
+import type {
+  CreateDriverComplianceTypeData,
+  UpdateDriverComplianceTypeData,
+  DriverComplianceTypeResponse,
+} from '../types/lookups.types';
 
-// Nota sui generics:
-// - apiService.method<T>() restituisce Promise<ApiResponse<T>>
-// - Per risposte paginate si usa il cast: apiService.get(...) as Promise<PaginatedApiResponse<T>>
+import { VEHICLES_BASE as BASE, buildQuery, createLookupCrud } from './apiHelpers';
 
-// =============================================================================
-// LOOKUP TABLES
-// =============================================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Drivers — CRUD
+// ─────────────────────────────────────────────────────────────────────────────
 
-export const vehicleLookupsApi = {
-  getCategories: (): Promise<ApiResponse<VehicleCategory[]>> => apiService.get<VehicleCategory[]>(`${BASE}/vehicle-categories`),
-
-  getStatuses: (): Promise<ApiResponse<VehicleStatus[]>> => apiService.get<VehicleStatus[]>(`${BASE}/vehicle-statuses`),
-
-  getFuelTypes: (): Promise<ApiResponse<FuelType[]>> => apiService.get<FuelType[]>(`${BASE}/fuel-types`),
-
-  getDeadlineTypes: (): Promise<ApiResponse<DeadlineType[]>> => apiService.get<DeadlineType[]>(`${BASE}/deadline-types`),
-
-  getMaintenanceTypes: (): Promise<ApiResponse<MaintenanceType[]>> =>
-    apiService.get<MaintenanceType[]>(`${BASE}/maintenance-types`),
-
-  getDriverComplianceTypes: (): Promise<ApiResponse<DriverComplianceType[]>> =>
-    apiService.get<DriverComplianceType[]>(`${BASE}/driver-compliance-types`),
+export const fetchDrivers = async (filters: DriverFilters = {}): Promise<DriversListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    search: filters.search,
+    active: filters.active,
+    city: filters.city,
+  });
+  return apiFetch<DriversListResponse>(`${BASE}/drivers${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// VEHICLES — CORE
-// =============================================================================
+export const fetchDriverById = async (id: number): Promise<DriverResponse> =>
+  apiFetch<DriverResponse>(`${BASE}/drivers/${id}`, {
+    headers: getAuthHeaders(),
+  });
 
-export const vehiclesApi = {
-  getAll: (filters: VehicleFilters = {}): Promise<PaginatedApiResponse<Vehicle>> => {
-    const params = new URLSearchParams();
+export const createDriver = async (data: CreateDriverData): Promise<DriverResponse> =>
+  apiFetch<DriverResponse>(`${BASE}/drivers`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    if (filters.search) params.set('search', filters.search);
-    if (filters.categoryId) params.set('categoryId', String(filters.categoryId));
-    if (filters.statusId) params.set('statusId', String(filters.statusId));
-    if (filters.fuelTypeId) params.set('fuelTypeId', String(filters.fuelTypeId));
-    if (filters.page) params.set('page', String(filters.page));
-    if (filters.limit) params.set('limit', String(filters.limit));
+export const updateDriver = async (id: number, data: UpdateDriverData): Promise<DriverResponse> =>
+  apiFetch<DriverResponse>(`${BASE}/drivers/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/vehicles${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<Vehicle>>;
-  },
+/** Toggle isActive — sospensione/riattivazione reversibile (es. malattia, aspettativa) */
+export const toggleDriver = async (id: number): Promise<DriverResponse> =>
+  apiFetch<DriverResponse>(`${BASE}/drivers/${id}/toggle`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+  });
 
-  getById: (id: number): Promise<ApiResponse<Vehicle>> => apiService.get<Vehicle>(`${BASE}/vehicles/${id}`),
+/** Soft-delete — cessazione rapporto: isActive=false + terminationDate=oggi */
+export const deleteDriver = async (id: number): Promise<DriverResponse> =>
+  apiFetch<DriverResponse>(`${BASE}/drivers/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
 
-  create: (data: VehicleCreateData): Promise<ApiResponse<Vehicle>> => apiService.post<Vehicle>(`${BASE}/vehicles`, data),
+// ─────────────────────────────────────────────────────────────────────────────
+// Vehicles — CRUD (Blocco A — Dotazione)
+// ─────────────────────────────────────────────────────────────────────────────
 
-  update: (id: number, data: VehicleEditData): Promise<ApiResponse<Vehicle>> =>
-    apiService.put<Vehicle>(`${BASE}/vehicles/${id}`, data),
+import type {
+  Vehicle,
+  CreateVehicleData,
+  UpdateVehicleData,
+  UpdateVehicleStatusData,
+  VehicleFilters,
+  VehiclesListResponse,
+  VehicleResponse,
+} from '../types/vehicles.types';
 
-  delete: (id: number): Promise<ApiResponse<null>> => apiService.delete<null>(`${BASE}/vehicles/${id}`),
+export const fetchVehicles = async (filters: VehicleFilters = {}): Promise<VehiclesListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    search: filters.search,
+    status: filters.status,
+    categoryId: filters.categoryId,
+    fuelType: filters.fuelType,
+    hasPlate: filters.hasPlate,
+  });
+  return apiFetch<VehiclesListResponse>(`${BASE}/vehicles${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// DRIVERS
-// =============================================================================
+export const fetchVehicleById = async (id: number): Promise<VehicleResponse> =>
+  apiFetch<VehicleResponse>(`${BASE}/vehicles/${id}`, {
+    headers: getAuthHeaders(),
+  });
 
-export const driversApi = {
-  getAll: (
-    filters: { search?: string; isActive?: boolean; page?: number; limit?: number } = {}
-  ): Promise<PaginatedApiResponse<Driver>> => {
-    const params = new URLSearchParams();
-    if (filters.search !== undefined) params.set('search', filters.search);
-    if (filters.isActive !== undefined) params.set('isActive', String(filters.isActive));
-    if (filters.page !== undefined) params.set('page', String(filters.page));
-    if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+export const createVehicle = async (data: CreateVehicleData): Promise<VehicleResponse> =>
+  apiFetch<VehicleResponse>(`${BASE}/vehicles`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/drivers${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<Driver>>;
-  },
+export const updateVehicle = async (id: number, data: UpdateVehicleData): Promise<VehicleResponse> =>
+  apiFetch<VehicleResponse>(`${BASE}/vehicles/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  getById: (id: number): Promise<ApiResponse<Driver>> => apiService.get<Driver>(`${BASE}/drivers/${id}`),
+/** Endpoint dedicato — separato da updateVehicle, rispecchia la stessa separazione del backend */
+export const updateVehicleStatus = async (id: number, data: UpdateVehicleStatusData): Promise<VehicleResponse> =>
+  apiFetch<VehicleResponse>(`${BASE}/vehicles/${id}/status`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  getCompliance: (driverId: number): Promise<ApiResponse<DriverCompliance[]>> =>
-    apiService.get<DriverCompliance[]>(`${BASE}/drivers/${driverId}/compliance`),
+/** Non cancella — dismette (status: decommissioned + decommissionDate). Nome "decommission", non "delete", per onestà semantica */
+export const decommissionVehicle = async (id: number): Promise<VehicleResponse> =>
+  apiFetch<VehicleResponse>(`${BASE}/vehicles/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
 
-  create: (data: DriverCreateData): Promise<ApiResponse<Driver>> => apiService.post<Driver>(`${BASE}/drivers`, data),
+// ─────────────────────────────────────────────────────────────────────────────
+// Driver Compliances — risorsa autonoma, filtrata per driverId
+// ─────────────────────────────────────────────────────────────────────────────
 
-  update: (id: number, data: DriverEditData): Promise<ApiResponse<Driver>> =>
-    apiService.put<Driver>(`${BASE}/drivers/${id}`, data),
-
-  deactivate: (id: number): Promise<ApiResponse<null>> => apiService.patch<null>(`${BASE}/drivers/${id}/deactivate`, {}),
+export const fetchDriverCompliances = async (filters: DriverComplianceFilters = {}): Promise<DriverComplianceListResponse> => {
+  const query = buildQuery({
+    driverId: filters.driverId,
+    status: filters.status,
+    page: filters.page,
+    limit: filters.limit,
+  });
+  return apiFetch<DriverComplianceListResponse>(`${BASE}/driver-compliances${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// VEHICLE DEADLINES
-// =============================================================================
+export const createDriverCompliance = async (data: CreateDriverComplianceData): Promise<DriverComplianceResponse> =>
+  apiFetch<DriverComplianceResponse>(`${BASE}/driver-compliances`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-export const vehicleDeadlinesApi = {
-  getAll: (filters: { vehicleId?: number; status?: string } = {}): Promise<PaginatedApiResponse<VehicleDeadline>> => {
-    const params = new URLSearchParams();
-    if (filters.vehicleId) params.set('vehicleId', String(filters.vehicleId));
-    if (filters.status) params.set('status', filters.status);
+export const renewDriverCompliance = async (id: number, data: RenewDriverComplianceData): Promise<DriverComplianceResponse> =>
+  apiFetch<DriverComplianceResponse>(`${BASE}/driver-compliances/${id}/renew`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/deadlines${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<VehicleDeadline>>;
-  },
+export const deleteDriverCompliance = async (id: number): Promise<DriverComplianceResponse> =>
+  apiFetch<DriverComplianceResponse>(`${BASE}/driver-compliances/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
 
-  getById: (id: number): Promise<ApiResponse<VehicleDeadline>> => apiService.get<VehicleDeadline>(`${BASE}/deadlines/${id}`),
+// ─────────────────────────────────────────────────────────────────────────────
+// Vehicle Deadlines — Blocco C — Scadenze
+// ─────────────────────────────────────────────────────────────────────────────
 
-  create: (data: {
-    vehicleId: number;
-    deadlineTypeId: number;
-    expiryDate: string;
-    notes?: string;
-  }): Promise<ApiResponse<VehicleDeadline>> => apiService.post<VehicleDeadline>(`${BASE}/deadlines`, data),
+import type {
+  VehicleDeadline,
+  CreateVehicleDeadlineData,
+  UpdateVehicleDeadlineData,
+  RenewVehicleDeadlineData,
+  VehicleDeadlineFilters,
+  VehicleDeadlinesListResponse,
+  VehicleDeadlineResponse,
+} from '../types/vehicles.types';
 
-  update: (id: number, data: { expiryDate?: string; notes?: string }): Promise<ApiResponse<VehicleDeadline>> =>
-    apiService.put<VehicleDeadline>(`${BASE}/deadlines/${id}`, data),
-
-  renew: (id: number, data: { newExpiryDate: string; notes?: string }): Promise<ApiResponse<VehicleDeadline>> =>
-    apiService.patch<VehicleDeadline>(`${BASE}/deadlines/${id}/renew`, data),
-
-  delete: (id: number): Promise<ApiResponse<null>> => apiService.delete<null>(`${BASE}/deadlines/${id}`),
+export const fetchVehicleDeadlines = async (filters: VehicleDeadlineFilters = {}): Promise<VehicleDeadlinesListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    vehicleId: filters.vehicleId,
+    status: filters.status,
+  });
+  return apiFetch<VehicleDeadlinesListResponse>(`${BASE}/deadlines${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// VEHICLE ASSIGNMENTS
-// =============================================================================
+export const fetchVehicleDeadlineById = async (id: number): Promise<VehicleDeadlineResponse> =>
+  apiFetch<VehicleDeadlineResponse>(`${BASE}/deadlines/${id}`, {
+    headers: getAuthHeaders(),
+  });
 
-export const vehicleAssignmentsApi = {
-  getAll: (
-    filters: { vehicleId?: number; driverId?: number; active?: boolean } = {}
-  ): Promise<PaginatedApiResponse<VehicleAssignment>> => {
-    const params = new URLSearchParams();
-    if (filters.vehicleId !== undefined) params.set('vehicleId', String(filters.vehicleId));
-    if (filters.driverId !== undefined) params.set('driverId', String(filters.driverId));
-    if (filters.active !== undefined) params.set('active', String(filters.active));
+export const createVehicleDeadline = async (data: CreateVehicleDeadlineData): Promise<VehicleDeadlineResponse> =>
+  apiFetch<VehicleDeadlineResponse>(`${BASE}/deadlines`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/assignments${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<VehicleAssignment>>;
-  },
+/** Update "sicuro" — solo notes/lastRenewalDate, vedi nota sul tipo UpdateVehicleDeadlineData */
+export const updateVehicleDeadline = async (id: number, data: UpdateVehicleDeadlineData): Promise<VehicleDeadlineResponse> =>
+  apiFetch<VehicleDeadlineResponse>(`${BASE}/deadlines/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  getCurrentByVehicle: (vehicleId: number): Promise<ApiResponse<VehicleAssignment | null>> =>
-    apiService.get<VehicleAssignment | null>(`${BASE}/assignments/vehicle/${vehicleId}/current`),
+/** Unica via per cambiare expiryDate — ricalcola sempre lo stato lato backend */
+export const renewVehicleDeadline = async (id: number, data: RenewVehicleDeadlineData): Promise<VehicleDeadlineResponse> =>
+  apiFetch<VehicleDeadlineResponse>(`${BASE}/deadlines/${id}/renew`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  create: (data: {
-    vehicleId: number;
-    driverId: number;
-    startDate: string;
-    notes?: string;
-  }): Promise<ApiResponse<VehicleAssignment>> => apiService.post<VehicleAssignment>(`${BASE}/assignments`, data),
+/** Qui è una cancellazione fisica reale — a differenza della dismissione dei veicoli */
+export const deleteVehicleDeadline = async (id: number): Promise<VehicleDeadlineResponse> =>
+  apiFetch<VehicleDeadlineResponse>(`${BASE}/deadlines/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
 
-  end: (id: number, data: { endDate: string; notes?: string }): Promise<ApiResponse<VehicleAssignment>> =>
-    apiService.patch<VehicleAssignment>(`${BASE}/assignments/${id}/end`, data),
+// ─────────────────────────────────────────────────────────────────────────────
+// Maintenance Records — Blocco D — Storico (entità principale)
+// ─────────────────────────────────────────────────────────────────────────────
 
-  delete: (id: number): Promise<ApiResponse<null>> => apiService.delete<null>(`${BASE}/assignments/${id}`),
+import type {
+  MaintenanceRecord,
+  CreateMaintenanceRecordData,
+  UpdateMaintenanceRecordData,
+  MaintenanceRecordFilters,
+  MaintenanceRecordsListResponse,
+  MaintenanceRecordResponse,
+  MaintenanceScheduleItem,
+  CreateMaintenanceScheduleData,
+  UpdateMaintenanceScheduleData,
+  MaintenanceScheduleFilters,
+  MaintenanceSchedulesListResponse,
+  MaintenanceScheduleResponse,
+} from '../types/vehicles.types';
+
+export const fetchMaintenanceRecords = async (
+  filters: MaintenanceRecordFilters = {}
+): Promise<MaintenanceRecordsListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    vehicleId: filters.vehicleId,
+    maintenanceTypeId: filters.maintenanceTypeId,
+    workshopId: filters.workshopId,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  });
+  return apiFetch<MaintenanceRecordsListResponse>(`${BASE}/maintenance-records${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// KM READINGS
-// =============================================================================
+export const fetchMaintenanceRecordById = async (id: number): Promise<MaintenanceRecordResponse> =>
+  apiFetch<MaintenanceRecordResponse>(`${BASE}/maintenance-records/${id}`, {
+    headers: getAuthHeaders(),
+  });
 
-export const kmReadingsApi = {
-  getAll: (filters: { vehicleId?: number; page?: number; limit?: number } = {}): Promise<PaginatedApiResponse<KmReading>> => {
-    const params = new URLSearchParams();
-    if (filters.vehicleId !== undefined) params.set('vehicleId', String(filters.vehicleId));
-    if (filters.page !== undefined) params.set('page', String(filters.page));
-    if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+/** Crea l'intervento — il backend genera/aggiorna automaticamente il MaintenanceSchedule collegato */
+export const createMaintenanceRecord = async (data: CreateMaintenanceRecordData): Promise<MaintenanceRecordResponse> =>
+  apiFetch<MaintenanceRecordResponse>(`${BASE}/maintenance-records`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/km-readings${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<KmReading>>;
-  },
+export const updateMaintenanceRecord = async (
+  id: number,
+  data: UpdateMaintenanceRecordData
+): Promise<MaintenanceRecordResponse> =>
+  apiFetch<MaintenanceRecordResponse>(`${BASE}/maintenance-records/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  create: (data: { vehicleId: number; km: number; readingDate: string; notes?: string }): Promise<ApiResponse<KmReading>> =>
-    apiService.post<KmReading>(`${BASE}/km-readings`, data),
+export const deleteMaintenanceRecord = async (id: number): Promise<MaintenanceRecordResponse> =>
+  apiFetch<MaintenanceRecordResponse>(`${BASE}/maintenance-records/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
 
-  delete: (id: number): Promise<ApiResponse<null>> => apiService.delete<null>(`${BASE}/km-readings/${id}`),
+// ─────────────────────────────────────────────────────────────────────────────
+// Maintenance Schedules — sola lettura + override manuale (no create/delete)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const fetchMaintenanceSchedules = async (
+  filters: MaintenanceScheduleFilters = {}
+): Promise<MaintenanceSchedulesListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    vehicleId: filters.vehicleId,
+    status: filters.status,
+  });
+  return apiFetch<MaintenanceSchedulesListResponse>(`${BASE}/maintenance-schedules${query}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
-// =============================================================================
-// NOTIFICATIONS
-// =============================================================================
+export const fetchMaintenanceScheduleById = async (id: number): Promise<MaintenanceScheduleResponse> =>
+  apiFetch<MaintenanceScheduleResponse>(`${BASE}/maintenance-schedules/${id}`, {
+    headers: getAuthHeaders(),
+  });
 
-export const vehicleNotificationsApi = {
-  getUnreadCount: (): Promise<ApiResponse<{ count: number }>> =>
-    apiService.get<{ count: number }>(`${BASE}/notifications/unread-count`),
+/** Unica scrittura possibile — override manuale, per casi eccezionali senza passare da un intervento */
+export const updateMaintenanceSchedule = async (
+  id: number,
+  data: UpdateMaintenanceScheduleData
+): Promise<MaintenanceScheduleResponse> =>
+  apiFetch<MaintenanceScheduleResponse>(`${BASE}/maintenance-schedules/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  getAll: (
-    filters: { isArchived?: boolean; page?: number; limit?: number } = {}
-  ): Promise<PaginatedApiResponse<VehicleNotification>> => {
-    const params = new URLSearchParams();
-    if (filters.isArchived !== undefined) params.set('isArchived', String(filters.isArchived));
-    if (filters.page !== undefined) params.set('page', String(filters.page));
-    if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+export const createMaintenanceSchedule = async (data: CreateMaintenanceScheduleData): Promise<MaintenanceScheduleResponse> =>
+  apiFetch<MaintenanceScheduleResponse>(`${BASE}/maintenance-schedules`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-    const qs = params.toString();
-    return apiService.get(`${BASE}/notifications${qs ? `?${qs}` : ''}`) as Promise<PaginatedApiResponse<VehicleNotification>>;
-  },
+export const deleteMaintenanceSchedule = async (id: number): Promise<MaintenanceScheduleResponse> =>
+  apiFetch<MaintenanceScheduleResponse>(`${BASE}/maintenance-schedules/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+// ─────────────────────────────────────────────────────────────────────────────
+// Driver Compliance Types — lookup di sistema, sola lettura da questo modulo
+// (la gestione del catalogo sarà nel futuro Blocco I — Config)
+// ─────────────────────────────────────────────────────────────────────────────
 
-  markRead: (id: number): Promise<ApiResponse<null>> => apiService.patch<null>(`${BASE}/notifications/${id}/read`, {}),
+export const fetchDriverComplianceTypes = async (): Promise<DriverComplianceTypesResponse> =>
+  apiFetch<DriverComplianceTypesResponse>(`${BASE}/driver-compliance-types?limit=100`, {
+    headers: getAuthHeaders(),
+  });
 
-  markAllRead: (): Promise<ApiResponse<null>> => apiService.patch<null>(`${BASE}/notifications/read-all`, {}),
+export const driverComplianceTypesApi = createLookupCrud<
+  DriverComplianceType,
+  { search?: string; active?: boolean; page?: number; limit?: number },
+  CreateDriverComplianceTypeData,
+  UpdateDriverComplianceTypeData
+>('/driver-compliance-types');
 
-  archive: (id: number): Promise<ApiResponse<null>> => apiService.patch<null>(`${BASE}/notifications/${id}/archive`, {}),
+// ─────────────────────────────────────────────────────────────────────────────
+// Re-export tipi comodi per chi importa solo da qui
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type {
+  Driver,
+  DriverCompliance,
+  DriverComplianceType,
+  Vehicle,
+  VehicleDeadline,
+  MaintenanceRecord,
+  MaintenanceScheduleItem,
 };

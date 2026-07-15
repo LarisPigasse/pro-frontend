@@ -1,11 +1,45 @@
-// features/vehicles/pages/Config.tsx — 🚧 Blocco I in sviluppo
-import React from 'react';
-import { PlaceholderPage } from './_PlaceholderPage';
+// =============================================================================
+// ASSET AZIENDALI — PAGE: Configurazione
+// features/vehicles/pages/Config.tsx
+// =============================================================================
 
-export const Config: React.FC = () => (
-  <PlaceholderPage
-    title='Configurazione'
-    description='Gestione lookup tables: categorie asset, stati operativi, tipi carburante, tipi scadenza e manutenzione.'
-    icon='config'
-  />
-);
+import React from 'react';
+import { PageHeader } from '@/core/components/layout';
+import { Tabs } from '@/core/components/navigation/tabs/Tabs';
+import type { TabItem } from '@/core/components/navigation/tabs/Tabs';
+import {
+  WorkshopsSection,
+  CategoriesSection,
+  DeadlineTypesSection,
+  MaintenanceTypesSection,
+  DriverComplianceTypesSection,
+  TelematicsProvidersSection,
+} from '../components';
+
+/** Segnaposto temporaneo per le sezioni non ancora costruite — sostituito una a una */
+// const ComingSoon: React.FC<{ label: string }> = ({ label }) => (
+//   <div className='flex items-center justify-center py-16 text-text-secondary italic'>Sezione "{label}" in costruzione</div>
+// );
+
+export const Config: React.FC = () => {
+  const tabs: TabItem[] = [
+    { id: 'categories', label: 'Categorie Veicolo', content: <CategoriesSection /> },
+    { id: 'telematics', label: 'Fornitori Telematici', content: <TelematicsProvidersSection /> },
+    { id: 'workshops', label: 'Officine', content: <WorkshopsSection /> },
+    { id: 'deadline-types', label: 'Tipi Scadenza', content: <DeadlineTypesSection /> },
+    { id: 'maintenance-types', label: 'Tipi Manutenzione', content: <MaintenanceTypesSection /> },
+    { id: 'driver-compliance-types', label: 'Tipi Conformità Autisti', content: <DriverComplianceTypesSection /> },
+  ];
+
+  return (
+    <>
+      <PageHeader title='Configurazione' subtitle='Gestione delle tabelle di riferimento del modulo Asset Aziendali' />
+
+      <div className='mt-2'>
+        <Tabs items={tabs} variant='underline' size='md' />
+      </div>
+    </>
+  );
+};
+
+export default Config;

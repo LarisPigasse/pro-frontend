@@ -18,7 +18,7 @@ export default defineConfig({
     // Funzionerà sia con localhost:5173 che con pro.edg.local:5173
     hmr: true,
     // Consenti richieste da host e gateway
-    allowedHosts: ['pro.edg.local', 'pro-frontend', 'localhost', '.localhost', 'api-gateway'],
+    allowedHosts: ['pro.edg.local', 'pro-frontend', 'localhost', '.localhost', 'api-gateway', 'host.docker.internal'],
     // Header utili in dev per evitare caching
     headers: {
       'Cache-Control': 'no-cache',

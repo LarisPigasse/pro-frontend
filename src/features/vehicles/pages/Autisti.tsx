@@ -3,154 +3,369 @@
 // features/vehicles/pages/Autisti.tsx
 // =============================================================================
 
-import React, { useCallback } from 'react';
-import { Plus, RefreshCw } from 'lucide-react';
-
-import { Button } from '@/core/components/ui';
+import React, { useMemo, useState } from 'react';
+import { Plus, Eye, UserX, UserCheck, Ban, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button, Badge, ConfirmModal } from '@/core/components/ui';
 import { Alert, Spinner } from '@/core/components/feedback';
-import { useDrivers } from '../hooks/useDrivers';
-import { DriverFilters } from '../components/DriverFilters';
-import { DriverTable } from '../components/DriverTable';
-import { ViewDriverModal } from '../components/ViewDriverModal';
-import { CreateDriverModal } from '../components/CreateDriverModal';
-import { EditDriverModal } from '../components/EditDriverModal';
+import { PageHeader, Card } from '@/core/components/layout';
+import Table from '@/core/components/data/table/Table';
+import type { TableColumn } from '@/core/components/data/table/Table';
+import { formatDate } from '@/core/utils';
 
-// -----------------------------------------------------------------------------
-// COMPONENT
-// -----------------------------------------------------------------------------
+import { useDrivers } from '../hooks/useDrivers';
+import { useDriverCompliances } from '../hooks/useDriverCompliances';
+import { useLookups } from '../hooks/useLookups';
+import { DriverFilters, DriverComplianceBadge, CreateDriverModal, EditDriverModal, ViewDriverModal } from '../components';
+import type { Driver, CreateDriverData, UpdateDriverData } from '../types/vehicles.types';
 
 export const Autisti: React.FC = () => {
   const {
-    drivers, pagination, loading, complianceLoading, error, submitting,
-    filters, setFilters, resetFilters, setPage,
-    modalState, openCreate, openEdit, openView, closeModal,
-    createDriver, updateDriver, deactivateDriver,
-    fetchDrivers,
+    data: drivers,
+    loading,
+    error,
+    filters,
+    pagination,
+    setFilters,
+    resetFilters,
+    setPage,
+    reload,
+    createDriver,
+    updateDriver,
+    toggleDriver,
+    deleteDriver,
   } = useDrivers();
 
-  const handleEditFromView = useCallback(() => {
-    if (modalState.driver) openEdit(modalState.driver);
-  }, [modalState.driver, openEdit]);
+  // Conformità aggregata per la colonna in tabella — batch sulla pagina corrente
+  const driverIds = useMemo(() => drivers.map(d => d.id), [drivers]);
+  const { summaries: complianceSummaries, reload: reloadComplianceSummaries } = useDriverCompliances(driverIds);
+
+  // Catalogo tipi conformità — caricato una volta, passato al ViewDriverModal
+  const { driverComplianceTypes } = useLookups();
+
+  // ─── stato modali ────────────────────────────────────────────────────────
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [toggleModalOpen, setToggleModalOpen] = useState(false); // sospendi / riattiva — stesso endpoint reversibile
+  const [terminateModalOpen, setTerminateModalOpen] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const closeAndClearSelection = (close: () => void) => {
+    close();
+    setTimeout(() => setSelectedDriver(null), 0); // evita "flash" di contenuto vuoto durante l'animazione di chiusura
+  };
+
+  // ─── helpers di formattazione ───────────────────────────────────────────
+
+  const getStatusBadge = (driver: Driver): React.ReactNode =>
+    driver.isActive ? (
+      <Badge variant='success' size='sm'>
+        Attivo
+      </Badge>
+    ) : (
+      <Badge variant='danger' size='sm'>
+        {driver.terminationDate ? 'Cessato' : 'Sospeso'}
+      </Badge>
+    );
+
+  // ─── handlers CRUD ───────────────────────────────────────────────────────
+
+  const handleCreate = async (data: CreateDriverData) => {
+    setActionLoading(true);
+    try {
+      await createDriver(data);
+      setCreateModalOpen(false);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleEdit = async (id: number, data: UpdateDriverData) => {
+    setActionLoading(true);
+    try {
+      await updateDriver(id, data);
+      closeAndClearSelection(() => setEditModalOpen(false));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleToggle = async () => {
+    if (!selectedDriver) return;
+    setActionLoading(true);
+    try {
+      await toggleDriver(selectedDriver.id);
+      closeAndClearSelection(() => setToggleModalOpen(false));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTerminate = async () => {
+    if (!selectedDriver) return;
+    setActionLoading(true);
+    try {
+      await deleteDriver(selectedDriver.id);
+      closeAndClearSelection(() => setTerminateModalOpen(false));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // ─── colonne tabella ─────────────────────────────────────────────────────
+
+  const columns: TableColumn<Driver>[] = [
+    {
+      header: 'Autista',
+      accessor: 'lastName',
+      sortable: true,
+      render: driver => (
+        <div className='flex flex-col'>
+          <span className='font-medium text-text-primary'>
+            {driver.lastName} {driver.firstName}
+          </span>
+          {driver.fiscalCode && <span className='text-xs text-text-secondary'>{driver.fiscalCode}</span>}
+        </div>
+      ),
+    },
+    {
+      header: 'Città',
+      accessor: 'city',
+      sortable: true,
+      render: driver => driver.city || '—',
+    },
+    {
+      header: 'Contatti',
+      accessor: driver => (
+        <div className='flex flex-col text-sm'>
+          {driver.phone && <span>{driver.phone}</span>}
+          {driver.email && <span className='text-text-secondary'>{driver.email}</span>}
+          {!driver.phone && !driver.email && <span className='text-text-secondary'>—</span>}
+        </div>
+      ),
+    },
+    {
+      header: 'Assunto il',
+      accessor: 'hireDate',
+      sortable: true,
+      render: driver => <span className='text-sm'>{formatDate(driver.hireDate)}</span>,
+    },
+    {
+      header: 'Conformità',
+      accessor: driver => <DriverComplianceBadge summary={complianceSummaries[driver.id]} />,
+    },
+    {
+      header: 'Stato',
+      accessor: driver => getStatusBadge(driver),
+    },
+  ];
+
+  // ─── render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className='max-w-7xl mx-auto p-6'>
-
-      {/* HEADER */}
-      <div className='mb-6 flex items-center justify-between'>
-        <div>
-          <h1 className='text-3xl font-bold text-gray-900'>Autisti</h1>
-          <p className='text-gray-600 mt-1'>
-            Anagrafica e conformità documentale
-            {complianceLoading && (
-              <span className='ml-2 inline-flex items-center gap-1 text-xs text-gray-400'>
-                <RefreshCw className='w-3 h-3 animate-spin' />
-                Caricamento conformità…
-              </span>
-            )}
-          </p>
-        </div>
-        <div className='flex items-center space-x-3'>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => fetchDrivers(filters)}
-            disabled={loading}
-            title='Aggiorna'
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
-          <Button variant='primary' onClick={openCreate}>
-            <Plus className='w-4 h-4 mr-2' />
+    <>
+      <PageHeader
+        title='Autisti'
+        subtitle='Anagrafica autisti e conformità documentale'
+        onRefresh={reload}
+        isLoading={loading}
+        actions={
+          <Button variant='primary' leftIcon={<Plus className='w-4 h-4' />} onClick={() => setCreateModalOpen(true)}>
             Nuovo autista
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      {/* ERRORE */}
       {error && (
         <Alert variant='danger' className='mb-6'>
           {error}
         </Alert>
       )}
 
-      {/* FILTRI */}
-      <DriverFilters
-        filters={filters}
-        onFiltersChange={setFilters}
-        onReset={resetFilters}
-        totalResults={loading ? undefined : pagination.total}
-      />
+      <DriverFilters currentFilters={filters} onApply={setFilters} onReset={resetFilters} />
 
-      {/* TABELLA */}
-      {loading && !drivers.length ? (
+      {loading && drivers.length === 0 ? (
         <div className='flex items-center justify-center py-12'>
           <Spinner size='md' />
         </div>
       ) : (
-        <>
-          <DriverTable
-            drivers={drivers}
-            loading={loading}
-            submitting={submitting}
-            filters={filters}
-            onView={openView}
-            onEdit={openEdit}
-            onDeactivate={deactivateDriver}
+        <Card variant='default' padding='none'>
+          <Table
+            data={drivers}
+            columns={columns}
+            keyExtractor={driver => driver.id}
+            isLoading={false}
+            emptyMessage='Nessun autista trovato'
+            size='md'
+            striped
+            hoverable
+            rowActions={{
+              enabled: true,
+              mode: 'menu',
+              quickActions: {
+                edit: {
+                  enabled: true,
+                  onEdit: driver => {
+                    setSelectedDriver(driver);
+                    setEditModalOpen(true);
+                  },
+                },
+              },
+              actions: driver => {
+                const canReactivate = !driver.isActive && !driver.terminationDate;
+                const canSuspend = driver.isActive;
+                const canTerminate = driver.isActive;
+
+                return [
+                  {
+                    id: 'view',
+                    label: 'Visualizza dettagli',
+                    icon: <Eye className='w-4 h-4' />,
+                    onClick: () => {
+                      setSelectedDriver(driver);
+                      setViewModalOpen(true);
+                    },
+                  },
+                  ...(canSuspend
+                    ? [
+                        {
+                          id: 'suspend',
+                          label: 'Sospendi',
+                          icon: <UserX className='w-4 h-4' />,
+                          onClick: () => {
+                            setSelectedDriver(driver);
+                            setToggleModalOpen(true);
+                          },
+                          divider: true,
+                        },
+                      ]
+                    : []),
+                  ...(canReactivate
+                    ? [
+                        {
+                          id: 'reactivate',
+                          label: 'Riattiva',
+                          icon: <UserCheck className='w-4 h-4' />,
+                          onClick: () => {
+                            setSelectedDriver(driver);
+                            setToggleModalOpen(true);
+                          },
+                          divider: true,
+                        },
+                      ]
+                    : []),
+                  ...(canTerminate
+                    ? [
+                        {
+                          id: 'terminate',
+                          label: 'Cessa rapporto',
+                          icon: <Ban className='w-4 h-4' />,
+                          onClick: () => {
+                            setSelectedDriver(driver);
+                            setTerminateModalOpen(true);
+                          },
+                          variant: 'danger' as const,
+                          divider: true,
+                        },
+                      ]
+                    : []),
+                ];
+              },
+            }}
           />
 
-          {/* PAGINAZIONE */}
-          <div className='mt-6 flex items-center justify-between'>
-            <div className='text-sm text-gray-600'>
-              Mostrando {drivers.length} di {pagination.total} autist{pagination.total === 1 ? 'a' : 'i'}
+          {/* Paginazione */}
+          <div className='bg-bg-secondary px-4 py-2 flex items-center justify-between border-t border-border-default'>
+            <div className='text-sm text-text-secondary'>
+              Pagina <span className='font-medium text-text-primary'>{pagination.page}</span> di{' '}
+              <span className='font-medium text-text-primary'>{pagination.totalPages || 1}</span>
+              {' · '}
+              <span className='font-medium text-text-primary'>{pagination.total}</span> autisti
             </div>
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center gap-2'>
               <Button
-                variant='ghost'
+                variant='outline'
                 size='sm'
+                leftIcon={<ChevronLeft className='w-4 h-4' />}
                 onClick={() => setPage(pagination.page - 1)}
-                disabled={pagination.page <= 1 || loading}
+                disabled={!pagination.hasPrev || loading}
               >
                 Indietro
               </Button>
-              <span className='text-sm text-gray-600'>
-                Pagina {pagination.page} di {pagination.totalPages || 1}
-              </span>
               <Button
-                variant='ghost'
+                variant='outline'
                 size='sm'
+                rightIcon={<ChevronRight className='w-4 h-4' />}
                 onClick={() => setPage(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages || loading}
+                disabled={!pagination.hasNext || loading}
               >
                 Avanti
               </Button>
             </div>
           </div>
-        </>
+        </Card>
       )}
 
-      {/* MODALI */}
-      <ViewDriverModal
-        driver={modalState.driver}
-        isOpen={modalState.mode === 'view'}
-        onClose={closeModal}
-        onEdit={handleEditFromView}
-      />
+      {/* ── Modali ──────────────────────────────────────────────────────── */}
 
       <CreateDriverModal
-        isOpen={modalState.mode === 'create'}
-        submitting={submitting}
-        onClose={closeModal}
-        onSubmit={createDriver}
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onConfirm={handleCreate}
+        loading={actionLoading}
+      />
+
+      <ViewDriverModal
+        isOpen={viewModalOpen}
+        onClose={() => closeAndClearSelection(() => setViewModalOpen(false))}
+        driver={selectedDriver}
+        onEdit={() => {
+          setViewModalOpen(false);
+          setEditModalOpen(true);
+        }}
+        driverComplianceTypes={driverComplianceTypes}
+        onComplianceChange={reloadComplianceSummaries}
       />
 
       <EditDriverModal
-        driver={modalState.driver}
-        isOpen={modalState.mode === 'edit'}
-        submitting={submitting}
-        onClose={closeModal}
-        onSubmit={updateDriver}
+        isOpen={editModalOpen}
+        onClose={() => closeAndClearSelection(() => setEditModalOpen(false))}
+        onConfirm={handleEdit}
+        driver={selectedDriver}
+        loading={actionLoading}
       />
 
-    </div>
+      <ConfirmModal
+        isOpen={toggleModalOpen}
+        onClose={() => closeAndClearSelection(() => setToggleModalOpen(false))}
+        onConfirm={handleToggle}
+        title={selectedDriver?.isActive ? 'Sospendi autista' : 'Riattiva autista'}
+        message={
+          selectedDriver?.isActive
+            ? `Sospendere temporaneamente ${selectedDriver?.firstName} ${selectedDriver?.lastName}? Potrà essere riattivato in qualsiasi momento.`
+            : `Riattivare ${selectedDriver?.firstName} ${selectedDriver?.lastName}?`
+        }
+        confirmText={selectedDriver?.isActive ? 'Sospendi' : 'Riattiva'}
+        cancelText='Annulla'
+        variant='default'
+        isLoading={actionLoading}
+      />
+
+      <ConfirmModal
+        isOpen={terminateModalOpen}
+        onClose={() => closeAndClearSelection(() => setTerminateModalOpen(false))}
+        onConfirm={handleTerminate}
+        title='Cessa rapporto'
+        message={`Cessare il rapporto con ${selectedDriver?.firstName} ${selectedDriver?.lastName}? L'operazione registra la data di cessazione ed è irreversibile dall'interfaccia.`}
+        confirmText='Cessa rapporto'
+        cancelText='Annulla'
+        variant='danger'
+        isLoading={actionLoading}
+      />
+    </>
   );
 };
+
+export default Autisti;

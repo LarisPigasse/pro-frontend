@@ -1,273 +1,180 @@
 // =============================================================================
-// VEHICLES MODULE — HOOK: useVehicles
+// ASSET AZIENDALI — HOOK: useVehicles
 // features/vehicles/hooks/useVehicles.ts
-// =============================================================================
-//
-// Gestisce:
-//   - Lista veicoli con filtri e paginazione
-//   - Operazioni CRUD (create, update, delete)
-//   - Stato UI modali (view/create/edit)
-//
-// Utilizzo:
-//   const {
-//     vehicles, pagination, loading, error,
-//     filters, setFilters, resetFilters,
-//     modalState, openCreate, openEdit, openView, closeModal,
-//     createVehicle, updateVehicle, deleteVehicle,
-//   } = useVehicles();
 // =============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
-
-import { vehiclesApi } from '../api/vehicles.api';
+import { fetchVehicles, createVehicle, updateVehicle, updateVehicleStatus, decommissionVehicle } from '../api/vehicles.api';
 import type {
   Vehicle,
-  VehicleCreateData,
-  VehicleEditData,
-  VehicleFiltersState,
-  VehicleModalState,
+  VehicleFilters,
+  CreateVehicleData,
+  UpdateVehicleData,
+  UpdateVehicleStatusData,
+  PaginationMeta,
 } from '../types/vehicles.types';
 
-// re-export della costante per evitare import circolari nei componenti
-import { DEFAULT_VEHICLE_FILTERS as _DEFAULT_FILTERS } from '../types/vehicles.types';
+// ─────────────────────────────────────────────────────────────────────────────
+// Default
+// ─────────────────────────────────────────────────────────────────────────────
 
-// -----------------------------------------------------------------------------
-// TIPI INTERNI
-// -----------------------------------------------------------------------------
-
-interface Pagination {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-interface UseVehiclesState {
-  vehicles: Vehicle[];
-  pagination: Pagination;
-  loading: boolean;
-  error: string | null;
-  submitting: boolean; // true durante create/update/delete
-}
-
-const EMPTY_PAGINATION: Pagination = {
+const DEFAULT_PAGINATION: PaginationMeta = {
   total: 0,
   page: 1,
   limit: 20,
   totalPages: 0,
+  hasNext: false,
+  hasPrev: false,
 };
 
-// -----------------------------------------------------------------------------
-// HOOK
-// -----------------------------------------------------------------------------
+/** Default: solo veicoli attivi — coerente col default del backend (status='active') */
+const DEFAULT_FILTERS: VehicleFilters = {
+  page: 1,
+  limit: 20,
+  status: 'active',
+};
 
-export const useVehicles = () => {
-  // --- Dati lista ---
-  const [state, setState] = useState<UseVehiclesState>({
-    vehicles: [],
-    pagination: EMPTY_PAGINATION,
-    loading: true,
-    error: null,
-    submitting: false,
-  });
+// ─────────────────────────────────────────────────────────────────────────────
+// Hook
+// ─────────────────────────────────────────────────────────────────────────────
 
-  // --- Filtri e paginazione ---
-  const [filters, setFiltersState] = useState<VehicleFiltersState>(_DEFAULT_FILTERS);
+interface UseVehiclesReturn {
+  data: Vehicle[];
+  pagination: PaginationMeta;
+  loading: boolean;
+  error: string | null;
+  submitting: boolean;
+  filters: VehicleFilters;
+  setFilters: (partial: Partial<VehicleFilters>) => void;
+  resetFilters: () => void;
+  setPage: (page: number) => void;
+  reload: () => Promise<void>;
+  createVehicle: (data: CreateVehicleData) => Promise<Vehicle>;
+  updateVehicle: (id: number, data: UpdateVehicleData) => Promise<Vehicle>;
+  updateVehicleStatus: (id: number, data: UpdateVehicleStatusData) => Promise<Vehicle>;
+  decommissionVehicle: (id: number) => Promise<Vehicle>;
+}
 
-  // --- Stato modali ---
-  const [modalState, setModalState] = useState<VehicleModalState>({
-    mode: null,
-    vehicle: null,
-  });
+export const useVehicles = (initialFilters: Partial<VehicleFilters> = {}): UseVehiclesReturn => {
+  const [filters, setFiltersState] = useState<VehicleFilters>({ ...DEFAULT_FILTERS, ...initialFilters });
+  const [data, setData] = useState<Vehicle[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(DEFAULT_PAGINATION);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  // ---------------------------------------------------------------------------
-  // FETCH LISTA
-  // ---------------------------------------------------------------------------
+  // ─── caricamento lista ──────────────────────────────────────────────────
 
-  const fetchVehicles = useCallback(async (currentFilters: VehicleFiltersState) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const res = await vehiclesApi.getAll(currentFilters);
-
-      setState(prev => ({
-        ...prev,
-        vehicles: res.data ?? [],
-        pagination: res.pagination ?? EMPTY_PAGINATION,
-        loading: false,
-        error: null,
-      }));
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Errore nel caricamento dei veicoli';
-
-      setState(prev => ({
-        ...prev,
-        vehicles: [],
-        pagination: EMPTY_PAGINATION,
-        loading: false,
-        error: message,
-      }));
+      const res = await fetchVehicles(filters);
+      setData(res.data);
+      setPagination(res.meta);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Errore nel caricamento dei veicoli');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
-  // Ri-fetch ogni volta che cambiano i filtri
   useEffect(() => {
-    fetchVehicles(filters);
-  }, [filters, fetchVehicles]);
+    load();
+  }, [load]);
 
-  // ---------------------------------------------------------------------------
-  // GESTIONE FILTRI
-  // ---------------------------------------------------------------------------
+  // ─── filtri e paginazione ───────────────────────────────────────────────
 
-  /**
-   * Aggiorna uno o più filtri e resetta la pagina a 1.
-   * La pagina non viene resettata se si sta cambiando esplicitamente `page`.
-   */
-  const setFilters = useCallback((updates: Partial<VehicleFiltersState>) => {
-    setFiltersState(prev => ({
-      ...prev,
-      ...updates,
-      page: updates.page ?? 1,
-    }));
+  const setFilters = useCallback((partial: Partial<VehicleFilters>) => {
+    setFiltersState(prev => ({ ...prev, ...partial, page: partial.page ?? 1 }));
   }, []);
 
   const resetFilters = useCallback(() => {
-    setFiltersState(_DEFAULT_FILTERS);
+    setFiltersState(DEFAULT_FILTERS);
   }, []);
 
   const setPage = useCallback((page: number) => {
     setFiltersState(prev => ({ ...prev, page }));
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // GESTIONE MODALI
-  // ---------------------------------------------------------------------------
+  const reload = useCallback(async () => {
+    await load();
+  }, [load]);
 
-  const openCreate = useCallback(() => {
-    setModalState({ mode: 'create', vehicle: null });
-  }, []);
+  // ─── CRUD — ogni mutazione ricarica la lista corrente ──────────────────
 
-  const openEdit = useCallback((vehicle: Vehicle) => {
-    setModalState({ mode: 'edit', vehicle });
-  }, []);
-
-  const openView = useCallback((vehicle: Vehicle) => {
-    setModalState({ mode: 'view', vehicle });
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setModalState({ mode: null, vehicle: null });
-  }, []);
-
-  // ---------------------------------------------------------------------------
-  // OPERAZIONI CRUD
-  // ---------------------------------------------------------------------------
-
-  const createVehicle = useCallback(
-    async (data: VehicleCreateData): Promise<boolean> => {
-      setState(prev => ({ ...prev, submitting: true }));
-
+  const handleCreateVehicle = useCallback(
+    async (data: CreateVehicleData): Promise<Vehicle> => {
+      setSubmitting(true);
       try {
-        await vehiclesApi.create(data);
-        // Ricarica la lista dalla pagina 1 dopo la creazione
-        setFiltersState(prev => ({ ...prev, page: 1 }));
-        closeModal();
-        return true;
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Errore nella creazione del veicolo';
-        setState(prev => ({ ...prev, submitting: false, error: message }));
-        return false;
+        const res = await createVehicle(data);
+        await load();
+        return res.data;
       } finally {
-        setState(prev => ({ ...prev, submitting: false }));
+        setSubmitting(false);
       }
     },
-    [closeModal]
+    [load]
   );
 
-  const updateVehicle = useCallback(
-    async (id: number, data: VehicleEditData): Promise<boolean> => {
-      setState(prev => ({ ...prev, submitting: true }));
-
+  const handleUpdateVehicle = useCallback(
+    async (id: number, data: UpdateVehicleData): Promise<Vehicle> => {
+      setSubmitting(true);
       try {
-        const res = await vehiclesApi.update(id, data);
-
-        // Aggiornamento ottimistico: sostituisce il veicolo nella lista
-        setState(prev => ({
-          ...prev,
-          submitting: false,
-          vehicles: prev.vehicles.map(v => (v.id === id ? { ...v, ...res.data } : v)),
-        }));
-
-        closeModal();
-        return true;
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Errore nella modifica del veicolo';
-        setState(prev => ({ ...prev, submitting: false, error: message }));
-        return false;
+        const res = await updateVehicle(id, data);
+        await load();
+        return res.data;
+      } finally {
+        setSubmitting(false);
       }
     },
-    [closeModal]
+    [load]
   );
 
-  const deleteVehicle = useCallback(async (id: number): Promise<boolean> => {
-    setState(prev => ({ ...prev, submitting: true }));
+  const handleUpdateVehicleStatus = useCallback(
+    async (id: number, data: UpdateVehicleStatusData): Promise<Vehicle> => {
+      setSubmitting(true);
+      try {
+        const res = await updateVehicleStatus(id, data);
+        await load();
+        return res.data;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [load]
+  );
 
-    try {
-      await vehiclesApi.delete(id);
-
-      // Rimozione ottimistica dalla lista
-      setState(prev => ({
-        ...prev,
-        submitting: false,
-        vehicles: prev.vehicles.filter(v => v.id !== id),
-        pagination: {
-          ...prev.pagination,
-          total: Math.max(0, prev.pagination.total - 1),
-        },
-      }));
-
-      return true;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Errore nella eliminazione del veicolo';
-      setState(prev => ({ ...prev, submitting: false, error: message }));
-      return false;
-    }
-  }, []);
-
-  /** Forza il ricaricamento della lista con i filtri correnti */
-  const reload = useCallback(() => {
-    fetchVehicles(filters);
-  }, [fetchVehicles, filters]);
-
-  // ---------------------------------------------------------------------------
-  // RETURN
-  // ---------------------------------------------------------------------------
+  const handleDecommissionVehicle = useCallback(
+    async (id: number): Promise<Vehicle> => {
+      setSubmitting(true);
+      try {
+        const res = await decommissionVehicle(id);
+        await load();
+        return res.data;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [load]
+  );
 
   return {
-    // Dati lista
-    vehicles: state.vehicles,
-    pagination: state.pagination,
-    loading: state.loading,
-    error: state.error,
-    submitting: state.submitting,
-
-    // Filtri
+    data,
+    pagination,
+    loading,
+    error,
+    submitting,
     filters,
     setFilters,
     resetFilters,
     setPage,
-
-    // Modali
-    modalState,
-    openCreate,
-    openEdit,
-    openView,
-    closeModal,
-
-    // CRUD
-    createVehicle,
-    updateVehicle,
-    deleteVehicle,
     reload,
+    createVehicle: handleCreateVehicle,
+    updateVehicle: handleUpdateVehicle,
+    updateVehicleStatus: handleUpdateVehicleStatus,
+    decommissionVehicle: handleDecommissionVehicle,
   };
 };
+
+export default useVehicles;

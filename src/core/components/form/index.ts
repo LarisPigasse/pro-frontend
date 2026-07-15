@@ -51,3 +51,6 @@ export { textAreaData } from './textarea/TextArea.data';
 export { default as TimePicker } from './time-picker/TimePicker';
 export { timePickerData } from './time-picker/TimePicker.data';
 export type { TimeValue, TimePickerFormat, TimePickerStep, TimePickerSize } from './time-picker/TimePicker';
+
+// FloatingFieldShell (blocco condiviso, usato da DatePicker/TimePicker)
+export { default as FloatingFieldShell } from './floating-field-shell/FloatingFieldShell';

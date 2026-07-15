@@ -25,27 +25,24 @@ const Explorer = lazy(() => import('./pages/Explorer'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // ✅ SESSIONS
-const SessionsPage = lazy(() => import('./features/sessions/pages/SessionsPage'));
+const SessionsPage = lazy(() => import('./features/accounts/pages/SessionsPage'));
 
 // ✅ ACCOUNTS
 const AccountsPage = lazy(() => import('./features/accounts/pages/AccountsPage'));
 
 // ✅ LOGS
-const LogsListPage = lazy(() => import('./features/logs/pages/LogsListPage'));
+const LogsListPage = lazy(() => import('./features/system/pages/LogsListPage'));
 
-// ✅ ALERTS
-const AlertsPage = lazy(() => import('./features/alerts/pages/AlertsPage'));
-
-// ✅ SYSTEM
-const SystemPage = lazy(() => import('./features/system/pages/SystemPage'));
+// ✅ SYSTEM INFO
+const InfoPage = lazy(() => import('./features/system/pages/InfoPage'));
 
 // ✅ ASSET AZIENDALI — lazy loading per ogni sottosezione
 const VehiclesDashboard = lazy(() => import('./features/vehicles/pages/Dashboard').then(m => ({ default: m.Dashboard })));
-const VehiclesVehicles  = lazy(() => import('./features/vehicles/pages/Vehicles').then(m => ({ default: m.Vehicles })));
-const VehiclesAutisti   = lazy(() => import('./features/vehicles/pages/Autisti').then(m => ({ default: m.Autisti })));
-const VehiclesScadenze  = lazy(() => import('./features/vehicles/pages/Scadenze').then(m => ({ default: m.Scadenze })));
-const VehiclesStorico   = lazy(() => import('./features/vehicles/pages/Storico').then(m => ({ default: m.Storico })));
-const VehiclesConfig    = lazy(() => import('./features/vehicles/pages/Config').then(m => ({ default: m.Config })));
+const VehiclesVehicles = lazy(() => import('./features/vehicles/pages/Dotazione').then(m => ({ default: m.Dotazione })));
+const VehiclesAutisti = lazy(() => import('./features/vehicles/pages/Autisti').then(m => ({ default: m.Autisti })));
+const VehiclesScadenze = lazy(() => import('./features/vehicles/pages/Scadenze').then(m => ({ default: m.Scadenze })));
+const VehiclesStorico = lazy(() => import('./features/vehicles/pages/Interventi').then(m => ({ default: m.Interventi })));
+const VehiclesConfig = lazy(() => import('./features/vehicles/pages/Config').then(m => ({ default: m.Config })));
 
 // Componente per inizializzazione completa del tema e settings
 const AppInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -85,9 +82,9 @@ const App: React.FC = () => {
               <Suspense fallback={<PageLoadingFallback />}>
                 <Routes>
                   {/* ✅ Auth Pages: Pagine pubbliche FUORI da MainLayout */}
-                  <Route path={ROUTES.LOGIN}           element={<LoginPage />} />
+                  <Route path={ROUTES.LOGIN} element={<LoginPage />} />
                   <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-                  <Route path={ROUTES.RESET_PASSWORD}  element={<ResetPasswordPage />} />
+                  <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
                   {/* ✅ Tutte le altre route: DENTRO MainLayout */}
                   <Route
@@ -96,7 +93,6 @@ const App: React.FC = () => {
                       <div className='App'>
                         <MainLayout>
                           <Routes>
-
                             {/* ── Dashboard ───────────────────────────── */}
                             <Route
                               path={ROUTES.HOME}
@@ -143,18 +139,10 @@ const App: React.FC = () => {
                               }
                             />
                             <Route
-                              path={ROUTES.SISTEMA_ALERTS}
+                              path={ROUTES.SISTEMA_INFO}
                               element={
-                                <PrivateRoute requiredPermission='sistema.alerts'>
-                                  <AlertsPage />
-                                </PrivateRoute>
-                              }
-                            />
-                            <Route
-                              path={ROUTES.SISTEMA_HEALTH}
-                              element={
-                                <PrivateRoute requiredPermission='system.health'>
-                                  <SystemPage />
+                                <PrivateRoute requiredPermission='sistema.info'>
+                                  <InfoPage />
                                 </PrivateRoute>
                               }
                             />
@@ -209,7 +197,7 @@ const App: React.FC = () => {
                               }
                             />
                             <Route
-                              path={ROUTES.VEICOLI_STORICO}
+                              path={ROUTES.VEICOLI_INTERVENTI}
                               element={
                                 <PrivateRoute requiredPermission='vehicles.read'>
                                   <VehiclesStorico />
@@ -227,8 +215,7 @@ const App: React.FC = () => {
 
                             {/* ── 404 ─────────────────────────────────── */}
                             <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
-                            <Route path='*'                element={<NotFound />} />
-
+                            <Route path='*' element={<NotFound />} />
                           </Routes>
                         </MainLayout>
 

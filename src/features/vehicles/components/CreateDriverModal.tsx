@@ -3,200 +3,119 @@
 // features/vehicles/components/CreateDriverModal.tsx
 // =============================================================================
 
-import React, { useState, useCallback } from 'react';
-
+import React, { useState, useRef } from 'react';
 import { Modal, Button } from '@/core/components/ui';
-import Input from '@/core/components/form/input/Input';
-import TextArea from '@/core/components/form/textarea/TextArea';
-import DatePicker from '@/core/components/form/date-picker/DatePicker';
-import type { DriverCreateData } from '../types/vehicles.types';
-
-// -----------------------------------------------------------------------------
-// TIPI INTERNI
-// -----------------------------------------------------------------------------
-
-type FormData = {
-  firstName:  string;
-  lastName:   string;
-  email:      string;
-  phone:      string;
-  birthDate:  string;
-  fiscalCode: string;
-  notes:      string;
-};
-
-interface FormErrors {
-  firstName?:  string;
-  lastName?:   string;
-  email?:      string;
-  fiscalCode?: string;
-}
-
-const EMPTY_FORM: FormData = {
-  firstName:  '',
-  lastName:   '',
-  email:      '',
-  phone:      '',
-  birthDate:  '',
-  fiscalCode: '',
-  notes:      '',
-};
-
-// -----------------------------------------------------------------------------
-// HELPERS
-// -----------------------------------------------------------------------------
-
-function validateForm(data: FormData): FormErrors {
-  const errors: FormErrors = {};
-  if (!data.firstName.trim())
-    errors.firstName = 'Il nome è obbligatorio';
-  if (!data.lastName.trim())
-    errors.lastName = 'Il cognome è obbligatorio';
-  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
-    errors.email = 'Email non valida';
-  if (data.fiscalCode && !/^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/i.test(data.fiscalCode))
-    errors.fiscalCode = 'Codice fiscale non valido';
-  return errors;
-}
-
-function nullIfEmpty(value: string): string | null {
-  return value.trim() === '' ? null : value.trim();
-}
-
-// -----------------------------------------------------------------------------
-// PROPS
-// -----------------------------------------------------------------------------
+import { Alert } from '@/core/components/feedback';
+import {
+  DriverFormFields,
+  EMPTY_DRIVER_FORM,
+  validateDriverForm,
+  driverFormToPayload,
+  type DriverFormValues,
+  type DriverFormTouched,
+} from './DriverFormFields';
+import type { CreateDriverData } from '../types/vehicles.types';
 
 interface CreateDriverModalProps {
-  isOpen:     boolean;
-  submitting: boolean;
-  onClose:    () => void;
-  onSubmit:   (data: DriverCreateData) => Promise<boolean>;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (data: CreateDriverData) => Promise<void>;
+  loading: boolean;
 }
 
-// -----------------------------------------------------------------------------
-// COMPONENT
-// -----------------------------------------------------------------------------
+const ALL_FIELDS: (keyof DriverFormValues)[] = [
+  'firstName',
+  'lastName',
+  'fiscalCode',
+  'birthDate',
+  'phone',
+  'email',
+  'address',
+  'city',
+  'hireDate',
+  'notes',
+];
 
-export const CreateDriverModal: React.FC<CreateDriverModalProps> = ({
-  isOpen,
-  submitting,
-  onClose,
-  onSubmit,
-}) => {
-  const [form,   setForm]   = useState<FormData>(EMPTY_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
+export const CreateDriverModal: React.FC<CreateDriverModalProps> = ({ isOpen, onClose, onConfirm, loading }) => {
+  const [values, setValues] = useState<DriverFormValues>(EMPTY_DRIVER_FORM);
+  const [touched, setTouched] = useState<DriverFormTouched>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
 
-  React.useEffect(() => {
-    if (!isOpen) {
-      setForm(EMPTY_FORM);
-      setErrors({});
-    }
-  }, [isOpen]);
+  const errors = validateDriverForm(values);
 
-  const handleChange = useCallback((field: keyof FormData, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-    setErrors(prev => ({ ...prev, [field]: undefined }));
-  }, []);
+  const handleChange = <K extends keyof DriverFormValues>(field: K, value: DriverFormValues[K]) => {
+    setValues(prev => ({ ...prev, [field]: value }));
+  };
 
-  const handleSubmit = useCallback(async () => {
-    const validation = validateForm(form);
-    if (Object.keys(validation).length > 0) {
-      setErrors(validation);
-      return;
-    }
-    const payload: DriverCreateData = {
-      firstName:  form.firstName.trim(),
-      lastName:   form.lastName.trim(),
-      email:      nullIfEmpty(form.email),
-      phone:      nullIfEmpty(form.phone),
-      birthDate:  nullIfEmpty(form.birthDate),
-      fiscalCode: nullIfEmpty(form.fiscalCode),
-      notes:      nullIfEmpty(form.notes),
-    };
+  const handleBlur = (field: keyof DriverFormValues) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
+
+  const resetForm = () => {
+    setValues(EMPTY_DRIVER_FORM);
+    setTouched({});
+    setApiError(null);
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submittingRef.current) return;
+
+    // Rivela tutti gli eventuali errori, anche sui campi non ancora "toccati"
+    setTouched(Object.fromEntries(ALL_FIELDS.map(f => [f, true])) as DriverFormTouched);
+    if (Object.keys(errors).length > 0) return;
+
+    submittingRef.current = true;
+    setApiError(null);
     try {
-      await onSubmit(payload);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Errore durante il salvataggio';
-      setErrors({ firstName: message });
+      await onConfirm(driverFormToPayload(values));
+      resetForm();
+      onClose();
+    } catch (err) {
+      setApiError(err instanceof Error ? err.message : "Errore durante la creazione dell'autista");
+    } finally {
+      submittingRef.current = false;
     }
-  }, [form, onSubmit]);
+  };
+
+  const footer = (
+    <div className='flex items-center justify-end gap-3'>
+      <Button variant='ghost' onClick={handleClose} disabled={loading}>
+        Annulla
+      </Button>
+      <Button variant='primary' onClick={handleSubmit} isLoading={loading} loadingText='Creazione in corso…'>
+        Crea autista
+      </Button>
+    </div>
+  );
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title='Nuovo autista'
-      footer={
-        <div className='flex justify-end gap-2'>
-          <Button variant='ghost' onClick={onClose} disabled={submitting}>Annulla</Button>
-          <Button variant='primary' onClick={handleSubmit} disabled={submitting}>
-            {submitting ? 'Salvataggio…' : 'Salva'}
-          </Button>
-        </div>
-      }
-    >
-      <div className='flex flex-col gap-2'>
-
-        {/* Nome e Cognome */}
-        <div className='grid grid-cols-2 gap-4'>
-          <Input
-            label='Nome'
-            required
-            value={form.firstName}
-            onChange={e => handleChange('firstName', e.target.value)}
-            error={errors.firstName}
-            autoFocus
+    <Modal isOpen={isOpen} onClose={handleClose} title='Nuovo autista' size='lg' footer={footer} preventClose={loading}>
+      <div className='p-6'>
+        {apiError && (
+          <Alert variant='danger' className='mb-4'>
+            {apiError}
+          </Alert>
+        )}
+        <form onSubmit={handleSubmit}>
+          <DriverFormFields
+            values={values}
+            errors={errors}
+            touched={touched}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            disabled={loading}
           />
-          <Input
-            label='Cognome'
-            required
-            value={form.lastName}
-            onChange={e => handleChange('lastName', e.target.value)}
-            error={errors.lastName}
-          />
-        </div>
-
-        {/* Codice fiscale */}
-        <Input
-          label='Codice fiscale'
-          value={form.fiscalCode}
-          onChange={e => handleChange('fiscalCode', e.target.value.toUpperCase())}
-          error={errors.fiscalCode}
-          maxLength={16}
-        />
-
-        {/* Data di nascita */}
-        <DatePicker
-          value={form.birthDate}
-          onChange={val => handleChange('birthDate', val)}
-        />
-
-        {/* Email e Telefono */}
-        <div className='grid grid-cols-2 gap-4'>
-          <Input
-            label='Email'
-            type='email'
-            value={form.email}
-            onChange={e => handleChange('email', e.target.value)}
-            error={errors.email}
-          />
-          <Input
-            label='Telefono'
-            type='tel'
-            value={form.phone}
-            onChange={e => handleChange('phone', e.target.value)}
-          />
-        </div>
-
-        {/* Note */}
-        <TextArea
-          value={form.notes}
-          onChange={e => handleChange('notes', e.target.value)}
-          rows={3}
-        />
-
+        </form>
       </div>
     </Modal>
   );
 };
+
+export default CreateDriverModal;
