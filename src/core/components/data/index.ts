@@ -7,3 +7,8 @@ export type { TableColumn, TableSize, TableRowActions } from './table/Table';
 export { default as TableLink } from './table-link/TableLink';
 export { tableLinkData } from './table-link/TableLink.data';
 export type { TableLinkVariant } from './table-link/TableLink';
+
+// StatCard
+export { default as StatCard } from './stat-card/StatCard';
+export { statCardData } from './stat-card/StatCard.data';
+export type { StatCardProps } from './stat-card/StatCard';

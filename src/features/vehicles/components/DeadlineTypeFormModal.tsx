@@ -34,6 +34,7 @@ interface FormValues {
   isRecurring: boolean;
   recurrenceMonths: string;
   sortOrder: string;
+  isPostponable: boolean;
 }
 
 const EMPTY_FORM: FormValues = {
@@ -47,6 +48,7 @@ const EMPTY_FORM: FormValues = {
   isRecurring: true,
   recurrenceMonths: '12',
   sortOrder: '0',
+  isPostponable: false,
 };
 
 export const DeadlineTypeFormModal: React.FC<DeadlineTypeFormModalProps> = ({
@@ -78,6 +80,7 @@ export const DeadlineTypeFormModal: React.FC<DeadlineTypeFormModalProps> = ({
         isRecurring: deadlineType.isRecurring,
         recurrenceMonths: deadlineType.recurrenceMonths != null ? String(deadlineType.recurrenceMonths) : '',
         sortOrder: String(deadlineType.sortOrder),
+        isPostponable: deadlineType.isPostponable,
       });
     } else {
       setValues(EMPTY_FORM);
@@ -114,6 +117,7 @@ export const DeadlineTypeFormModal: React.FC<DeadlineTypeFormModalProps> = ({
       isRecurring: values.isRecurring,
       recurrenceMonths: values.isRecurring ? Number(values.recurrenceMonths) || undefined : undefined,
       sortOrder: Number(values.sortOrder) || 0,
+      isPostponable: values.isPostponable,
     };
 
     submittingRef.current = true;
@@ -250,6 +254,20 @@ export const DeadlineTypeFormModal: React.FC<DeadlineTypeFormModalProps> = ({
                 disabled={loading}
               />
             )}
+          </div>
+          <div className='flex items-center justify-between border border-border-default rounded-lg px-4 py-3'>
+            <div>
+              <span className='text-sm text-text-primary'>Prorogabile</span>
+              <p className='text-xs text-text-secondary mt-0.5'>
+                Disattivo (default): la scadenza è improrogabile, va rinnovata entro la data (es. revisione, assicurazione).
+                Attivo: può restare valida anche oltre la scadenza (es. bollo).
+              </p>
+            </div>
+            <Switch
+              checked={values.isPostponable}
+              onCheckedChange={checked => setValues(prev => ({ ...prev, isPostponable: checked }))}
+              disabled={loading}
+            />
           </div>
 
           <Input

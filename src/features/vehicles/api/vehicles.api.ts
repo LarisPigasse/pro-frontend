@@ -21,11 +21,7 @@ import type {
   DriverComplianceTypesResponse,
 } from '../types/vehicles.types';
 
-import type {
-  CreateDriverComplianceTypeData,
-  UpdateDriverComplianceTypeData,
-  DriverComplianceTypeResponse,
-} from '../types/lookups.types';
+import type { CreateDriverComplianceTypeData, UpdateDriverComplianceTypeData } from '../types/lookups.types';
 
 import { VEHICLES_BASE as BASE, buildQuery, createLookupCrud } from './apiHelpers';
 
@@ -368,6 +364,54 @@ export const driverComplianceTypesApi = createLookupCrud<
 >('/driver-compliance-types');
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Notifications — Blocco E — Dashboard (sola lettura + mark-read, entità trasversale)
+// ─────────────────────────────────────────────────────────────────────────────
+
+import type {
+  Notification,
+  NotificationFilters,
+  NotificationsListResponse,
+  NotificationResponse,
+  UnreadCountResponse,
+  MarkAllNotificationsReadResponse,
+} from '../types/vehicles.types';
+
+export const fetchNotifications = async (filters: NotificationFilters = {}): Promise<NotificationsListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    vehicleId: filters.vehicleId,
+    driverId: filters.driverId,
+    type: filters.type,
+    severity: filters.severity,
+    isRead: filters.isRead,
+    isArchived: filters.isArchived,
+  });
+  return apiFetch<NotificationsListResponse>(`${BASE}/notifications${query}`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const fetchUnreadNotificationsCount = async (): Promise<UnreadCountResponse> =>
+  apiFetch<UnreadCountResponse>(`${BASE}/notifications/unread-count`, {
+    headers: getAuthHeaders(),
+  });
+
+/** Segna singola notifica come letta — usata dal click su una riga nel pannello Dashboard */
+export const markNotificationRead = async (id: number): Promise<NotificationResponse> =>
+  apiFetch<NotificationResponse>(`${BASE}/notifications/${id}/read`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+  });
+
+/** Segna tutte come lette — bottone "Segna tutte" nel pannello Dashboard */
+export const markAllNotificationsRead = async (): Promise<MarkAllNotificationsReadResponse> =>
+  apiFetch<MarkAllNotificationsReadResponse>(`${BASE}/notifications/read-all`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Re-export tipi comodi per chi importa solo da qui
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -379,4 +423,5 @@ export type {
   VehicleDeadline,
   MaintenanceRecord,
   MaintenanceScheduleItem,
+  Notification,
 };

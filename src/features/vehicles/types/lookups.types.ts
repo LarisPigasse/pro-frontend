@@ -129,6 +129,7 @@ export interface DeadlineType extends LookupBase {
   isRecurring: boolean;
   recurrenceMonths: number | null;
   sortOrder: number;
+  isPostponable: boolean;
 }
 
 export interface CreateDeadlineTypeData {
@@ -142,6 +143,7 @@ export interface CreateDeadlineTypeData {
   isRecurring?: boolean;
   recurrenceMonths?: number;
   sortOrder?: number;
+  isPostponable?: boolean;
 }
 export type UpdateDeadlineTypeData = Partial<CreateDeadlineTypeData>;
 

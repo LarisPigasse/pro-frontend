@@ -460,6 +460,7 @@ export interface DriverComplianceType {
 export interface DriverCompliance {
   id: number;
   driverId: number;
+  driver: DriverSummary;
   typeId: number;
   complianceType?: DriverComplianceType; // alias Sequelize esatto: "complianceType"
   issuedAt: string | null;
@@ -521,4 +522,87 @@ export const DRIVER_COMPLIANCE_CATEGORY_LABELS: Record<DriverComplianceCategory,
   medical: 'Idoneità medica',
   training: 'Formazione',
   other: 'Altro',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Driver Summary — versione ridotta di Driver, annidata in DriverCompliance
+// (allineamento con l'INCLUDE reale del backend — il tipo precedente non la aveva)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface DriverSummary {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notification — entità trasversale, generata perlopiù dal cron di sistema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type MarkAllNotificationsReadResponse = ApiResponse<{ updated: number }>;
+export type NotificationType = 'deadline' | 'maintenance' | 'km_threshold' | 'driver_compliance' | 'system';
+export type NotificationSeverity = 'info' | 'warning' | 'critical';
+export type NotificationEntityType =
+  | 'vehicle_deadline'
+  | 'maintenance_schedule'
+  | 'driver_compliance'
+  | 'km_threshold'
+  | 'system';
+
+export interface Notification {
+  id: number;
+  vehicleId: number | null;
+  driverId: number | null;
+  entityType: NotificationEntityType;
+  entityId: number | null;
+  type: NotificationType;
+  severity: NotificationSeverity;
+  title: string;
+  message: string;
+  isRead: boolean;
+  isArchived: boolean;
+  readAt: string | null;
+  emailSent: boolean;
+  emailSentAt: string | null;
+  createdAt: string;
+  // ⚠️ niente updatedAt — il modello Sequelize lo disabilita esplicitamente (updatedAt: false)
+}
+
+export interface DeadlineTypeSummary {
+  id: number;
+  name: string;
+  label: string;
+  alertDays1: number;
+  alertDays2: number;
+  alertDays3: number;
+  isPostponable: boolean; // ⚠️ nuovo
+}
+
+export interface NotificationFilters {
+  page?: number;
+  limit?: number;
+  vehicleId?: number;
+  driverId?: number;
+  type?: NotificationType;
+  severity?: NotificationSeverity;
+  isRead?: boolean;
+  isArchived?: boolean;
+}
+
+export type NotificationsListResponse = PaginatedApiResponse<Notification>;
+export type NotificationResponse = ApiResponse<Notification>;
+export type UnreadCountResponse = ApiResponse<{ count: number }>;
+
+export const NOTIFICATION_SEVERITY_LABELS: Record<NotificationSeverity, string> = {
+  info: 'Informazione',
+  warning: 'Attenzione',
+  critical: 'Critico',
+};
+
+export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
+  deadline: 'Scadenza',
+  maintenance: 'Manutenzione',
+  km_threshold: 'Soglia chilometrica',
+  driver_compliance: 'Conformità autista',
+  system: 'Sistema',
 };

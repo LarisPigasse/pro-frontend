@@ -10,56 +10,13 @@ import { useAlertRules, useAlertHistory } from '../hooks';
 import { ServiceStatusCard } from '../components/ServiceStatusCard';
 import { AlertStatsCards, AlertRulesTable, AlertHistoryTable, AlertRuleForm } from '../components';
 import type { AlertRule, AlertRuleFormData, AlertHistoryFilters } from '../types';
+import { StatCard } from '@/core/components/data';
 
 // ============================================================================
 // TIPI
 // ============================================================================
 
 type Tab = 'health' | 'rules' | 'history';
-
-// ============================================================================
-// STAT CARD
-// ============================================================================
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  color: string;
-  loading?: boolean;
-  alert?: boolean;
-  subtitle?: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, loading, alert, subtitle }) => {
-  if (loading) {
-    return (
-      <Card variant='default' padding='md'>
-        <div className='flex items-center justify-between'>
-          <div className='flex-1'>
-            <Skeleton className='h-4 w-24 mb-2' />
-            <Skeleton className='h-8 w-16' />
-          </div>
-          <Skeleton className='h-12 w-12 rounded-full' />
-        </div>
-      </Card>
-    );
-  }
-  return (
-    <Card variant='default' padding='md' className={alert ? 'border border-red-300 dark:border-red-700' : ''}>
-      <div className='flex items-center justify-between'>
-        <div>
-          <p className='text-sm font-medium text-text-secondary'>{title}</p>
-          <p className={`text-3xl font-bold mt-1 ${alert ? 'text-red-600 dark:text-red-400' : 'text-text-primary'}`}>
-            {typeof value === 'number' ? value.toLocaleString() : value}
-          </p>
-          {subtitle && <p className='text-xs text-text-secondary mt-0.5'>{subtitle}</p>}
-        </div>
-        <div className={`p-3 rounded-full ${color}`}>{icon}</div>
-      </div>
-    </Card>
-  );
-};
 
 // ============================================================================
 // SECTION WRAPPER

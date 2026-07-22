@@ -24,6 +24,9 @@ interface MaintenanceRecordFormModalProps {
   onCreate: (data: CreateMaintenanceRecordData) => Promise<void>;
   onUpdate: (id: number, data: UpdateMaintenanceRecordData) => Promise<void>;
   loading: boolean;
+  /** Precompila Veicolo/Tipo in modalità 'create' — usato dalla Dashboard partendo da una riga già nota di Programmazione */
+  initialVehicleId?: number;
+  initialMaintenanceTypeId?: number;
 }
 
 interface FormValues {
@@ -60,6 +63,8 @@ export const MaintenanceRecordFormModal: React.FC<MaintenanceRecordFormModalProp
   onCreate,
   onUpdate,
   loading,
+  initialVehicleId,
+  initialMaintenanceTypeId,
 }) => {
   const { options: vehicleOptions } = useActiveVehicles();
   const { options: typeOptions } = useActiveMaintenanceTypes();
@@ -86,11 +91,15 @@ export const MaintenanceRecordFormModal: React.FC<MaintenanceRecordFormModalProp
         notes: record.notes ?? '',
       });
     } else {
-      setValues(EMPTY_FORM);
+      setValues({
+        ...EMPTY_FORM,
+        vehicleId: initialVehicleId != null ? String(initialVehicleId) : '',
+        maintenanceTypeId: initialMaintenanceTypeId != null ? String(initialMaintenanceTypeId) : '',
+      });
     }
     setTouched({});
     setApiError(null);
-  }, [isOpen, mode, record]);
+  }, [isOpen, mode, record, initialVehicleId, initialMaintenanceTypeId]);
 
   const errors = {
     vehicleId: mode === 'create' && !values.vehicleId ? 'Seleziona un veicolo' : undefined,
