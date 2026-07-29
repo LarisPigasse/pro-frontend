@@ -25,6 +25,9 @@ export const ROUTES = {
   VEICOLI_AUTISTI: '/veicoli/autisti',
   VEICOLI_SCADENZE: '/veicoli/scadenze',
   VEICOLI_INTERVENTI: '/veicoli/interventi',
+  VEICOLI_NOTIFICHE: '/veicoli/notifiche',
+  VEICOLI_AUDIT: '/veicoli/audit',
+  VEICOLI_LOG_EMAIL: '/veicoli/log-email',
   VEICOLI_CONFIGURAZIONE: '/veicoli/configurazione',
 
   // Modulo Sistema

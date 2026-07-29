@@ -19,6 +19,8 @@ import type {
   DriverComplianceListResponse,
   DriverComplianceResponse,
   DriverComplianceTypesResponse,
+  NotificationDeliveryLogFilters,
+  NotificationDeliveryLogsListResponse,
 } from '../types/vehicles.types';
 
 import type { CreateDriverComplianceTypeData, UpdateDriverComplianceTypeData } from '../types/lookups.types';
@@ -386,6 +388,8 @@ export const fetchNotifications = async (filters: NotificationFilters = {}): Pro
     severity: filters.severity,
     isRead: filters.isRead,
     isArchived: filters.isArchived,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
   });
   return apiFetch<NotificationsListResponse>(`${BASE}/notifications${query}`, {
     headers: getAuthHeaders(),
@@ -410,6 +414,22 @@ export const markAllNotificationsRead = async (): Promise<MarkAllNotificationsRe
     method: 'PATCH',
     headers: getAuthHeaders(),
   });
+
+export const fetchNotificationDeliveryLogs = async (
+  filters: NotificationDeliveryLogFilters = {}
+): Promise<NotificationDeliveryLogsListResponse> => {
+  const query = buildQuery({
+    page: filters.page,
+    limit: filters.limit,
+    notificationId: filters.notificationId,
+    status: filters.status,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  });
+  return apiFetch<NotificationDeliveryLogsListResponse>(`${BASE}/notification-delivery-logs${query}`, {
+    headers: getAuthHeaders(),
+  });
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Re-export tipi comodi per chi importa solo da qui

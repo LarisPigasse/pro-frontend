@@ -42,6 +42,11 @@ const VehiclesVehicles = lazy(() => import('./features/vehicles/pages/Dotazione'
 const VehiclesAutisti = lazy(() => import('./features/vehicles/pages/Autisti').then(m => ({ default: m.Autisti })));
 const VehiclesScadenze = lazy(() => import('./features/vehicles/pages/Scadenze').then(m => ({ default: m.Scadenze })));
 const VehiclesStorico = lazy(() => import('./features/vehicles/pages/Interventi').then(m => ({ default: m.Interventi })));
+const VehiclesNotifiche = lazy(() => import('./features/vehicles/pages/Notifiche').then(m => ({ default: m.Notifiche })));
+const VehiclesAudit = lazy(() =>
+  import('./features/vehicles/pages/AuditInterventi').then(m => ({ default: m.AuditInterventi }))
+);
+const VehiclesLogEmail = lazy(() => import('./features/vehicles/pages/LogEmail').then(m => ({ default: m.LogEmail })));
 const VehiclesConfig = lazy(() => import('./features/vehicles/pages/Config').then(m => ({ default: m.Config })));
 
 // Componente per inizializzazione completa del tema e settings
@@ -102,7 +107,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
                             {/* ── Auth ────────────────────────────────── */}
                             <Route
                               path={ROUTES.CHANGE_PASSWORD}
@@ -120,7 +124,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
                             {/* ── Sistema ─────────────────────────────── */}
                             <Route
                               path={ROUTES.SISTEMA_SESSIONS}
@@ -162,7 +165,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
                             {/* ── Asset Aziendali ─────────────────────── */}
                             <Route
                               path={ROUTES.VEICOLI}
@@ -205,6 +207,31 @@ const App: React.FC = () => {
                               }
                             />
                             <Route
+                              path={ROUTES.VEICOLI_NOTIFICHE}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesNotifiche />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
+                              path={ROUTES.VEICOLI_AUDIT}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.audit'>
+                                  <VehiclesAudit />
+                                </PrivateRoute>
+                              }
+                            />
+                            +{' '}
+                            <Route
+                              path={ROUTES.VEICOLI_LOG_EMAIL}
+                              element={
+                                <PrivateRoute requiredPermission='vehicles.read'>
+                                  <VehiclesLogEmail />
+                                </PrivateRoute>
+                              }
+                            />
+                            <Route
                               path={ROUTES.VEICOLI_CONFIGURAZIONE}
                               element={
                                 <PrivateRoute requiredPermission='vehicles.write'>
@@ -212,7 +239,6 @@ const App: React.FC = () => {
                                 </PrivateRoute>
                               }
                             />
-
                             {/* ── 404 ─────────────────────────────────── */}
                             <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
                             <Route path='*' element={<NotFound />} />

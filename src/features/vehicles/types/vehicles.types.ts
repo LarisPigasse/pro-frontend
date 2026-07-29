@@ -553,6 +553,8 @@ export interface Notification {
   id: number;
   vehicleId: number | null;
   driverId: number | null;
+  vehicle: VehicleSummary | null;
+  driver: DriverSummary | null;
   entityType: NotificationEntityType;
   entityId: number | null;
   type: NotificationType;
@@ -587,11 +589,56 @@ export interface NotificationFilters {
   severity?: NotificationSeverity;
   isRead?: boolean;
   isArchived?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export type NotificationsListResponse = PaginatedApiResponse<Notification>;
 export type NotificationResponse = ApiResponse<Notification>;
 export type UnreadCountResponse = ApiResponse<{ count: number }>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NotificationDeliveryLog — tracciamento invii email per destinatario
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type DeliveryStatus = 'sent' | 'failed';
+
+/** Come il backend annida la notifica dentro il log di consegna */
+export interface NotificationSummary {
+  id: number;
+  title: string;
+  type: NotificationType;
+  severity: NotificationSeverity;
+  createdAt: string;
+}
+
+export interface NotificationDeliveryLog {
+  id: number;
+  notificationId: number;
+  notification: NotificationSummary | null;
+  recipientEmail: string;
+  recipientName: string | null;
+  status: DeliveryStatus;
+  messageId: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+}
+
+export interface NotificationDeliveryLogFilters {
+  page?: number;
+  limit?: number;
+  notificationId?: number;
+  status?: DeliveryStatus;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export type NotificationDeliveryLogsListResponse = PaginatedApiResponse<NotificationDeliveryLog>;
+
+export const DELIVERY_STATUS_LABELS: Record<DeliveryStatus, string> = {
+  sent: 'Consegnata',
+  failed: 'Fallita',
+};
 
 export const NOTIFICATION_SEVERITY_LABELS: Record<NotificationSeverity, string> = {
   info: 'Informazione',

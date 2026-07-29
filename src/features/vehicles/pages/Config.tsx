@@ -14,6 +14,7 @@ import {
   MaintenanceTypesSection,
   DriverComplianceTypesSection,
   TelematicsProvidersSection,
+  AlertRecipientsSection,
 } from '../components';
 
 /** Segnaposto temporaneo per le sezioni non ancora costruite — sostituito una a una */
@@ -29,6 +30,7 @@ export const Config: React.FC = () => {
     { id: 'deadline-types', label: 'Tipi Scadenza', content: <DeadlineTypesSection /> },
     { id: 'maintenance-types', label: 'Tipi Manutenzione', content: <MaintenanceTypesSection /> },
     { id: 'driver-compliance-types', label: 'Tipi Conformità Autisti', content: <DriverComplianceTypesSection /> },
+    { id: 'alert-recipients', label: 'Destinatari Avvisi', content: <AlertRecipientsSection /> },
   ];
 
   return (

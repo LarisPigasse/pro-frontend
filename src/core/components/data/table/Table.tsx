@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { cn } from '../../../utils/';
 import { ActionMenu, EditAction, DeleteAction } from '../../actions';
 import type { Action } from '../../actions';
-import { X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { X, ArrowUp, ArrowDown, ArrowUpDown, ChevronRight } from 'lucide-react';
 
 export interface TableColumn<T> {
   header: string | (() => ReactNode);
@@ -69,6 +69,11 @@ interface TableProps<T> {
   onRowClick?: (item: T) => void;
   /** Configurazione azioni riga */
   rowActions?: TableRowActions<T>;
+  /** Riga di dettaglio opzionale sotto la riga, per pochi campi extra —
+   *  alternativa più leggera di una modal quando i dati da mostrare sono pochi */
+  expandable?: {
+    render: (item: T) => ReactNode;
+  };
 }
 
 // Sorting configuration
@@ -94,9 +99,21 @@ function Table<T>({
   hoverable = true,
   onRowClick,
   rowActions,
+  expandable,
 }: TableProps<T>) {
   // 🔄 Sorting state
   const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
+
+  // 📂 Expanded rows state (solo se `expandable` è passato)
+  const [expandedKeys, setExpandedKeys] = useState<Set<string | number>>(new Set());
+
+  const toggleExpanded = (key: string | number) => {
+    setExpandedKeys(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   // 📏 Size variants con CSS custom properties
   const sizeClasses = {
@@ -392,6 +409,7 @@ function Table<T>({
         {/* 📊 Table Header */}
         <thead className='bg-bg-secondary'>
           <tr>
+            {expandable && <th className={cn(headerPaddingClasses[size], 'w-10')}></th>}
             {preparedColumns.map((column, index) => (
               <th
                 key={index}
@@ -415,72 +433,103 @@ function Table<T>({
 
         {/* 📋 Table Body */}
         <tbody className='bg-bg-primary divide-y divide-border-default'>
-          {sortedData.map((item, rowIndex) => (
-            <tr
-              key={keyExtractor(item)}
-              onClick={() => handleRowClick(item)}
-              className={cn(
-                'transition-colors duration-200',
-                hoverable && 'hover:bg-bg-hover',
-                striped && rowIndex % 2 === 1 && 'bg-bg-secondary/30',
-                onRowClick && 'cursor-pointer'
-              )}
-            >
-              {preparedColumns.map((column, colIndex) => {
-                // Handle actions column
-                const isActionsColumn =
-                  rowActions?.enabled &&
-                  ((rowActions.position === 'start' && colIndex === 0) ||
-                    (rowActions.position !== 'start' && colIndex === preparedColumns.length - 1));
+          {sortedData.map((item, rowIndex) => {
+            const key = keyExtractor(item);
+            const isExpanded = expandable ? expandedKeys.has(key) : false;
 
-                if (isActionsColumn) {
-                  return (
+            return (
+              <React.Fragment key={key}>
+                <tr
+                  onClick={() => handleRowClick(item)}
+                  className={cn(
+                    'transition-colors duration-200',
+                    hoverable && 'hover:bg-bg-hover',
+                    striped && rowIndex % 2 === 1 && 'bg-bg-secondary/30',
+                    onRowClick && 'cursor-pointer'
+                  )}
+                >
+                  {expandable && (
                     <td
-                      key={colIndex}
-                      className={cn(cellPaddingClasses[size], 'whitespace-nowrap', column.className)}
-                      onClick={e => e.stopPropagation()} // Prevent row click
+                      className={cn(cellPaddingClasses[size], 'whitespace-nowrap')}
+                      onClick={e => {
+                        e.stopPropagation(); // Non attivare onRowClick
+                        toggleExpanded(key);
+                      }}
                     >
-                      {renderActionsCell(item)}
+                      <ChevronRight
+                        className={cn(
+                          'w-4 h-4 text-text-secondary transition-transform duration-200 cursor-pointer',
+                          isExpanded && 'rotate-90'
+                        )}
+                      />
                     </td>
-                  );
-                }
+                  )}
 
-                // Handle regular columns
-                const cellContent =
-                  typeof column.accessor === 'function'
-                    ? column.accessor(item)
-                    : column.render
-                      ? column.render(item)
-                      : item[column.accessor];
+                  {preparedColumns.map((column, colIndex) => {
+                    // Handle actions column
+                    const isActionsColumn =
+                      rowActions?.enabled &&
+                      ((rowActions.position === 'start' && colIndex === 0) ||
+                        (rowActions.position !== 'start' && colIndex === preparedColumns.length - 1));
 
-                const isClickableCell = column.clickable;
-
-                return (
-                  <td
-                    key={colIndex}
-                    onClick={
-                      isClickableCell
-                        ? e => {
-                            e.stopPropagation(); // Prevent row click
-                            if (column.onCellClick) {
-                              column.onCellClick(item);
-                            }
-                          }
-                        : undefined
+                    if (isActionsColumn) {
+                      return (
+                        <td
+                          key={colIndex}
+                          className={cn(cellPaddingClasses[size], 'whitespace-nowrap', column.className)}
+                          onClick={e => e.stopPropagation()} // Prevent row click
+                        >
+                          {renderActionsCell(item)}
+                        </td>
+                      );
                     }
-                    className={cn(
-                      cellPaddingClasses[size],
-                      'whitespace-nowrap text-text-primary',
-                      getClickableCellClasses(column),
-                      column.className
-                    )}
-                  >
-                    {cellContent as ReactNode}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+
+                    // Handle regular columns
+                    const cellContent =
+                      typeof column.accessor === 'function'
+                        ? column.accessor(item)
+                        : column.render
+                          ? column.render(item)
+                          : item[column.accessor];
+
+                    const isClickableCell = column.clickable;
+
+                    return (
+                      <td
+                        key={colIndex}
+                        onClick={
+                          isClickableCell
+                            ? e => {
+                                e.stopPropagation(); // Prevent row click
+                                if (column.onCellClick) {
+                                  column.onCellClick(item);
+                                }
+                              }
+                            : undefined
+                        }
+                        className={cn(
+                          cellPaddingClasses[size],
+                          'whitespace-nowrap text-text-primary',
+                          getClickableCellClasses(column),
+                          column.className
+                        )}
+                      >
+                        {cellContent as ReactNode}
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                {expandable && isExpanded && (
+                  <tr className='bg-bg-secondary/30'>
+                    <td colSpan={preparedColumns.length + 1} className={cellPaddingClasses[size]}>
+                      {expandable.render(item)}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>

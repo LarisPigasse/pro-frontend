@@ -44,3 +44,6 @@ export { DualCountSubtitle } from './DualCountSubtitle';
 export { DualCountValue } from './DualCountValue';
 export { ComplianceStatusPanel } from './ComplianceStatusPanel';
 export { ScheduledActivitiesPanel } from './ScheduledActivitiesPanel';
+export { AlertRecipientsSection } from './AlertRecipientsSection';
+export { NotificationFilters } from './NotificationFilters';
+export { LogEmailFilters } from './LogEmailFilters';
